@@ -40,6 +40,9 @@ contract StrategyManager is Ownable, ReentrancyGuard {
     // Events
     event StrategyAdded(address indexed strategy, uint256 weight, uint256 riskScore);
     event StrategyUpdated(address indexed strategy, uint256 newWeight, uint256 newRiskScore);
+    event StrategyDeactivated(address indexed strategy);
+    event StrategyReactivated(address indexed strategy);
+    event APYUpdated(address indexed strategy, uint256 oldAPY, uint256 newAPY);
     event StrategyRemoved(address indexed strategy);
     event AllocationCalculated(address indexed strategy, uint256 allocation);
     event RiskToleranceUpdated(uint256 oldTolerance, uint256 newTolerance);
@@ -162,10 +165,9 @@ contract StrategyManager is Ownable, ReentrancyGuard {
     /**
      * @dev Calculate optimal allocation for each strategy
      */
-    function calculateOptimalAllocations(uint256 totalAmount) 
-        external 
-        view 
-        returns (address[] memory, uint256[] memory) 
+    function calculateOptimalAllocations(uint256 totalAmount)
+        external
+        returns (address[] memory, uint256[] memory)
     {
         uint256 activeStrategies = 0;
         for (uint256 i = 0; i < strategyList.length; i++) {
@@ -224,10 +226,10 @@ contract StrategyManager is Ownable, ReentrancyGuard {
     /**
      * @dev Check if rebalancing is needed
      */
-    function shouldRebalance(address[] memory currentStrategies, uint256[] memory currentAllocations) 
-        external 
-        view 
-        returns (bool) 
+    function shouldRebalance(address[] memory currentStrategies, uint256[] memory currentAllocations)
+        external
+        view
+        returns (bool)
     {
         if (currentStrategies.length == 0) return false;
         
@@ -238,28 +240,18 @@ contract StrategyManager is Ownable, ReentrancyGuard {
         
         if (totalCurrent == 0) return false;
         
-        (address[] memory optimalStrategies, uint256[] memory optimalAllocations) = 
-            this.calculateOptimalAllocations(totalCurrent);
+        // Simple check: if any strategy allocation deviates significantly from equal allocation
+        uint256 expectedAllocation = totalCurrent / currentStrategies.length;
         
-        // Check if deviation exceeds threshold
-        for (uint256 i = 0; i < currentStrategies.length; i++) {
-            address strategy = currentStrategies[i];
+        // Check if any allocation deviates significantly from expected equal allocation
+        for (uint256 i = 0; i < currentAllocations.length; i++) {
             uint256 currentAlloc = currentAllocations[i];
-            uint256 optimalAlloc = 0;
-            
-            // Find optimal allocation for this strategy
-            for (uint256 j = 0; j < optimalStrategies.length; j++) {
-                if (optimalStrategies[j] == strategy) {
-                    optimalAlloc = optimalAllocations[j];
-                    break;
-                }
-            }
-            
+
             // Calculate deviation percentage
-            uint256 deviation = currentAlloc > optimalAlloc ? 
-                currentAlloc - optimalAlloc : optimalAlloc - currentAlloc;
+            uint256 deviation = currentAlloc > expectedAllocation ?
+                currentAlloc - expectedAllocation : expectedAllocation - currentAlloc;
             uint256 deviationBps = (deviation * BASIS_POINTS) / totalCurrent;
-            
+
             if (deviationBps > rebalanceThreshold) {
                 return true;
             }
@@ -339,6 +331,309 @@ contract StrategyManager is Ownable, ReentrancyGuard {
         uint256 oldTolerance = riskTolerance;
         riskTolerance = _riskTolerance;
         emit RiskToleranceUpdated(oldTolerance, _riskTolerance);
+    }
+
+    /**
+     * @dev Deactivate a strategy
+     */
+    function deactivateStrategy(address _strategy) external onlyOwner {
+        require(strategies[_strategy].isActive, "Strategy not active");
+        strategies[_strategy].isActive = false;
+        emit StrategyDeactivated(_strategy);
+    }
+
+    /**
+     * @dev Reactivate a strategy
+     */
+    function reactivateStrategy(address _strategy) external onlyOwner {
+        require(!strategies[_strategy].isActive, "Strategy already active");
+        strategies[_strategy].isActive = true;
+        emit StrategyReactivated(_strategy);
+    }
+
+    /**
+     * @dev Update strategy APY
+     */
+    function updateStrategyAPY(address _strategy, uint256 _apy) external onlyOwner {
+        require(strategies[_strategy].isActive, "Strategy not active");
+        uint256 oldAPY = strategies[_strategy].lastAPY;
+        strategies[_strategy].lastAPY = _apy;
+
+        // Track APY history
+        apyHistory[_strategy].push(_apy);
+
+        // Update moving average
+        strategies[_strategy].apyHistory = _calculateMovingAverage(_strategy);
+
+        // Calculate performance score based on consistency
+        uint256 historyLength = apyHistory[_strategy].length;
+        if (historyLength >= 2) {
+            // Calculate variance to measure consistency
+            uint256 avgAPY = strategies[_strategy].apyHistory;
+            uint256 variance = 0;
+            for (uint256 i = 0; i < historyLength; i++) {
+                uint256 diff = apyHistory[_strategy][i] > avgAPY ?
+                    apyHistory[_strategy][i] - avgAPY :
+                    avgAPY - apyHistory[_strategy][i];
+                variance += diff * diff;
+            }
+            variance = variance / historyLength;
+
+            // Higher score for lower variance (more consistent)
+            // Score ranges from 0-100, with 100 being most consistent
+            strategies[_strategy].performanceScore = variance < 100 ? 100 - variance : 0;
+        } else {
+            // Default score for new strategies
+            strategies[_strategy].performanceScore = 50;
+        }
+
+        lastUpdateTime[_strategy] = block.timestamp;
+
+        emit APYUpdated(_strategy, oldAPY, _apy);
+    }
+
+    /**
+     * @dev Calculate optimal allocation (simplified version)
+     */
+    function calculateOptimalAllocation(uint256 _totalAmount) external view returns (uint256[] memory) {
+        address[] memory activeStrategies = getActiveStrategies();
+        uint256[] memory allocations = new uint256[](activeStrategies.length);
+
+        if (activeStrategies.length == 0) {
+            return allocations;
+        }
+
+        // Simple equal allocation for now
+        uint256 allocationPerStrategy = _totalAmount / activeStrategies.length;
+        uint256 remainder = _totalAmount % activeStrategies.length;
+
+        for (uint256 i = 0; i < activeStrategies.length; i++) {
+            allocations[i] = allocationPerStrategy;
+            if (i < remainder) {
+                allocations[i] += 1; // Distribute remainder
+            }
+        }
+
+        return allocations;
+    }
+
+    /**
+     * @dev Get all active strategies
+     */
+    function getActiveStrategies() public view returns (address[] memory) {
+        uint256 count = 0;
+        for (uint256 i = 0; i < strategyList.length; i++) {
+            if (strategies[strategyList[i]].isActive) {
+                count++;
+            }
+        }
+
+        address[] memory activeStrategies = new address[](count);
+        uint256 index = 0;
+        for (uint256 i = 0; i < strategyList.length; i++) {
+            if (strategies[strategyList[i]].isActive) {
+                activeStrategies[index] = strategyList[i];
+                index++;
+            }
+        }
+
+        return activeStrategies;
+    }
+
+    /**
+     * @dev Get strategy count
+     */
+    function getStrategyCount() external view returns (uint256) {
+        return strategyList.length;
+    }
+
+    /**
+     * @dev Get strategy info
+     */
+    function getStrategyInfo(address _strategy) external view returns (
+        uint256 weight,
+        uint256 lastAPY,
+        uint256 riskScore,
+        uint256 maxAllocation,
+        uint256 minAllocation,
+        bool isActive
+    ) {
+        StrategyInfo memory info = strategies[_strategy];
+        return (
+            info.weight,
+            info.lastAPY,
+            info.riskScore,
+            info.maxAllocation,
+            info.minAllocation,
+            info.isActive
+        );
+    }
+
+    /**
+     * @dev Get portfolio summary
+     */
+    function getPortfolioSummary() external view returns (
+        uint256 totalStrategies,
+        uint256 activeStrategies,
+        uint256 averageAPY,
+        uint256 totalRiskScore
+    ) {
+        totalStrategies = strategyList.length;
+
+        uint256 activeCount = 0;
+        uint256 totalAPY = 0;
+        uint256 totalRisk = 0;
+
+        for (uint256 i = 0; i < strategyList.length; i++) {
+            StrategyInfo memory info = strategies[strategyList[i]];
+            if (info.isActive) {
+                activeCount++;
+                totalAPY += info.lastAPY;
+                totalRisk += info.riskScore;
+            }
+        }
+
+        activeStrategies = activeCount;
+        averageAPY = activeCount > 0 ? totalAPY / activeCount : 0;
+        totalRiskScore = activeCount > 0 ? totalRisk / activeCount : 0;
+    }
+
+    /**
+     * @dev Calculate risk-adjusted return (simplified)
+     */
+    function calculateRiskAdjustedReturn(address _strategy) external view returns (uint256) {
+        StrategyInfo memory info = strategies[_strategy];
+        if (!info.isActive || info.riskScore == 0) {
+            return 0;
+        }
+        // Simple risk-adjusted return: APY / risk score
+        return (info.lastAPY * 100) / info.riskScore;
+    }
+
+    /**
+     * @dev Calculate rebalance amounts (simplified)
+     */
+    function calculateRebalanceAmounts(
+        address[] memory _strategies,
+        uint256[] memory _currentAmounts,
+        uint256 _totalAmount
+    ) external view returns (uint256[] memory) {
+        // Simple equal allocation for rebalancing
+        address[] memory activeStrategies = getActiveStrategies();
+        uint256[] memory rebalanceAmounts = new uint256[](_strategies.length);
+
+        if (activeStrategies.length == 0) {
+            return rebalanceAmounts;
+        }
+
+        uint256 targetPerStrategy = _totalAmount / activeStrategies.length;
+
+        for (uint256 i = 0; i < _strategies.length; i++) {
+            rebalanceAmounts[i] = targetPerStrategy > _currentAmounts[i]
+                ? targetPerStrategy - _currentAmounts[i]
+                : 0;
+        }
+
+        return rebalanceAmounts;
+    }
+
+    /**
+     * @dev Get strategy performance over time
+     */
+    function getStrategyPerformance(address _strategy) external view returns (uint256[] memory) {
+        return apyHistory[_strategy];
+    }
+
+    /**
+     * @dev Calculate moving average APY
+     */
+    function calculateMovingAverageAPY(address _strategy, uint256 _periods) external view returns (uint256) {
+        uint256[] memory history = apyHistory[_strategy];
+        if (history.length == 0) {
+            return 0;
+        }
+
+        uint256 periods = _periods > history.length ? history.length : _periods;
+        uint256 sum = 0;
+
+        for (uint256 i = history.length - periods; i < history.length; i++) {
+            sum += history[i];
+        }
+
+        return sum / periods;
+    }
+
+    /**
+     * @dev Calculate Sharpe ratio for a strategy
+     */
+    function calculateSharpeRatio(address _strategy) external view returns (uint256) {
+        StrategyInfo memory info = strategies[_strategy];
+        if (!info.isActive || info.riskScore == 0) {
+            return 0;
+        }
+        // Simplified Sharpe ratio: (return - risk-free rate) / volatility
+        // Using APY as return and risk score as volatility proxy
+        uint256 riskFreeRate = 200; // 2% risk-free rate
+        if (info.lastAPY <= riskFreeRate) {
+            return 0;
+        }
+        return ((info.lastAPY - riskFreeRate) * 100) / info.riskScore;
+    }
+
+    /**
+     * @dev Pause a strategy
+     */
+    function pauseStrategy(address _strategy) external onlyOwner {
+        require(strategies[_strategy].isActive, "Strategy not active");
+        strategies[_strategy].isActive = false;
+        emit StrategyUpdated(_strategy, strategies[_strategy].weight, strategies[_strategy].riskScore);
+    }
+
+    /**
+     * @dev Emergency stop all strategies
+     */
+    function emergencyStop() external onlyOwner {
+        for (uint256 i = 0; i < strategyList.length; i++) {
+            if (strategies[strategyList[i]].isActive) {
+                strategies[strategyList[i]].isActive = false;
+                emit StrategyUpdated(strategyList[i], strategies[strategyList[i]].weight, strategies[strategyList[i]].riskScore);
+            }
+        }
+    }
+
+    /**
+     * @dev Get strategy allocation percentage
+     */
+    function getStrategyAllocation(address _strategy) external view returns (uint256) {
+        if (!strategies[_strategy].isActive) {
+            return 0;
+        }
+
+        uint256 totalWeight = 0;
+        for (uint256 i = 0; i < strategyList.length; i++) {
+            if (strategies[strategyList[i]].isActive) {
+                totalWeight += strategies[strategyList[i]].weight;
+            }
+        }
+
+        if (totalWeight == 0) {
+            return 0;
+        }
+
+        return (strategies[_strategy].weight * BASIS_POINTS) / totalWeight;
+    }
+
+    /**
+     * @dev Update strategy weight
+     */
+    function updateStrategyWeight(address _strategy, uint256 _newWeight) external onlyOwner {
+        require(strategies[_strategy].isActive, "Strategy not active");
+        require(_newWeight > 0, "Weight must be positive");
+
+        uint256 oldWeight = strategies[_strategy].weight;
+        strategies[_strategy].weight = _newWeight;
+
+        emit StrategyUpdated(_strategy, _newWeight, strategies[_strategy].riskScore);
     }
     
     function setRebalanceThreshold(uint256 _threshold) external onlyOwner {

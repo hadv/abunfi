@@ -6,10 +6,30 @@
     "dev": "hardhat node",
     "build": "hardhat compile",
     "test": "hardhat test",
-    "deploy": "hardhat run scripts/deploy.js",
-    "deploy:testnet": "hardhat run scripts/deploy.js --network arbitrumGoerli",
-    "verify": "hardhat verify",
-    "clean": "hardhat clean"
+    "test:coverage": "hardhat coverage",
+    "test:gas": "REPORT_GAS=true hardhat test",
+
+    "deploy": "hardhat run scripts/deploy-complete.js",
+    "deploy:testnet": "hardhat run scripts/deploy-testnet.js",
+    "deploy:local": "hardhat run scripts/deploy-complete.js --network localhost",
+
+    "deploy:ethereum": "hardhat run scripts/deploy-complete.js --network ethereum",
+    "deploy:arbitrum": "hardhat run scripts/deploy-complete.js --network arbitrum",
+    "deploy:polygon": "hardhat run scripts/deploy-complete.js --network polygon",
+
+    "deploy:sepolia": "hardhat run scripts/deploy-testnet.js --network sepolia",
+    "deploy:goerli": "hardhat run scripts/deploy-testnet.js --network goerli",
+    "deploy:mumbai": "hardhat run scripts/deploy-testnet.js --network mumbai",
+    "deploy:arbitrum-goerli": "hardhat run scripts/deploy-testnet.js --network arbitrumGoerli",
+
+    "verify": "hardhat run scripts/verify-contracts.js",
+    "verify:ethereum": "hardhat run scripts/verify-contracts.js --network ethereum",
+    "verify:arbitrum": "hardhat run scripts/verify-contracts.js --network arbitrum",
+    "verify:polygon": "hardhat run scripts/verify-contracts.js --network polygon",
+
+    "clean": "hardhat clean",
+    "size": "hardhat size-contracts",
+    "flatten": "hardhat flatten"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",

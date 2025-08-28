@@ -48,7 +48,7 @@ contract MockComet {
         return utilization;
     }
     
-    function baseToken() external view returns (address) {
+    function getBaseToken() external view returns (address) {
         return address(baseToken);
     }
     

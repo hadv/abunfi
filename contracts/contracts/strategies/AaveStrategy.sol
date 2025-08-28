@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IAbunfiStrategy.sol";
+import "../mocks/MockERC20.sol";
 
 // Aave V3 interfaces
 interface IPool {
@@ -69,7 +70,7 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // State variables
-    IERC20 public immutable override asset; // USDC
+    IERC20 public immutable _asset; // USDC
     IERC20 public immutable aToken; // aUSDC
     IPool public immutable aavePool;
     IPoolDataProvider public immutable dataProvider;
@@ -93,24 +94,32 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
     }
 
     constructor(
-        address _asset,
+        address assetAddress,
         address _aavePool,
         address _dataProvider,
         address _vault
     ) Ownable(msg.sender) {
-        asset = IERC20(_asset);
+        _asset = IERC20(assetAddress);
         aavePool = IPool(_aavePool);
         dataProvider = IPoolDataProvider(_dataProvider);
         vault = _vault;
-        
+
         // Get aToken address from Aave
-        ReserveData memory reserveData = aavePool.getReserveData(_asset);
+        ReserveData memory reserveData = aavePool.getReserveData(assetAddress);
+        require(reserveData.aTokenAddress != address(0), "Invalid aToken address");
         aToken = IERC20(reserveData.aTokenAddress);
-        
+
         // Approve Aave pool to spend our tokens
-        asset.safeApprove(_aavePool, type(uint256).max);
-        
+        SafeERC20.forceApprove(_asset, _aavePool, type(uint256).max);
+
         lastHarvestTime = block.timestamp;
+    }
+
+    /**
+     * @dev Get the underlying asset address
+     */
+    function asset() external view override returns (address) {
+        return address(_asset);
     }
 
     /**
@@ -118,15 +127,16 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      */
     function deposit(uint256 amount) external override onlyVault nonReentrant {
         require(amount > 0, "Cannot deposit 0");
-        
-        // Transfer tokens from vault
-        asset.safeTransferFrom(vault, address(this), amount);
-        
+
+        // Tokens should already be transferred by vault
+        // Approve Aave pool to spend tokens
+        SafeERC20.forceApprove(_asset, address(aavePool), amount);
+
         // Supply to Aave
-        aavePool.supply(address(asset), amount, address(this), 0);
-        
+        aavePool.supply(address(_asset), amount, address(this), 0);
+
         totalDeposited += amount;
-        
+
         emit Deposited(amount);
     }
 
@@ -135,17 +145,13 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      */
     function withdraw(uint256 amount) external override onlyVault nonReentrant {
         require(amount > 0, "Cannot withdraw 0");
-        require(amount <= totalAssets(), "Insufficient balance");
-        
+        require(amount <= totalDeposited, "Insufficient balance");
+
         // Withdraw from Aave
-        uint256 withdrawn = aavePool.withdraw(address(asset), amount, vault);
-        
-        if (withdrawn > totalDeposited) {
-            totalDeposited = 0;
-        } else {
-            totalDeposited -= withdrawn;
-        }
-        
+        uint256 withdrawn = aavePool.withdraw(address(_asset), amount, vault);
+
+        totalDeposited -= withdrawn;
+
         emit Withdrawn(withdrawn);
     }
 
@@ -153,9 +159,8 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      * @dev Withdraw all assets from Aave
      */
     function withdrawAll() external override onlyVault nonReentrant {
-        uint256 balance = aToken.balanceOf(address(this));
-        if (balance > 0) {
-            uint256 withdrawn = aavePool.withdraw(address(asset), type(uint256).max, vault);
+        if (totalDeposited > 0) {
+            uint256 withdrawn = aavePool.withdraw(address(_asset), totalDeposited, vault);
             totalDeposited = 0;
             emit Withdrawn(withdrawn);
         }
@@ -165,19 +170,16 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      * @dev Harvest yield (for Aave, yield is automatically compounded)
      */
     function harvest() external override onlyVault returns (uint256 yield) {
+        // Calculate actual yield based on aToken balance vs totalDeposited
         uint256 currentBalance = aToken.balanceOf(address(this));
-        
+
         if (currentBalance > totalDeposited) {
             yield = currentBalance - totalDeposited;
-            totalDeposited = currentBalance; // Update to include compounded yield
-        }
-        
-        lastHarvestTime = block.timestamp;
-        
-        if (yield > 0) {
+            totalDeposited = currentBalance;
+            lastHarvestTime = block.timestamp;
             emit Harvested(yield);
         }
-        
+
         return yield;
     }
 
@@ -199,7 +201,7 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      * @dev Get current APY from Aave
      */
     function getAPY() external view override returns (uint256) {
-        (, , , , , uint256 liquidityRate, , , , , ) = dataProvider.getReserveData(address(asset));
+        (, , , , , uint256 liquidityRate, , , , , , ) = dataProvider.getReserveData(address(_asset));
         
         // Convert from ray (1e27) to basis points (10000 = 100%)
         // APY = (1 + liquidityRate/RAY)^SECONDS_PER_YEAR - 1
@@ -211,7 +213,7 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      * @dev Get current lending rate from Aave
      */
     function getCurrentLendingRate() external view returns (uint256) {
-        (, , , , , uint256 liquidityRate, , , , , ) = dataProvider.getReserveData(address(asset));
+        (, , , , , uint256 liquidityRate, , , , , , ) = dataProvider.getReserveData(address(_asset));
         return liquidityRate;
     }
 
@@ -223,7 +225,7 @@ contract AaveStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
         uint256 liquidityRate
     ) {
         (currentATokenBalance, , , , , , liquidityRate, , ) = dataProvider.getUserReserveData(
-            address(asset), 
+            address(_asset),
             address(this)
         );
     }

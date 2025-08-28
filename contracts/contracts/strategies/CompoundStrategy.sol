@@ -32,7 +32,7 @@ contract CompoundStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // State variables
-    IERC20 public immutable override asset; // USDC
+    IERC20 public immutable _asset; // USDC
     IComet public immutable comet; // Compound V3 market
     ICometRewards public immutable cometRewards; // Compound rewards contract
     address public immutable vault;
@@ -56,23 +56,30 @@ contract CompoundStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
     }
 
     constructor(
-        address _asset,
+        address assetAddress,
         address _comet,
         address _cometRewards,
         address _vault
     ) Ownable(msg.sender) {
-        asset = IERC20(_asset);
+        _asset = IERC20(assetAddress);
         comet = IComet(_comet);
         cometRewards = ICometRewards(_cometRewards);
         vault = _vault;
-        
+
         // Verify that the comet base token matches our asset
-        require(comet.baseToken() == _asset, "Asset mismatch");
-        
+        require(comet.baseToken() == assetAddress, "Asset mismatch");
+
         // Approve Compound market to spend our tokens
-        asset.safeApprove(_comet, type(uint256).max);
-        
+        SafeERC20.forceApprove(_asset, _comet, type(uint256).max);
+
         lastHarvestTime = block.timestamp;
+    }
+
+    /**
+     * @dev Get the underlying asset address
+     */
+    function asset() external view override returns (address) {
+        return address(_asset);
     }
 
     /**
@@ -80,15 +87,16 @@ contract CompoundStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
      */
     function deposit(uint256 amount) external override onlyVault nonReentrant {
         require(amount > 0, "Cannot deposit 0");
-        
-        // Transfer tokens from vault
-        asset.safeTransferFrom(vault, address(this), amount);
-        
+
+        // Tokens should already be transferred by vault
+        // Approve Compound comet to spend tokens
+        SafeERC20.forceApprove(_asset, address(comet), amount);
+
         // Supply to Compound V3
-        comet.supply(address(asset), amount);
-        
+        comet.supply(address(_asset), amount);
+
         totalDeposited += amount;
-        
+
         emit Deposited(amount);
     }
 
@@ -100,10 +108,10 @@ contract CompoundStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
         require(amount <= totalAssets(), "Insufficient balance");
         
         // Withdraw from Compound V3
-        comet.withdraw(address(asset), amount);
+        comet.withdraw(address(_asset), amount);
         
         // Transfer to vault
-        asset.safeTransfer(vault, amount);
+        SafeERC20.safeTransfer(_asset, vault, amount);
         
         if (amount > totalDeposited) {
             totalDeposited = 0;
@@ -120,8 +128,8 @@ contract CompoundStrategy is IAbunfiStrategy, Ownable, ReentrancyGuard {
     function withdrawAll() external override onlyVault nonReentrant {
         uint256 balance = comet.balanceOf(address(this));
         if (balance > 0) {
-            comet.withdraw(address(asset), balance);
-            asset.safeTransfer(vault, asset.balanceOf(address(this)));
+            comet.withdraw(address(_asset), balance);
+            SafeERC20.safeTransfer(_asset, vault, _asset.balanceOf(address(this)));
             totalDeposited = 0;
             emit Withdrawn(balance);
         }
