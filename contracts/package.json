@@ -1,0 +1,24 @@
+{
+  "name": "abunfi-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for Abunfi DeFi savings platform",
+  "scripts": {
+    "dev": "hardhat node",
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network arbitrumGoerli",
+    "verify": "hardhat verify",
+    "clean": "hardhat clean"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts-upgradeable": "^5.0.0",
+    "hardhat": "^2.19.0",
+    "dotenv": "^16.3.1"
+  },
+  "dependencies": {
+    "@aave/core-v3": "^1.19.0"
+  }
+}
