@@ -25,7 +25,7 @@ const features = [
   {
     icon: <TrendingUp sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'Lãi suất hấp dẫn',
-    description: 'Nhận lãi suất ~8%/năm từ các giao thức DeFi uy tín như Aave và Compound'
+    description: 'Nhận lãi suất 6-12%/năm từ các chiến lược đầu tư đa dạng: Lending, Liquid Staking, Liquidity Providing'
   },
   {
     icon: <AccountBalanceWallet sx={{ fontSize: 40, color: 'primary.main' }} />,
@@ -35,7 +35,7 @@ const features = [
   {
     icon: <Security sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'An toàn & minh bạch',
-    description: 'Smart contracts được kiểm toán, funds được phân bổ tự động giữa các protocols'
+    description: 'Smart contracts được kiểm toán, quản lý rủi ro thông minh với phân bổ tự động giữa các chiến lược'
   },
   {
     icon: <Speed sx={{ fontSize: 40, color: 'primary.main' }} />,
@@ -121,7 +121,7 @@ const LandingPage = () => {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}
             >
-              Gửi tiết kiệm từ 10,000 VNĐ và nhận lãi suất hấp dẫn từ DeFi. 
+              Gửi tiết kiệm từ 10,000 VNĐ và nhận lãi suất 6-12%/năm từ các chiến lược đầu tư đa dạng.
               Đơn giản, an toàn, minh bạch.
             </Typography>
             
@@ -155,7 +155,7 @@ const LandingPage = () => {
             <Grid item xs={12} md={4}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
-                  ~8%
+                  6-12%
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                   Lãi suất hàng năm
@@ -240,79 +240,122 @@ const LandingPage = () => {
               component="h2"
               sx={{ textAlign: 'center', mb: 2, fontWeight: 'bold' }}
             >
-              Được hỗ trợ bởi các giao thức hàng đầu
+              Chiến lược đầu tư đa dạng
             </Typography>
             <Typography
               variant="h6"
               color="text.secondary"
-              sx={{ textAlign: 'center', mb: 6, maxWidth: 600, mx: 'auto' }}
+              sx={{ textAlign: 'center', mb: 6, maxWidth: 700, mx: 'auto' }}
             >
-              Tiền của bạn được đầu tư thông minh vào các giao thức DeFi uy tín nhất thế giới
+              Tiền của bạn được phân bổ thông minh giữa các chiến lược đầu tư khác nhau để tối ưu hóa lợi nhuận và giảm thiểu rủi ro
             </Typography>
 
             <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'primary.light' }}>
-                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
+              {/* Lending Strategy */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'success.light' }}>
+                  <CardContent sx={{ p: 3, textAlign: 'center' }}>
                     <Typography variant="h2" sx={{ mb: 2 }}>🏦</Typography>
-                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-                      Aave Protocol
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      Lending Protocols
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      Giao thức lending lớn nhất với TVL hơn $12B, được kiểm toán bởi các công ty bảo mật hàng đầu
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Aave, Compound - Cho vay tài sản để nhận lãi suất ổn định
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
                         bgcolor: 'success.light',
                         color: 'success.dark',
-                        px: 2,
+                        px: 1.5,
                         py: 0.5,
-                        borderRadius: 1
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
                       }}>
-                        TVL: $12.5B
+                        APY: 4-6%
                       </Typography>
                       <Typography variant="caption" sx={{
                         bgcolor: 'info.light',
                         color: 'info.dark',
-                        px: 2,
+                        px: 1.5,
                         py: 0.5,
-                        borderRadius: 1
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
                       }}>
-                        Battle-tested
+                        Rủi ro thấp
                       </Typography>
                     </Box>
                   </CardContent>
                 </Card>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'secondary.light' }}>
-                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
-                    <Typography variant="h2" sx={{ mb: 2 }}>🔷</Typography>
-                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-                      Compound Protocol
+              {/* Liquidity Providing Strategy */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'warning.light' }}>
+                  <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ mb: 2 }}>⚖️</Typography>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      Liquidity Providing
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      Giao thức lending tiên phong với cơ chế lãi suất tự động và governance token COMP
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Curve, Uniswap V3 - Cung cấp thanh khoản cho các cặp stablecoin
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
                         bgcolor: 'warning.light',
                         color: 'warning.dark',
-                        px: 2,
+                        px: 1.5,
                         py: 0.5,
-                        borderRadius: 1
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
                       }}>
-                        TVL: $8.2B
+                        APY: 5-8%
                       </Typography>
                       <Typography variant="caption" sx={{
                         bgcolor: 'secondary.light',
                         color: 'secondary.dark',
-                        px: 2,
+                        px: 1.5,
                         py: 0.5,
-                        borderRadius: 1
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
                       }}>
-                        Pioneer
+                        Rủi ro TB
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Liquid Staking Strategy */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'primary.light' }}>
+                  <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🚀</Typography>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      Liquid Staking
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Lido, Rocket Pool - Stake ETH và nhận liquid staking tokens
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'primary.light',
+                        color: 'primary.dark',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
+                      }}>
+                        APY: 4-6%
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'error.light',
+                        color: 'error.dark',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
+                      }}>
+                        Rủi ro TB-Cao
                       </Typography>
                     </Box>
                   </CardContent>
@@ -322,10 +365,10 @@ const LandingPage = () => {
 
             <Box sx={{ textAlign: 'center', mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
               <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                🤖 Phân bổ thông minh tự động
+                🤖 Quản lý rủi ro thông minh
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Hệ thống AI của chúng tôi tự động phân bổ funds giữa các protocols để tối ưu hóa lợi nhuận và giảm thiểu rủi ro
+                Hệ thống tự động phân bổ funds giữa các chiến lược dựa trên mức độ rủi ro, APY và điều kiện thị trường để tối ưu hóa lợi nhuận
               </Typography>
             </Box>
           </Box>
