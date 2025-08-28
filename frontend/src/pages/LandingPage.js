@@ -25,7 +25,7 @@ const features = [
   {
     icon: <TrendingUp sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'Lãi suất hấp dẫn',
-    description: 'Nhận lãi suất ~8%/năm từ các giao thức DeFi uy tín như Aave'
+    description: 'Nhận lãi suất ~8%/năm từ các giao thức DeFi uy tín như Aave và Compound'
   },
   {
     icon: <AccountBalanceWallet sx={{ fontSize: 40, color: 'primary.main' }} />,
@@ -35,7 +35,7 @@ const features = [
   {
     icon: <Security sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'An toàn & minh bạch',
-    description: 'Smart contracts được kiểm toán, mọi giao dịch đều minh bạch trên blockchain'
+    description: 'Smart contracts được kiểm toán, funds được phân bổ tự động giữa các protocols'
   },
   {
     icon: <Speed sx={{ fontSize: 40, color: 'primary.main' }} />,
@@ -226,6 +226,109 @@ const LandingPage = () => {
               </Grid>
             ))}
           </Grid>
+        </motion.div>
+
+        {/* Protocols Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <Box sx={{ mt: 8, mb: 8 }}>
+            <Typography
+              variant="h4"
+              component="h2"
+              sx={{ textAlign: 'center', mb: 2, fontWeight: 'bold' }}
+            >
+              Được hỗ trợ bởi các giao thức hàng đầu
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ textAlign: 'center', mb: 6, maxWidth: 600, mx: 'auto' }}
+            >
+              Tiền của bạn được đầu tư thông minh vào các giao thức DeFi uy tín nhất thế giới
+            </Typography>
+
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'primary.light' }}>
+                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🏦</Typography>
+                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
+                      Aave Protocol
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                      Giao thức lending lớn nhất với TVL hơn $12B, được kiểm toán bởi các công ty bảo mật hàng đầu
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'success.light',
+                        color: 'success.dark',
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 1
+                      }}>
+                        TVL: $12.5B
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'info.light',
+                        color: 'info.dark',
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 1
+                      }}>
+                        Battle-tested
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Card sx={{ height: '100%', border: '2px solid', borderColor: 'secondary.light' }}>
+                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🔷</Typography>
+                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
+                      Compound Protocol
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                      Giao thức lending tiên phong với cơ chế lãi suất tự động và governance token COMP
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'warning.light',
+                        color: 'warning.dark',
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 1
+                      }}>
+                        TVL: $8.2B
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'secondary.light',
+                        color: 'secondary.dark',
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 1
+                      }}>
+                        Pioneer
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+
+            <Box sx={{ textAlign: 'center', mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
+                🤖 Phân bổ thông minh tự động
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Hệ thống AI của chúng tôi tự động phân bổ funds giữa các protocols để tối ưu hóa lợi nhuận và giảm thiểu rủi ro
+              </Typography>
+            </Box>
+          </Box>
         </motion.div>
 
         {/* CTA Section */}

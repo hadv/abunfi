@@ -321,18 +321,67 @@ const SavingsPage = () => {
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                   Cách thức hoạt động
                 </Typography>
-                
+
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  • Tiền của bạn được đầu tư vào các giao thức DeFi uy tín như Aave
+                  • Tiền của bạn được đầu tư vào các giao thức DeFi uy tín như Aave và Compound
                 </Typography>
-                
+
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  • Hệ thống tự động phân bổ funds để tối ưu hóa lợi nhuận
+                </Typography>
+
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   • Lãi suất được tính hàng ngày và tự động cộng dồn
                 </Typography>
-                
+
                 <Typography variant="body2" color="text.secondary">
                   • Bạn có thể rút tiền bất cứ lúc nào mà không mất phí
                 </Typography>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Protocol Information Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card sx={{ mt: 3 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Protocols được sử dụng
+                </Typography>
+
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    🏦 Aave Protocol
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Lãi suất hiện tại: ~{(currentAPY * 0.6).toFixed(1)}%/năm
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Giao thức lending hàng đầu với thanh khoản cao và bảo mật tốt
+                  </Typography>
+                </Box>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    🔷 Compound Protocol
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Lãi suất hiện tại: ~{(currentAPY * 0.4).toFixed(1)}%/năm
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Giao thức lending tiên phong với cơ chế lãi suất tự động
+                  </Typography>
+                </Box>
+
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  Hệ thống tự động phân bổ funds giữa các protocols để tối ưu hóa lợi nhuận và giảm thiểu rủi ro
+                </Alert>
               </CardContent>
             </Card>
           </motion.div>
