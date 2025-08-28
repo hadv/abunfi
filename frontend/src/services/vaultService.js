@@ -41,5 +41,53 @@ export const vaultService = {
   getYieldHistory: async (period = '30d') => {
     const response = await api.get(`/vault/yield-history?period=${period}`);
     return response.data;
+  },
+
+  // Get all strategies information
+  getAllStrategies: async () => {
+    const response = await api.get('/vault/strategies');
+    return response.data;
+  },
+
+  // Get specific strategy information
+  getStrategyInfo: async (strategyAddress) => {
+    const response = await api.get(`/vault/strategies/${strategyAddress}`);
+    return response.data;
+  },
+
+  // Get strategy allocations
+  getStrategyAllocations: async () => {
+    const response = await api.get('/vault/allocations');
+    return response.data;
+  },
+
+  // Get protocol comparison data
+  getProtocolComparison: async () => {
+    const response = await api.get('/vault/protocols/comparison');
+    return response.data;
+  },
+
+  // Trigger rebalancing
+  triggerRebalance: async () => {
+    const response = await api.post('/vault/rebalance');
+    return response.data;
+  },
+
+  // Get rebalancing history
+  getRebalanceHistory: async (limit = 10) => {
+    const response = await api.get(`/vault/rebalance-history?limit=${limit}`);
+    return response.data;
+  },
+
+  // Get strategy performance metrics
+  getStrategyPerformance: async (period = '30d') => {
+    const response = await api.get(`/vault/strategies/performance?period=${period}`);
+    return response.data;
+  },
+
+  // Get APY history for all strategies
+  getStrategiesAPYHistory: async (period = '30d') => {
+    const response = await api.get(`/vault/strategies/apy-history?period=${period}`);
+    return response.data;
   }
 };

@@ -31,7 +31,23 @@ const mockPortfolio = {
   totalDeposits: 1000000,
   earnedYield: 250000,
   currentAPY: 8.2,
-  shares: 1.25
+  shares: 1.25,
+  strategies: [
+    {
+      name: 'Aave USDC Strategy',
+      allocation: 60,
+      apy: 7.8,
+      balance: 750000,
+      protocol: 'Aave'
+    },
+    {
+      name: 'Compound USDC Strategy',
+      allocation: 40,
+      apy: 8.9,
+      balance: 500000,
+      protocol: 'Compound'
+    }
+  ]
 };
 
 const mockYieldHistory = [
@@ -279,6 +295,59 @@ const DashboardPage = () => {
                 <Typography variant="body2" color="text.secondary">
                   Lãi suất hiện tại
                 </Typography>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Strategy Allocation */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Phân bổ Strategies
+                </Typography>
+
+                {displayPortfolio.strategies.map((strategy, index) => (
+                  <Box key={index} sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                        {strategy.protocol}
+                      </Typography>
+                      <Chip
+                        label={`${strategy.apy}% APY`}
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                      />
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {strategy.allocation}% phân bổ
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                        {(strategy.balance).toLocaleString()} VNĐ
+                      </Typography>
+                    </Box>
+
+                    <LinearProgress
+                      variant="determinate"
+                      value={strategy.allocation}
+                      sx={{
+                        height: 6,
+                        borderRadius: 3,
+                        backgroundColor: 'grey.200',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: index === 0 ? 'primary.main' : 'secondary.main'
+                        }
+                      }}
+                    />
+                  </Box>
+                ))}
               </CardContent>
             </Card>
           </motion.div>
