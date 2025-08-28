@@ -2,6 +2,25 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./MockERC20.sol";
+
+struct ReserveData {
+    uint256 configuration;
+    uint128 liquidityIndex;
+    uint128 currentLiquidityRate;
+    uint128 variableBorrowIndex;
+    uint128 currentVariableBorrowRate;
+    uint128 currentStableBorrowRate;
+    uint40 lastUpdateTimestamp;
+    uint16 id;
+    address aTokenAddress;
+    address stableDebtTokenAddress;
+    address variableDebtTokenAddress;
+    address interestRateStrategyAddress;
+    uint128 accruedToTreasury;
+    uint128 unbacked;
+    uint128 isolationModeTotalDebt;
+}
 
 /**
  * @title MockAavePool
@@ -10,6 +29,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract MockAavePool {
     IERC20 public asset;
     mapping(address => uint256) public balances;
+    mapping(address => address) public aTokens;
     uint256 public liquidityRate = 80000000000000000000000000; // ~8% APY in ray format
     
     event Supply(address indexed asset, uint256 amount, address indexed onBehalfOf, uint16 referralCode);
@@ -18,49 +38,80 @@ contract MockAavePool {
     constructor(address _asset) {
         asset = IERC20(_asset);
     }
-    
-    function supply(address _asset, uint256 amount, address onBehalfOf, uint16 referralCode) external {
-        require(_asset == address(asset), "Invalid asset");
-        asset.transferFrom(msg.sender, address(this), amount);
-        balances[onBehalfOf] += amount;
-        emit Supply(_asset, amount, onBehalfOf, referralCode);
+
+    /**
+     * @dev Set aToken address for testing
+     */
+    function setAToken(address _asset, address _aToken) external {
+        aTokens[_asset] = _aToken;
     }
-    
-    function withdraw(address _asset, uint256 amount, address to) external returns (uint256) {
-        require(_asset == address(asset), "Invalid asset");
-        
-        uint256 withdrawAmount = amount;
-        if (amount == type(uint256).max) {
-            withdrawAmount = balances[msg.sender];
+
+    /**
+     * @dev Supply assets to the pool
+     */
+    function supply(address _asset, uint256 _amount, address _onBehalfOf, uint16 _referralCode) external {
+        require(_amount > 0, "Amount must be positive");
+
+        // Transfer tokens from sender
+        IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
+
+        // Track balance for the strategy (onBehalfOf)
+        balances[_onBehalfOf] += _amount;
+
+        // Also track in aToken balance if aToken exists
+        if (aTokens[_asset] != address(0)) {
+            // Mint aTokens to the strategy
+            MockERC20(aTokens[_asset]).mint(_onBehalfOf, _amount);
         }
-        
-        require(balances[msg.sender] >= withdrawAmount, "Insufficient balance");
-        
-        balances[msg.sender] -= withdrawAmount;
-        asset.transfer(to, withdrawAmount);
-        
-        emit Withdraw(_asset, withdrawAmount, to);
-        return withdrawAmount;
+
+        emit Supply(_asset, _amount, _onBehalfOf, _referralCode);
+    }
+
+    /**
+     * @dev Withdraw assets from the pool
+     */
+    function withdraw(address _asset, uint256 _amount, address _to) external returns (uint256) {
+        require(_amount > 0, "Amount must be positive");
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+
+        // Update balance
+        balances[msg.sender] -= _amount;
+
+        // Transfer tokens back
+        IERC20(_asset).transfer(_to, _amount);
+
+        emit Withdraw(_asset, _amount, _to);
+        return _amount;
+    }
+
+    /**
+     * @dev Get reserve data
+     */
+    function getReserveData(address _asset) external view returns (ReserveData memory) {
+        return ReserveData({
+            configuration: 0,
+            liquidityIndex: 1e27, // 1 in ray format
+            currentLiquidityRate: uint128(liquidityRate),
+            variableBorrowIndex: 1e27,
+            currentVariableBorrowRate: 0,
+            currentStableBorrowRate: 0,
+            lastUpdateTimestamp: uint40(block.timestamp),
+            id: 0,
+            aTokenAddress: aTokens[_asset],
+            stableDebtTokenAddress: address(0),
+            variableDebtTokenAddress: address(0),
+            interestRateStrategyAddress: address(0),
+            accruedToTreasury: 0,
+            unbacked: 0,
+            isolationModeTotalDebt: 0
+        });
     }
     
-    function getReserveData(address _asset) external view returns (
-        uint256 unbacked,
-        uint256 accruedToTreasuryScaled,
-        uint256 totalAToken,
-        uint256 totalStableDebt,
-        uint256 totalVariableDebt,
-        uint256 _liquidityRate,
-        uint256 variableBorrowRate,
-        uint256 stableBorrowRate,
-        uint256 averageStableBorrowRate,
-        uint256 liquidityIndex,
-        uint256 variableBorrowIndex,
-        uint40 lastUpdateTimestamp
-    ) {
-        return (0, 0, 0, 0, 0, liquidityRate, 0, 0, 0, 0, 0, 0);
-    }
+
     
-    function getUserReserveData(address _asset, address user) external view returns (
+
+    
+    function getUserReserveData(address _asset, address /* user */) external view returns (
         uint256 currentATokenBalance,
         uint256 currentStableDebt,
         uint256 currentVariableDebt,
@@ -71,7 +122,7 @@ contract MockAavePool {
         uint40 stableRateLastUpdated,
         bool usageAsCollateralEnabled
     ) {
-        return (balances[user], 0, 0, 0, 0, 0, liquidityRate, 0, false);
+        return (0, 0, 0, 0, 0, 0, liquidityRate, 0, false);
     }
     
     // Test helper functions

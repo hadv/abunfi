@@ -40,6 +40,7 @@ contract AbunfiVault is Ownable, ReentrancyGuard, Pausable {
     // Events
     event Deposit(address indexed user, uint256 amount, uint256 shares);
     event Withdraw(address indexed user, uint256 amount, uint256 shares);
+    event StrategyAdded(address indexed strategy);
     event StrategyAdded(address indexed strategy, uint256 weight);
     event StrategyRemoved(address indexed strategy);
     event StrategyWeightUpdated(address indexed strategy, uint256 oldWeight, uint256 newWeight);
@@ -269,7 +270,7 @@ contract AbunfiVault is Ownable, ReentrancyGuard, Pausable {
      */
     function getStrategyInfo(address strategy) external view returns (
         string memory name,
-        uint256 totalAssets,
+        uint256 totalAssetsAmount,
         uint256 apy,
         uint256 weight,
         bool isActive
@@ -293,7 +294,7 @@ contract AbunfiVault is Ownable, ReentrancyGuard, Pausable {
     function getAllStrategiesInfo() external view returns (
         address[] memory addresses,
         string[] memory names,
-        uint256[] memory totalAssets,
+        uint256[] memory totalAssetsAmounts,
         uint256[] memory apys,
         uint256[] memory weights
     ) {
@@ -306,7 +307,7 @@ contract AbunfiVault is Ownable, ReentrancyGuard, Pausable {
 
         addresses = new address[](activeCount);
         names = new string[](activeCount);
-        totalAssets = new uint256[](activeCount);
+        totalAssetsAmounts = new uint256[](activeCount);
         apys = new uint256[](activeCount);
         weights = new uint256[](activeCount);
 
@@ -315,7 +316,7 @@ contract AbunfiVault is Ownable, ReentrancyGuard, Pausable {
             if (isActiveStrategy[address(strategies[i])]) {
                 addresses[index] = address(strategies[i]);
                 names[index] = strategies[i].name();
-                totalAssets[index] = strategies[i].totalAssets();
+                totalAssetsAmounts[index] = strategies[i].totalAssets();
                 apys[index] = strategies[i].getAPY();
                 weights[index] = strategyWeights[address(strategies[i])];
                 index++;
@@ -441,6 +442,43 @@ contract AbunfiVault is Ownable, ReentrancyGuard, Pausable {
     function unpause() external onlyOwner {
         _unpause();
     }
+
+    // Additional strategy management
+    address[] public strategyList;
+
+    /**
+     * @dev Add a strategy with weight
+     */
+    function addStrategyWithWeight(address _strategy, uint256 _weight) external onlyOwner {
+        require(_strategy != address(0), "Invalid strategy address");
+        require(!isActiveStrategy[_strategy], "Strategy already active");
+        require(_weight > 0, "Weight must be positive");
+
+        isActiveStrategy[_strategy] = true;
+        strategyWeights[_strategy] = _weight;
+        strategies.push(IAbunfiStrategy(_strategy));
+        strategyList.push(_strategy);
+
+        emit StrategyAdded(_strategy);
+    }
+
+    /**
+     * @dev Add a strategy (single parameter version for compatibility)
+     */
+    function addStrategy(address _strategy) external onlyOwner {
+        require(_strategy != address(0), "Invalid strategy address");
+        require(!isActiveStrategy[_strategy], "Strategy already active");
+
+        isActiveStrategy[_strategy] = true;
+        strategyWeights[_strategy] = 100; // Default weight
+        strategyList.push(_strategy);
+
+        emit StrategyAdded(_strategy);
+    }
+
+
+
+
 
     function emergencyWithdraw() external onlyOwner {
         uint256 balance = asset.balanceOf(address(this));
