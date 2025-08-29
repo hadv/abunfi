@@ -1,22 +1,28 @@
-const mongoose = require('mongoose');
+const databaseService = require('../services/DatabaseService');
 const logger = require('../utils/logger');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.NODE_ENV === 'test' 
-      ? process.env.MONGODB_TEST_URI 
-      : process.env.MONGODB_URI;
+    logger.info('Initializing PostgreSQL + Redis database service...');
 
-    const conn = await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    // Initialize the database service (PostgreSQL + Redis)
+    await databaseService.initialize();
+    logger.info('Database service initialized successfully');
 
-    logger.info(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     logger.error('Database connection error:', error);
     process.exit(1);
   }
 };
 
-module.exports = connectDB;
+// Graceful shutdown
+const disconnectDB = async () => {
+  try {
+    await databaseService.disconnect();
+    logger.info('Database service disconnected');
+  } catch (error) {
+    logger.error('Database disconnection error:', error);
+  }
+};
+
+module.exports = { connectDB, disconnectDB, databaseService };

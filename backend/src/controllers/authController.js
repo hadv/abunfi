@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const UserRepository = require('../models/postgres/UserRepository');
 const logger = require('../utils/logger');
 
 const generateToken = (userId) => {
@@ -13,43 +13,44 @@ const authController = {
       const { socialId, socialProvider, email, name, walletAddress, avatar } = req.body;
 
       // Check if user exists
-      let user = await User.findBySocial(socialId, socialProvider);
-      
+      let user = await UserRepository.findBySocial(socialId, socialProvider);
+
       if (!user) {
         // Check if user exists with same email
-        user = await User.findOne({ email });
-        
+        user = await UserRepository.findByEmail(email);
+
         if (user) {
           // Update existing user with social info
-          user.socialId = socialId;
-          user.socialProvider = socialProvider;
-          user.walletAddress = walletAddress.toLowerCase();
-          user.avatar = avatar;
-          await user.save();
+          await UserRepository.update(user.id, {
+            social_id: socialId,
+            social_provider: socialProvider,
+            metadata: { ...user.metadata, avatar }
+          });
+          user = await UserRepository.findById(user.id);
         } else {
           // Create new user
-          user = new User({
+          user = await UserRepository.create({
             email,
             name,
-            socialId,
-            socialProvider,
-            walletAddress: walletAddress.toLowerCase(),
-            avatar,
-            isEmailVerified: true // Social login emails are pre-verified
+            social_id: socialId,
+            social_provider: socialProvider,
+            wallet_address: walletAddress.toLowerCase(),
+            metadata: { avatar },
+            is_email_verified: true // Social login emails are pre-verified
           });
-          await user.save();
         }
       } else {
         // Update login info
-        await user.updateLoginInfo();
+        await UserRepository.updateLoginInfo(user.id);
+        user = await UserRepository.findById(user.id);
       }
 
-      const token = generateToken(user._id);
+      const token = generateToken(user.id);
 
       res.json({
         success: true,
         token,
-        user: user.toPublicJSON()
+        user: UserRepository.toPublicJSON(user)
       });
     } catch (error) {
       logger.error('Social login error:', error);
@@ -65,27 +66,29 @@ const authController = {
       // TODO: Verify phone verification code
       // For MVP, we'll skip actual SMS verification
 
-      let user = await User.findOne({ phone });
-      
+      // Find user by phone in metadata
+      const users = await UserRepository.findByPreferences({ phone });
+      let user = users.length > 0 ? users[0] : null;
+
       if (!user) {
-        user = new User({
-          phone,
+        user = await UserRepository.create({
           name: `User ${phone.slice(-4)}`,
           email: `${phone}@abunfi.local`,
-          socialProvider: 'phone',
-          walletAddress: walletAddress.toLowerCase()
+          social_provider: 'phone',
+          wallet_address: walletAddress.toLowerCase(),
+          metadata: { phone }
         });
-        await user.save();
       } else {
-        await user.updateLoginInfo();
+        await UserRepository.updateLoginInfo(user.id);
+        user = await UserRepository.findById(user.id);
       }
 
-      const token = generateToken(user._id);
+      const token = generateToken(user.id);
 
       res.json({
         success: true,
         token,
-        user: user.toPublicJSON()
+        user: UserRepository.toPublicJSON(user)
       });
     } catch (error) {
       logger.error('Phone login error:', error);
@@ -152,19 +155,16 @@ const authController = {
     try {
       const { token } = req.params;
 
-      const user = await User.findOne({ emailVerificationToken: token });
-      
+      const user = await UserRepository.verifyEmail(token);
+
       if (!user) {
         return res.status(400).json({ error: 'Invalid verification token' });
       }
 
-      user.isEmailVerified = true;
-      user.emailVerificationToken = undefined;
-      await user.save();
-
       res.json({
         success: true,
-        message: 'Email verified successfully'
+        message: 'Email verified successfully',
+        user: UserRepository.toPublicJSON(user)
       });
     } catch (error) {
       logger.error('Email verification error:', error);
@@ -177,8 +177,8 @@ const authController = {
     try {
       const { email } = req.body;
 
-      const user = await User.findOne({ email });
-      
+      const user = await UserRepository.findByEmail(email);
+
       if (!user) {
         // Don't reveal if email exists
         return res.json({
@@ -189,8 +189,12 @@ const authController = {
 
       // TODO: Generate reset token and send email
       // For MVP, we'll just log it
+      const resetToken = Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date(Date.now() + 3600000); // 1 hour
 
-      logger.info(`Password reset requested for ${email}`);
+      await UserRepository.setPasswordResetToken(user.id, resetToken, expiresAt);
+
+      logger.info(`Password reset requested for ${email}, token: ${resetToken}`);
 
       res.json({
         success: true,
@@ -198,6 +202,31 @@ const authController = {
       });
     } catch (error) {
       logger.error('Forgot password error:', error);
+      res.status(500).json({ error: 'Password reset failed' });
+    }
+  },
+
+  // Reset password
+  resetPassword: async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      const user = await UserRepository.findByPasswordResetToken(token);
+
+      if (!user) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+      }
+
+      // TODO: Hash password and update user
+      // For MVP, we'll just clear the token
+      await UserRepository.clearPasswordResetToken(user.id);
+
+      res.json({
+        success: true,
+        message: 'Password reset successfully'
+      });
+    } catch (error) {
+      logger.error('Reset password error:', error);
       res.status(500).json({ error: 'Password reset failed' });
     }
   }

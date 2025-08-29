@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
-const connectDB = require('./config/database');
+const { connectDB, disconnectDB, databaseService } = require('./config/database');
 const blockchainService = require('./config/blockchain');
 const logger = require('./utils/logger');
 
@@ -62,14 +62,42 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV,
-    version: process.env.npm_package_version || '1.0.0'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    const dbHealth = await databaseService.healthCheck();
+    const dbStats = await databaseService.getStats();
+
+    const health = {
+      status: dbHealth.overall ? 'OK' : 'DEGRADED',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV,
+      version: process.env.npm_package_version || '1.0.0',
+      databases: {
+        postgresql: {
+          status: dbHealth.postgres ? 'connected' : 'disconnected',
+          stats: dbStats.postgres
+        },
+        redis: {
+          status: dbHealth.redis ? 'connected' : 'disconnected',
+          stats: dbStats.redis ? 'connected' : 'disconnected'
+        }
+      },
+      blockchain: {
+        status: blockchainService.initialized ? 'connected' : 'disconnected'
+      }
+    };
+
+    const statusCode = dbHealth.overall ? 200 : 503;
+    res.status(statusCode).json(health);
+  } catch (error) {
+    logger.error('Health check error:', error);
+    res.status(503).json({
+      status: 'ERROR',
+      timestamp: new Date().toISOString(),
+      error: error.message
+    });
+  }
 });
 
 // API routes
@@ -123,13 +151,15 @@ app.use((err, req, res, next) => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully');
+  await disconnectDB();
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   logger.info('SIGINT received, shutting down gracefully');
+  await disconnectDB();
   process.exit(0);
 });
 

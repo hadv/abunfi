@@ -1,5 +1,6 @@
-const User = require('../models/User');
-const Transaction = require('../models/Transaction');
+const UserRepository = require('../models/postgres/UserRepository');
+const TransactionRepository = require('../models/postgres/TransactionRepository');
+const databaseService = require('../services/DatabaseService');
 const blockchainService = require('../config/blockchain');
 const logger = require('../utils/logger');
 
@@ -7,9 +8,16 @@ const userController = {
   // Get user profile
   getProfile: async (req, res) => {
     try {
+      const userId = req.user.id;
+      const user = await UserRepository.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
       res.json({
         success: true,
-        user: req.user.toPublicJSON()
+        user: UserRepository.toPublicJSON(user)
       });
     } catch (error) {
       logger.error('Get profile error:', error);
@@ -20,20 +28,23 @@ const userController = {
   // Update user profile
   updateProfile: async (req, res) => {
     try {
-      const { name, phone, preferences } = req.body;
-      const user = req.user;
+      const { name, preferences, metadata } = req.body;
+      const userId = req.user.id;
 
-      if (name) user.name = name;
-      if (phone) user.phone = phone;
-      if (preferences) {
-        user.preferences = { ...user.preferences, ...preferences };
+      const updateData = {};
+      if (name) updateData.name = name;
+      if (preferences) updateData.preferences = preferences;
+      if (metadata) updateData.metadata = metadata;
+
+      const updatedUser = await UserRepository.update(userId, updateData);
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
       }
-
-      await user.save();
 
       res.json({
         success: true,
-        user: user.toPublicJSON()
+        user: UserRepository.toPublicJSON(updatedUser)
       });
     } catch (error) {
       logger.error('Update profile error:', error);
@@ -41,45 +52,88 @@ const userController = {
     }
   },
 
-  // Get user dashboard data
-  getDashboard: async (req, res) => {
+  // Update user preferences
+  updatePreferences: async (req, res) => {
     try {
-      const user = req.user;
+      const { preferences } = req.body;
+      const userId = req.user.id;
 
-      // Get portfolio data from blockchain
-      let portfolio = null;
-      try {
-        if (blockchainService.initialized) {
-          portfolio = await blockchainService.getUserBalance(user.walletAddress);
-        }
-      } catch (blockchainError) {
-        logger.warn('Blockchain service unavailable, using mock data');
+      const updatedPreferences = await UserRepository.updatePreferences(userId, preferences);
+
+      if (!updatedPreferences) {
+        return res.status(404).json({ error: 'User not found' });
       }
-
-      // Mock data if blockchain is not available
-      if (!portfolio) {
-        portfolio = {
-          totalBalance: '1250000',
-          deposits: '1000000', 
-          shares: '1.25',
-          earnedYield: '250000'
-        };
-      }
-
-      // Get recent transactions
-      const recentTransactions = await Transaction.getUserTransactions(user._id, 5);
-
-      // Get user stats
-      const stats = await Transaction.getUserStats(user._id);
 
       res.json({
         success: true,
-        data: {
-          portfolio,
-          recentTransactions,
-          stats,
-          user: user.toPublicJSON()
-        }
+        message: 'Preferences updated successfully',
+        preferences: updatedPreferences
+      });
+    } catch (error) {
+      logger.error('Update preferences error:', error);
+      res.status(500).json({ error: 'Failed to update preferences' });
+    }
+  },
+
+  // Get user dashboard data
+  getDashboard: async (req, res) => {
+    try {
+      const userId = req.user.id;
+
+      // Use caching for dashboard data
+      const dashboardData = await databaseService.cache(
+        `dashboard:${userId}`,
+        async () => {
+          // Get user data with balance
+          const user = await UserRepository.findById(userId);
+
+          if (!user) {
+            throw new Error('User not found');
+          }
+
+          // Get portfolio data from blockchain
+          let portfolio = null;
+          try {
+            if (blockchainService.initialized) {
+              portfolio = await blockchainService.getUserBalance(user.wallet_address);
+            }
+          } catch (blockchainError) {
+            logger.warn('Blockchain service unavailable, using database data');
+          }
+
+          // Use database balance if blockchain is not available
+          if (!portfolio) {
+            portfolio = {
+              totalBalance: user.total_balance || 0,
+              deposits: user.total_balance || 0,
+              shares: user.total_shares || 0,
+              earnedYield: user.total_yield_earned || 0
+            };
+          }
+
+          // Get recent transactions
+          const recentTransactions = await TransactionRepository.getUserTransactions(userId, { limit: 5 });
+
+          // Get user stats
+          const stats = await TransactionRepository.getUserStats(userId);
+
+          // Get monthly stats
+          const monthlyStats = await TransactionRepository.getMonthlyStats(userId, 6);
+
+          return {
+            portfolio,
+            recentTransactions,
+            stats,
+            monthlyStats,
+            user: UserRepository.toPublicJSON(user)
+          };
+        },
+        300 // 5 minutes cache
+      );
+
+      res.json({
+        success: true,
+        data: dashboardData
       });
     } catch (error) {
       logger.error('Get dashboard error:', error);
