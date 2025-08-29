@@ -1,5 +1,7 @@
 const blockchainService = require('../config/blockchain');
-const Transaction = require('../models/Transaction');
+const TransactionRepository = require('../models/postgres/TransactionRepository');
+const UserRepository = require('../models/postgres/UserRepository');
+const databaseService = require('../services/DatabaseService');
 const logger = require('../utils/logger');
 
 const vaultController = {
@@ -151,27 +153,27 @@ const vaultController = {
   prepareDeposit: async (req, res) => {
     try {
       const { amount } = req.body;
-      const user = req.user;
+      const userId = req.user.id;
+
+      const estimatedShares = (parseFloat(amount) / 1000000).toFixed(4);
 
       // Create pending transaction record
-      const transaction = new Transaction({
-        user: user._id,
+      const transaction = await TransactionRepository.create({
+        user_id: userId,
         type: 'deposit',
         amount: parseFloat(amount),
         status: 'pending',
         metadata: {
-          estimatedShares: (parseFloat(amount) / 1000000).toFixed(4)
+          estimatedShares
         }
       });
-
-      await transaction.save();
 
       res.json({
         success: true,
         data: {
-          transactionId: transaction._id,
+          transactionId: transaction.id,
           amount,
-          estimatedShares: transaction.metadata.estimatedShares,
+          estimatedShares,
           message: 'Transaction prepared. Please confirm in your wallet.'
         }
       });
@@ -185,28 +187,28 @@ const vaultController = {
   prepareWithdraw: async (req, res) => {
     try {
       const { shares } = req.body;
-      const user = req.user;
+      const userId = req.user.id;
+
+      const estimatedAmount = parseFloat(shares) * 1000000; // Estimated amount
 
       // Create pending transaction record
-      const transaction = new Transaction({
-        user: user._id,
+      const transaction = await TransactionRepository.create({
+        user_id: userId,
         type: 'withdraw',
         shares: parseFloat(shares),
-        amount: parseFloat(shares) * 1000000, // Estimated amount
+        amount: estimatedAmount,
         status: 'pending',
         metadata: {
           requestedShares: shares
         }
       });
 
-      await transaction.save();
-
       res.json({
         success: true,
         data: {
-          transactionId: transaction._id,
+          transactionId: transaction.id,
           shares,
-          estimatedAmount: transaction.amount,
+          estimatedAmount,
           message: 'Transaction prepared. Please confirm in your wallet.'
         }
       });

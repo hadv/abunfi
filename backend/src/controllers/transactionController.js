@@ -1,4 +1,6 @@
-const Transaction = require('../models/Transaction');
+const TransactionRepository = require('../models/postgres/TransactionRepository');
+const UserRepository = require('../models/postgres/UserRepository');
+const databaseService = require('../services/DatabaseService');
 const blockchainService = require('../config/blockchain');
 const logger = require('../utils/logger');
 
@@ -6,26 +8,37 @@ const transactionController = {
   // Get user transactions
   getUserTransactions: async (req, res) => {
     try {
-      const { page = 1, limit = 20, type, status } = req.query;
-      const user = req.user;
+      const {
+        page = 1,
+        limit = 20,
+        type,
+        status,
+        startDate,
+        endDate
+      } = req.query;
+      const userId = req.user.id;
 
-      const query = { user: user._id };
-      if (type) query.type = type;
-      if (status) query.status = status;
+      const options = {
+        limit: parseInt(limit),
+        offset: (parseInt(page) - 1) * parseInt(limit),
+        type,
+        status,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null
+      };
 
-      const transactions = await Transaction.find(query)
-        .sort({ createdAt: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit))
-        .populate('user', 'name email');
-
-      const total = await Transaction.countDocuments(query);
+      // Get transactions and total count
+      const [transactions, total] = await Promise.all([
+        TransactionRepository.getUserTransactions(userId, options),
+        TransactionRepository.countUserTransactions(userId, options)
+      ]);
 
       // Also get recent blockchain transactions if available
       let blockchainTxs = [];
       try {
         if (blockchainService.initialized) {
-          blockchainTxs = await blockchainService.getRecentTransactions(user.walletAddress, 10);
+          const user = await UserRepository.findById(userId);
+          blockchainTxs = await blockchainService.getRecentTransactions(user.wallet_address, 10);
         }
       } catch (blockchainError) {
         logger.warn('Could not fetch blockchain transactions:', blockchainError.message);
@@ -54,14 +67,11 @@ const transactionController = {
   getTransactionById: async (req, res) => {
     try {
       const { id } = req.params;
-      const user = req.user;
+      const userId = req.user.id;
 
-      const transaction = await Transaction.findOne({
-        _id: id,
-        user: user._id
-      }).populate('user', 'name email');
+      const transaction = await TransactionRepository.findById(id);
 
-      if (!transaction) {
+      if (!transaction || transaction.user_id !== userId) {
         return res.status(404).json({ error: 'Transaction not found' });
       }
 
@@ -78,88 +88,115 @@ const transactionController = {
   // Get user transaction stats
   getUserTransactionStats: async (req, res) => {
     try {
-      const user = req.user;
+      const userId = req.user.id;
 
-      const stats = await Transaction.aggregate([
-        { $match: { user: user._id } },
-        {
-          $group: {
-            _id: '$type',
-            totalAmount: { $sum: '$amount' },
-            count: { $sum: 1 },
-            avgAmount: { $avg: '$amount' }
-          }
-        }
-      ]);
+      // Use caching for stats
+      const statsData = await databaseService.cache(
+        `user_stats:${userId}`,
+        async () => {
+          // Get detailed stats by type and status
+          const stats = await TransactionRepository.getUserStats(userId);
 
-      // Get total stats
-      const totalStats = await Transaction.aggregate([
-        { $match: { user: user._id, status: 'confirmed' } },
-        {
-          $group: {
-            _id: null,
-            totalDeposits: {
-              $sum: {
-                $cond: [{ $eq: ['$type', 'deposit'] }, '$amount', 0]
-              }
-            },
-            totalWithdrawals: {
-              $sum: {
-                $cond: [{ $eq: ['$type', 'withdraw'] }, '$amount', 0]
-              }
-            },
-            totalYield: {
-              $sum: {
-                $cond: [{ $eq: ['$type', 'yield_harvest'] }, '$amount', 0]
-              }
-            },
-            totalTransactions: { $sum: 1 }
-          }
-        }
-      ]);
+          // Get monthly stats for the last 6 months
+          const monthlyStats = await TransactionRepository.getMonthlyStats(userId, 6);
 
-      // Get monthly stats for the last 6 months
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-
-      const monthlyStats = await Transaction.aggregate([
-        {
-          $match: {
-            user: user._id,
-            status: 'confirmed',
-            createdAt: { $gte: sixMonthsAgo }
-          }
-        },
-        {
-          $group: {
-            _id: {
-              year: { $year: '$createdAt' },
-              month: { $month: '$createdAt' },
-              type: '$type'
-            },
-            totalAmount: { $sum: '$amount' },
-            count: { $sum: 1 }
-          }
-        },
-        { $sort: { '_id.year': 1, '_id.month': 1 } }
-      ]);
-
-      res.json({
-        success: true,
-        data: {
-          byType: stats,
-          total: totalStats[0] || {
+          // Calculate totals
+          const totals = {
             totalDeposits: 0,
             totalWithdrawals: 0,
             totalYield: 0,
             totalTransactions: 0
-          },
-          monthly: monthlyStats
-        }
+          };
+
+          stats.forEach(stat => {
+            if (stat.status === 'confirmed') {
+              totals.totalTransactions += parseInt(stat.count);
+
+              switch (stat.type) {
+                case 'deposit':
+                  totals.totalDeposits += parseFloat(stat.total_amount);
+                  break;
+                case 'withdraw':
+                  totals.totalWithdrawals += parseFloat(stat.total_amount);
+                  break;
+                case 'yield_harvest':
+                  totals.totalYield += parseFloat(stat.total_amount);
+                  break;
+              }
+            }
+          });
+
+          return {
+            byType: stats,
+            total: totals,
+            monthly: monthlyStats
+          };
+        },
+        300 // 5 minutes cache
+      );
+
+      res.json({
+        success: true,
+        data: statsData
       });
     } catch (error) {
       logger.error('Get transaction stats error:', error);
       res.status(500).json({ error: 'Failed to get transaction stats' });
+    }
+  },
+
+  // Create transaction (for testing purposes)
+  createTransaction: async (req, res) => {
+    try {
+      const { type, amount, metadata } = req.body;
+      const userId = req.user.id;
+
+      const transactionData = {
+        user_id: userId,
+        type,
+        amount: parseFloat(amount),
+        status: 'pending',
+        metadata: metadata || {}
+      };
+
+      const transaction = await TransactionRepository.create(transactionData);
+
+      res.status(201).json({
+        success: true,
+        data: transaction
+      });
+    } catch (error) {
+      logger.error('Create transaction error:', error);
+      res.status(500).json({ error: 'Failed to create transaction' });
+    }
+  },
+
+  // Update transaction status (admin only)
+  updateTransactionStatus: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status, txHash, blockNumber, gasUsed, gasFee, errorMessage } = req.body;
+
+      const additionalData = {};
+      if (txHash) additionalData.tx_hash = txHash;
+      if (blockNumber) additionalData.block_number = blockNumber;
+      if (gasUsed) additionalData.gas_used = gasUsed;
+      if (gasFee) additionalData.gas_fee = gasFee;
+      if (errorMessage) additionalData.error_message = errorMessage;
+
+      const updatedTransaction = await TransactionRepository.updateStatus(id, status, additionalData);
+
+      if (!updatedTransaction) {
+        return res.status(404).json({ error: 'Transaction not found' });
+      }
+
+      res.json({
+        success: true,
+        data: updatedTransaction
+      });
+    } catch (error) {
+      logger.error('Update transaction status error:', error);
+      res.status(500).json({ error: 'Failed to update transaction status' });
     }
   }
 };

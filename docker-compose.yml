@@ -1,23 +1,6 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
-  mongodb:
-    image: mongo:7.0
-    container_name: abunfi-mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
-      MONGO_INITDB_DATABASE: abunfi
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    networks:
-      - abunfi-network
-
   # Backend API
   backend:
     build:
@@ -28,14 +11,19 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      MONGODB_URI: mongodb://admin:password123@mongodb:27017/abunfi?authSource=admin
+      # PostgreSQL (primary database)
+      DATABASE_URL: postgresql://abunfi_user:abunfi_password@postgres:5432/abunfi
+      # Redis (for caching and sessions)
+      REDIS_URL: redis://redis:6379
+      # Application config
       JWT_SECRET: your-super-secret-jwt-key
       RPC_URL: https://arb1.arbitrum.io/rpc
       CORS_ORIGIN: http://localhost:3000
     ports:
       - "3001:3001"
     depends_on:
-      - mongodb
+      - postgres
+      - redis
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -82,6 +70,29 @@ services:
       - abunfi-network
     command: npx hardhat node --hostname 0.0.0.0
 
+  # PostgreSQL Database (for financial data)
+  postgres:
+    image: postgres:16-alpine
+    container_name: abunfi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: abunfi
+      POSTGRES_USER: abunfi_user
+      POSTGRES_PASSWORD: abunfi_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
+    networks:
+      - abunfi-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U abunfi_user -d abunfi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # Redis (for caching and sessions)
   redis:
     image: redis:7.2-alpine
@@ -94,9 +105,14 @@ services:
     networks:
       - abunfi-network
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
-  mongodb_data:
+  postgres_data:
     driver: local
   redis_data:
     driver: local
