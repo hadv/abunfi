@@ -4,20 +4,20 @@
   "description": "Micro-Saving DeFi App for Vietnamese Users",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:contracts\" \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:contracts": "cd contracts && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "build": "npm run build:contracts && npm run build:backend && npm run build:frontend",
-    "build:contracts": "cd contracts && npm run build",
+    "build": "npm run contracts:build && npm run build:backend && npm run build:frontend",
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",
-    "test": "npm run test:contracts && npm run test:backend && npm run test:frontend",
-    "test:contracts": "cd contracts && npm run test",
+    "test": "npm run test:backend && npm run test:frontend",
     "test:backend": "cd backend && npm run test",
     "test:frontend": "cd frontend && npm run test",
-    "deploy": "cd contracts && npm run deploy",
-    "install:all": "npm install && cd contracts && npm install && cd ../backend && npm install && cd ../frontend && npm install"
+
+    "contracts:build": "cd contracts-submodule && forge build",
+    "contracts:test": "cd contracts-submodule && forge test",
+    "contracts:deploy": "cd contracts-submodule && forge script script/Deploy.s.sol --broadcast",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [
     "defi",
@@ -33,8 +33,7 @@
     "concurrently": "^8.2.2"
   },
   "workspaces": [
-    "contracts",
-    "backend", 
+    "backend",
     "frontend"
   ]
 }

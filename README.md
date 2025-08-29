@@ -50,7 +50,7 @@ abunfi-contracts/       # Smart contracts repository (separate)
 ## 🛠️ Tech Stack
 
 - **Blockchain**: Arbitrum/Base (Layer 2)
-- **Smart Contracts**: Solidity, Foundry (moved to [abunfi-contracts](https://github.com/hadv/abunfi-contracts))
+- **Smart Contracts**: Solidity, Foundry (submodule: [abunfi-contracts](https://github.com/hadv/abunfi-contracts))
 - **Backend**: Node.js, Express, MongoDB
 - **Frontend**: React, ethers.js, Web3Auth
 - **DeFi Integration**: Aave, Curve, Lido, Rocket Pool, Uniswap V3

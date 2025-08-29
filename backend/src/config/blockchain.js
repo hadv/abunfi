@@ -3,21 +3,23 @@ const logger = require('../utils/logger');
 const path = require('path');
 const fs = require('fs');
 
-// Load contract ABIs from the contracts repository
+// Load contract ABIs directly from submodule
 function loadContractABI(contractName) {
   try {
-    // Try to load from local contracts repository first
-    const contractsPath = path.join(__dirname, '../../../contracts/exports', `${contractName}.json`);
+    // Load directly from contracts submodule
+    const contractsPath = path.join(__dirname, '../../../contracts-submodule/exports', `${contractName}.json`);
     if (fs.existsSync(contractsPath)) {
       const contractData = JSON.parse(fs.readFileSync(contractsPath, 'utf8'));
       return contractData.abi;
     }
 
-    // Fallback to node_modules if contracts are installed as package
-    const packagePath = path.join(__dirname, '../../../node_modules/@abunfi/contracts/exports', `${contractName}.json`);
-    if (fs.existsSync(packagePath)) {
-      const contractData = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-      return contractData.abi;
+    // Try to load from index.json (consolidated ABIs)
+    const indexPath = path.join(__dirname, '../../../contracts-submodule/exports/index.json');
+    if (fs.existsSync(indexPath)) {
+      const allContracts = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+      if (allContracts[contractName] && allContracts[contractName].abi) {
+        return allContracts[contractName].abi;
+      }
     }
 
     throw new Error(`Contract ABI not found: ${contractName}`);

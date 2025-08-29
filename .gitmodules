@@ -1,0 +1,3 @@
+[submodule "contracts-submodule"]
+	path = contracts-submodule
+	url = https://github.com/hadv/abunfi-contracts.git
