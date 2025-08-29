@@ -10,13 +10,19 @@ Phá vỡ rào cản tài chính, mang lại khả năng tiết kiệm và sinh 
 
 ```
 abunfi/
-├── contracts/          # Smart contracts (Solidity)
-│   ├── strategies/     # Investment strategies
-│   └── interfaces/     # Contract interfaces
 ├── backend/            # Node.js API server
 ├── frontend/           # React web application
 ├── docs/              # Documentation
 └── scripts/           # Deployment & utility scripts
+
+abunfi-contracts/       # Smart contracts repository (separate)
+├── src/               # Smart contracts (Solidity)
+│   ├── strategies/    # Investment strategies
+│   ├── interfaces/    # Contract interfaces
+│   └── mocks/         # Mock contracts for testing
+├── test/              # Forge tests
+├── script/            # Deployment scripts
+└── exports/           # Contract ABIs for integration
 ```
 
 ## 🚀 Tính năng chính
@@ -44,7 +50,7 @@ abunfi/
 ## 🛠️ Tech Stack
 
 - **Blockchain**: Arbitrum/Base (Layer 2)
-- **Smart Contracts**: Solidity, Hardhat
+- **Smart Contracts**: Solidity, Foundry (moved to [abunfi-contracts](https://github.com/hadv/abunfi-contracts))
 - **Backend**: Node.js, Express, MongoDB
 - **Frontend**: React, ethers.js, Web3Auth
 - **DeFi Integration**: Aave, Curve, Lido, Rocket Pool, Uniswap V3
