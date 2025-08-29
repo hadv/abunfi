@@ -1,32 +1,72 @@
 const { ethers } = require('ethers');
 const logger = require('../utils/logger');
+const path = require('path');
+const fs = require('fs');
 
-// Contract ABIs (simplified for MVP)
-const VAULT_ABI = [
-  "function deposit(uint256 amount) external",
-  "function withdraw(uint256 shares) external", 
-  "function balanceOf(address user) external view returns (uint256)",
-  "function earnedYield(address user) external view returns (uint256)",
-  "function totalAssets() external view returns (uint256)",
-  "function userShares(address user) external view returns (uint256)",
-  "function userDeposits(address user) external view returns (uint256)",
-  "event Deposit(address indexed user, uint256 amount, uint256 shares)",
-  "event Withdraw(address indexed user, uint256 amount, uint256 shares)"
-];
+// Load contract ABIs from the contracts repository
+function loadContractABI(contractName) {
+  try {
+    // Try to load from local contracts repository first
+    const contractsPath = path.join(__dirname, '../../../contracts/exports', `${contractName}.json`);
+    if (fs.existsSync(contractsPath)) {
+      const contractData = JSON.parse(fs.readFileSync(contractsPath, 'utf8'));
+      return contractData.abi;
+    }
 
-const USDC_ABI = [
-  "function balanceOf(address owner) external view returns (uint256)",
-  "function transfer(address to, uint256 amount) external returns (bool)",
-  "function approve(address spender, uint256 amount) external returns (bool)",
-  "function allowance(address owner, address spender) external view returns (uint256)",
-  "function decimals() external view returns (uint8)"
-];
+    // Fallback to node_modules if contracts are installed as package
+    const packagePath = path.join(__dirname, '../../../node_modules/@abunfi/contracts/exports', `${contractName}.json`);
+    if (fs.existsSync(packagePath)) {
+      const contractData = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+      return contractData.abi;
+    }
 
-const STRATEGY_ABI = [
-  "function totalAssets() external view returns (uint256)",
-  "function getAPY() external view returns (uint256)",
-  "function name() external view returns (string)"
-];
+    throw new Error(`Contract ABI not found: ${contractName}`);
+  } catch (error) {
+    logger.warn(`Failed to load ABI for ${contractName}, using fallback:`, error.message);
+    return getFallbackABI(contractName);
+  }
+}
+
+// Fallback ABIs for development/testing
+function getFallbackABI(contractName) {
+  const fallbackABIs = {
+    AbunfiVault: [
+      "function deposit(uint256 amount, address receiver) external returns (uint256)",
+      "function withdraw(uint256 shares, address receiver, address owner) external returns (uint256)",
+      "function balanceOf(address user) external view returns (uint256)",
+      "function totalAssets() external view returns (uint256)",
+      "function userShares(address user) external view returns (uint256)",
+      "function userDeposits(address user) external view returns (uint256)",
+      "function asset() external view returns (address)",
+      "function MINIMUM_DEPOSIT() external view returns (uint256)",
+      "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+      "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)"
+    ],
+    MockERC20: [
+      "function balanceOf(address owner) external view returns (uint256)",
+      "function transfer(address to, uint256 amount) external returns (bool)",
+      "function approve(address spender, uint256 amount) external returns (bool)",
+      "function allowance(address owner, address spender) external view returns (uint256)",
+      "function decimals() external view returns (uint8)",
+      "function name() external view returns (string)",
+      "function symbol() external view returns (string)"
+    ],
+    AaveStrategy: [
+      "function totalAssets() external view returns (uint256)",
+      "function getAPY() external view returns (uint256)",
+      "function name() external view returns (string)",
+      "function asset() external view returns (address)",
+      "function vault() external view returns (address)"
+    ]
+  };
+
+  return fallbackABIs[contractName] || [];
+}
+
+// Load ABIs
+const VAULT_ABI = loadContractABI('AbunfiVault');
+const USDC_ABI = loadContractABI('MockERC20'); // Using MockERC20 ABI for USDC
+const STRATEGY_ABI = loadContractABI('AaveStrategy');
 
 class BlockchainService {
   constructor() {
