@@ -51,6 +51,33 @@ abunfi/
   - `deposit(amount)` - Deposit into Aave
   - `withdraw(amount)` - Withdraw from Aave
 
+### CompoundStrategy
+- **Purpose**: Strategy contract for Compound V3 lending
+- **Key Functions**:
+  - `getAPY()` - Get current APY from Compound
+  - `totalAssets()` - Get total assets in this strategy
+  - `deposit(amount)` - Deposit into Compound
+  - `withdraw(amount)` - Withdraw from Compound
+  - `harvest()` - Harvest yield and claim COMP rewards
+
+### LiquidStakingStrategy
+- **Purpose**: Strategy contract for liquid staking (stETH, rETH)
+- **Key Functions**:
+  - `getAPY()` - Get current staking APY
+  - `totalAssets()` - Get total assets in this strategy
+  - `deposit(amount)` - Stake assets for liquid staking tokens
+  - `withdraw(amount)` - Unstake liquid staking tokens
+  - `harvest()` - Harvest staking rewards
+
+### LiquidityProvidingStrategy
+- **Purpose**: Strategy contract for AMM liquidity provision
+- **Key Functions**:
+  - `getAPY()` - Get current LP APY
+  - `totalAssets()` - Get total assets in this strategy
+  - `deposit(amount)` - Add liquidity to AMM pools
+  - `withdraw(amount)` - Remove liquidity from AMM pools
+  - `harvest()` - Harvest LP fees and rewards
+
 ### MockERC20
 - **Purpose**: ERC20 token interface (used for USDC interactions)
 - **Key Functions**:
@@ -63,26 +90,53 @@ abunfi/
 ### Using Contract Hooks
 
 ```javascript
-import { useVaultContract, useERC20Contract } from '../hooks/useContract';
+import {
+  useVaultContract,
+  useERC20Contract,
+  useAllStrategyContracts,
+  useContractAddresses
+} from '../hooks/useContract';
 
 function VaultComponent() {
-  const vaultAddress = process.env.REACT_APP_VAULT_CONTRACT_ADDRESS;
-  const usdcAddress = process.env.REACT_APP_USDC_CONTRACT_ADDRESS;
-  
-  const { contract: vaultContract, isReady } = useVaultContract(vaultAddress);
-  const { contract: usdcContract } = useERC20Contract(usdcAddress);
-  
+  const addresses = useContractAddresses();
+  const { contract: vaultContract, isReady } = useVaultContract(addresses.vault);
+  const { contract: usdcContract } = useERC20Contract(addresses.usdc);
+  const strategies = useAllStrategyContracts();
+
   const handleDeposit = async (amount) => {
     if (!isReady) return;
-    
+
     // Approve USDC spending
-    await usdcContract.approve(vaultAddress, ethers.constants.MaxUint256);
-    
+    await usdcContract.approve(addresses.vault, ethers.constants.MaxUint256);
+
     // Deposit into vault
     const tx = await vaultContract.deposit(ethers.utils.parseUnits(amount, 6));
     await tx.wait();
   };
-  
+
+  const getStrategiesInfo = async () => {
+    if (!isReady) return;
+
+    // Get all strategies info from vault
+    const strategiesInfo = await vaultContract.getAllStrategiesInfo();
+    return {
+      addresses: strategiesInfo[0],
+      names: strategiesInfo[1],
+      totalAssets: strategiesInfo[2],
+      apys: strategiesInfo[3],
+      weights: strategiesInfo[4]
+    };
+  };
+
+  const getIndividualStrategyAPY = async (strategyType) => {
+    const strategy = strategies[strategyType];
+    if (strategy?.readOnlyContract) {
+      const apy = await strategy.readOnlyContract.getAPY();
+      return Number(apy) / 100; // Convert from basis points
+    }
+    return 0;
+  };
+
   return (
     // Component JSX
   );
