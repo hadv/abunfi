@@ -80,6 +80,31 @@ function getFallbackABI(contractName) {
       "function name() external view returns (string)",
       "function asset() external view returns (address)",
       "function vault() external view returns (address)"
+    ],
+    UniswapV4FairFlowStablecoinStrategy: [
+      "function totalAssets() external view returns (uint256)",
+      "function getAPY() external view returns (uint256)",
+      "function name() external view returns (string)",
+      "function asset() external view returns (address)",
+      "function vault() external view returns (address)"
+    ],
+    StrategyManager: [
+      "function addStrategy(address strategy, uint256 weight) external",
+      "function removeStrategy(address strategy) external",
+      "function updateStrategyWeight(address strategy, uint256 newWeight) external",
+      "function getAllStrategies() external view returns (address[])"
+    ],
+    AbunfiSmartAccount: [
+      "function execute(address target, uint256 value, bytes calldata data) external",
+      "function executeBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas) external"
+    ],
+    EIP7702Bundler: [
+      "function bundleTransactions(bytes[] calldata transactions) external",
+      "function estimateGas(bytes[] calldata transactions) external view returns (uint256)"
+    ],
+    EIP7702Paymaster: [
+      "function sponsorTransaction(address user, bytes calldata transaction) external",
+      "function getBalance() external view returns (uint256)"
     ]
   };
 
@@ -88,23 +113,39 @@ function getFallbackABI(contractName) {
 
 // Load ABIs
 const VAULT_ABI = loadContractABI('AbunfiVault');
+const STRATEGY_MANAGER_ABI = loadContractABI('StrategyManager');
 const USDC_ABI = loadContractABI('MockERC20'); // Using MockERC20 ABI for USDC
+
+// Strategy ABIs
 const AAVE_STRATEGY_ABI = loadContractABI('AaveStrategy');
 const COMPOUND_STRATEGY_ABI = loadContractABI('CompoundStrategy');
 const LIQUID_STAKING_STRATEGY_ABI = loadContractABI('LiquidStakingStrategy');
 const LIQUIDITY_PROVIDING_STRATEGY_ABI = loadContractABI('LiquidityProvidingStrategy');
+const UNISWAP_V4_FAIRFLOW_STRATEGY_ABI = loadContractABI('UniswapV4FairFlowStablecoinStrategy');
+
+// EIP-7702 ABIs
+const SMART_ACCOUNT_ABI = loadContractABI('AbunfiSmartAccount');
+const BUNDLER_ABI = loadContractABI('EIP7702Bundler');
+const PAYMASTER_ABI = loadContractABI('EIP7702Paymaster');
 
 class BlockchainService {
   constructor() {
     this.provider = null;
     this.signer = null;
     this.vaultContract = null;
+    this.strategyManagerContract = null;
     this.usdcContract = null;
     this.strategyContracts = {
       aave: null,
       compound: null,
       liquidStaking: null,
-      liquidityProviding: null
+      liquidityProviding: null,
+      uniswapV4FairFlow: null
+    };
+    this.eip7702Contracts = {
+      smartAccount: null,
+      bundler: null,
+      paymaster: null
     };
     this.initialized = false;
   }
@@ -121,11 +162,19 @@ class BlockchainService {
         console.warn('No private key provided - admin operations will not be available');
       }
 
-      // Initialize contracts only if addresses are provided
+      // Initialize core contracts
       if (process.env.VAULT_CONTRACT_ADDRESS && process.env.VAULT_CONTRACT_ADDRESS !== '0x...') {
         this.vaultContract = new ethers.Contract(
           process.env.VAULT_CONTRACT_ADDRESS,
           VAULT_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.STRATEGY_MANAGER_ADDRESS && process.env.STRATEGY_MANAGER_ADDRESS !== '0x...') {
+        this.strategyManagerContract = new ethers.Contract(
+          process.env.STRATEGY_MANAGER_ADDRESS,
+          STRATEGY_MANAGER_ABI,
           this.provider
         );
       }
@@ -167,6 +216,39 @@ class BlockchainService {
         this.strategyContracts.liquidityProviding = new ethers.Contract(
           process.env.LIQUIDITY_PROVIDING_STRATEGY_ADDRESS,
           LIQUIDITY_PROVIDING_STRATEGY_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.UNISWAP_V4_FAIRFLOW_STRATEGY_ADDRESS && process.env.UNISWAP_V4_FAIRFLOW_STRATEGY_ADDRESS !== '0x...') {
+        this.strategyContracts.uniswapV4FairFlow = new ethers.Contract(
+          process.env.UNISWAP_V4_FAIRFLOW_STRATEGY_ADDRESS,
+          UNISWAP_V4_FAIRFLOW_STRATEGY_ABI,
+          this.provider
+        );
+      }
+
+      // Initialize EIP-7702 contracts
+      if (process.env.SMART_ACCOUNT_ADDRESS && process.env.SMART_ACCOUNT_ADDRESS !== '0x...') {
+        this.eip7702Contracts.smartAccount = new ethers.Contract(
+          process.env.SMART_ACCOUNT_ADDRESS,
+          SMART_ACCOUNT_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.EIP7702_BUNDLER_ADDRESS && process.env.EIP7702_BUNDLER_ADDRESS !== '0x...') {
+        this.eip7702Contracts.bundler = new ethers.Contract(
+          process.env.EIP7702_BUNDLER_ADDRESS,
+          BUNDLER_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.EIP7702_PAYMASTER_ADDRESS && process.env.EIP7702_PAYMASTER_ADDRESS !== '0x...') {
+        this.eip7702Contracts.paymaster = new ethers.Contract(
+          process.env.EIP7702_PAYMASTER_ADDRESS,
+          PAYMASTER_ABI,
           this.provider
         );
       }

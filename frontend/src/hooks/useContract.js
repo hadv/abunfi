@@ -3,18 +3,28 @@ import { ethers } from 'ethers';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
 // Import ABIs directly from submodule
 import AbunfiVaultABI from '../../contracts-submodule/exports/AbunfiVault.json';
+import StrategyManagerABI from '../../contracts-submodule/exports/StrategyManager.json';
 import AaveStrategyABI from '../../contracts-submodule/exports/AaveStrategy.json';
 import CompoundStrategyABI from '../../contracts-submodule/exports/CompoundStrategy.json';
 import LiquidStakingStrategyABI from '../../contracts-submodule/exports/LiquidStakingStrategy.json';
 import LiquidityProvidingStrategyABI from '../../contracts-submodule/exports/LiquidityProvidingStrategy.json';
+import UniswapV4FairFlowStablecoinStrategyABI from '../../contracts-submodule/exports/UniswapV4FairFlowStablecoinStrategy.json';
+import AbunfiSmartAccountABI from '../../contracts-submodule/exports/AbunfiSmartAccount.json';
+import EIP7702BundlerABI from '../../contracts-submodule/exports/EIP7702Bundler.json';
+import EIP7702PaymasterABI from '../../contracts-submodule/exports/EIP7702Paymaster.json';
 import MockERC20ABI from '../../contracts-submodule/exports/MockERC20.json';
 
 const ABIS = {
   AbunfiVault: AbunfiVaultABI,
+  StrategyManager: StrategyManagerABI,
   AaveStrategy: AaveStrategyABI,
   CompoundStrategy: CompoundStrategyABI,
   LiquidStakingStrategy: LiquidStakingStrategyABI,
   LiquidityProvidingStrategy: LiquidityProvidingStrategyABI,
+  UniswapV4FairFlowStablecoinStrategy: UniswapV4FairFlowStablecoinStrategyABI,
+  AbunfiSmartAccount: AbunfiSmartAccountABI,
+  EIP7702Bundler: EIP7702BundlerABI,
+  EIP7702Paymaster: EIP7702PaymasterABI,
   MockERC20: MockERC20ABI
 };
 
@@ -105,11 +115,23 @@ export const useERC20Contract = (tokenAddress) => {
  */
 export const useContractAddresses = () => {
   return useMemo(() => ({
+    // Core contracts
     vault: process.env.REACT_APP_VAULT_CONTRACT_ADDRESS,
+    strategyManager: process.env.REACT_APP_STRATEGY_MANAGER_ADDRESS,
+
+    // Strategy contracts
     aaveStrategy: process.env.REACT_APP_AAVE_STRATEGY_ADDRESS,
     compoundStrategy: process.env.REACT_APP_COMPOUND_STRATEGY_ADDRESS,
     liquidStakingStrategy: process.env.REACT_APP_LIQUID_STAKING_STRATEGY_ADDRESS,
     liquidityProvidingStrategy: process.env.REACT_APP_LIQUIDITY_PROVIDING_STRATEGY_ADDRESS,
+    uniswapV4FairFlowStrategy: process.env.REACT_APP_UNISWAP_V4_FAIRFLOW_STRATEGY_ADDRESS,
+
+    // EIP-7702 Gasless Transaction contracts
+    smartAccount: process.env.REACT_APP_SMART_ACCOUNT_ADDRESS,
+    bundler: process.env.REACT_APP_EIP7702_BUNDLER_ADDRESS,
+    paymaster: process.env.REACT_APP_EIP7702_PAYMASTER_ADDRESS,
+
+    // Token contracts
     usdc: process.env.REACT_APP_USDC_CONTRACT_ADDRESS,
   }), []);
 };
@@ -117,11 +139,23 @@ export const useContractAddresses = () => {
 /**
  * Specific hooks for each contract type
  */
+// Core contracts
 export const useVaultContract = (address) => useContract('AbunfiVault', address);
+export const useStrategyManagerContract = (address) => useContract('StrategyManager', address);
+
+// Strategy contracts
 export const useAaveStrategyContract = (address) => useContract('AaveStrategy', address);
 export const useCompoundStrategyContract = (address) => useContract('CompoundStrategy', address);
 export const useLiquidStakingStrategyContract = (address) => useContract('LiquidStakingStrategy', address);
 export const useLiquidityProvidingStrategyContract = (address) => useContract('LiquidityProvidingStrategy', address);
+export const useUniswapV4FairFlowStrategyContract = (address) => useContract('UniswapV4FairFlowStablecoinStrategy', address);
+
+// EIP-7702 Gasless Transaction contracts
+export const useSmartAccountContract = (address) => useContract('AbunfiSmartAccount', address);
+export const useBundlerContract = (address) => useContract('EIP7702Bundler', address);
+export const usePaymasterContract = (address) => useContract('EIP7702Paymaster', address);
+
+// Token contracts
 export const useERC20Contract = (address) => useContract('MockERC20', address);
 
 /**
@@ -134,6 +168,7 @@ export const useAllStrategyContracts = () => {
   const compoundStrategy = useCompoundStrategyContract(addresses.compoundStrategy);
   const liquidStakingStrategy = useLiquidStakingStrategyContract(addresses.liquidStakingStrategy);
   const liquidityProvidingStrategy = useLiquidityProvidingStrategyContract(addresses.liquidityProvidingStrategy);
+  const uniswapV4FairFlowStrategy = useUniswapV4FairFlowStrategyContract(addresses.uniswapV4FairFlowStrategy);
 
   return useMemo(() => ({
     aave: {
@@ -163,8 +198,15 @@ export const useAllStrategyContracts = () => {
       address: addresses.liquidityProvidingStrategy,
       isReady: liquidityProvidingStrategy.isReady,
       name: 'Liquidity Providing Strategy'
+    },
+    uniswapV4FairFlow: {
+      contract: uniswapV4FairFlowStrategy.contract,
+      readOnlyContract: uniswapV4FairFlowStrategy.readOnlyContract,
+      address: addresses.uniswapV4FairFlowStrategy,
+      isReady: uniswapV4FairFlowStrategy.isReady,
+      name: 'Uniswap V4 FairFlow Stablecoin Strategy'
     }
-  }), [aaveStrategy, compoundStrategy, liquidStakingStrategy, liquidityProvidingStrategy, addresses]);
+  }), [aaveStrategy, compoundStrategy, liquidStakingStrategy, liquidityProvidingStrategy, uniswapV4FairFlowStrategy, addresses]);
 };
 
 /**
