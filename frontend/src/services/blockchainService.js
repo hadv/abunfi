@@ -2,11 +2,17 @@ import { ethers } from 'ethers';
 // Import ABIs directly from submodule
 import AbunfiVaultABI from '../../contracts-submodule/exports/AbunfiVault.json';
 import AaveStrategyABI from '../../contracts-submodule/exports/AaveStrategy.json';
+import CompoundStrategyABI from '../../contracts-submodule/exports/CompoundStrategy.json';
+import LiquidStakingStrategyABI from '../../contracts-submodule/exports/LiquidStakingStrategy.json';
+import LiquidityProvidingStrategyABI from '../../contracts-submodule/exports/LiquidityProvidingStrategy.json';
 import MockERC20ABI from '../../contracts-submodule/exports/MockERC20.json';
 
 const ABIS = {
   AbunfiVault: AbunfiVaultABI,
   AaveStrategy: AaveStrategyABI,
+  CompoundStrategy: CompoundStrategyABI,
+  LiquidStakingStrategy: LiquidStakingStrategyABI,
+  LiquidityProvidingStrategy: LiquidityProvidingStrategyABI,
   MockERC20: MockERC20ABI
 };
 
@@ -23,6 +29,9 @@ class BlockchainService {
     this.addresses = {
       vault: process.env.REACT_APP_VAULT_CONTRACT_ADDRESS,
       aaveStrategy: process.env.REACT_APP_AAVE_STRATEGY_ADDRESS,
+      compoundStrategy: process.env.REACT_APP_COMPOUND_STRATEGY_ADDRESS,
+      liquidStakingStrategy: process.env.REACT_APP_LIQUID_STAKING_STRATEGY_ADDRESS,
+      liquidityProvidingStrategy: process.env.REACT_APP_LIQUIDITY_PROVIDING_STRATEGY_ADDRESS,
       usdc: process.env.REACT_APP_USDC_CONTRACT_ADDRESS,
     };
   }
@@ -73,6 +82,33 @@ class BlockchainService {
         this.contracts.aaveStrategy = new ethers.Contract(
           this.addresses.aaveStrategy,
           ABIS.AaveStrategy.abi,
+          this.signer
+        );
+      }
+
+      // Initialize Compound strategy contract
+      if (this.addresses.compoundStrategy) {
+        this.contracts.compoundStrategy = new ethers.Contract(
+          this.addresses.compoundStrategy,
+          ABIS.CompoundStrategy.abi,
+          this.signer
+        );
+      }
+
+      // Initialize Liquid Staking strategy contract
+      if (this.addresses.liquidStakingStrategy) {
+        this.contracts.liquidStakingStrategy = new ethers.Contract(
+          this.addresses.liquidStakingStrategy,
+          ABIS.LiquidStakingStrategy.abi,
+          this.signer
+        );
+      }
+
+      // Initialize Liquidity Providing strategy contract
+      if (this.addresses.liquidityProvidingStrategy) {
+        this.contracts.liquidityProvidingStrategy = new ethers.Contract(
+          this.addresses.liquidityProvidingStrategy,
+          ABIS.LiquidityProvidingStrategy.abi,
           this.signer
         );
       }

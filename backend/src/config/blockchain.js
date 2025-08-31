@@ -59,6 +59,27 @@ function getFallbackABI(contractName) {
       "function name() external view returns (string)",
       "function asset() external view returns (address)",
       "function vault() external view returns (address)"
+    ],
+    CompoundStrategy: [
+      "function totalAssets() external view returns (uint256)",
+      "function getAPY() external view returns (uint256)",
+      "function name() external view returns (string)",
+      "function asset() external view returns (address)",
+      "function vault() external view returns (address)"
+    ],
+    LiquidStakingStrategy: [
+      "function totalAssets() external view returns (uint256)",
+      "function getAPY() external view returns (uint256)",
+      "function name() external view returns (string)",
+      "function asset() external view returns (address)",
+      "function vault() external view returns (address)"
+    ],
+    LiquidityProvidingStrategy: [
+      "function totalAssets() external view returns (uint256)",
+      "function getAPY() external view returns (uint256)",
+      "function name() external view returns (string)",
+      "function asset() external view returns (address)",
+      "function vault() external view returns (address)"
     ]
   };
 
@@ -68,7 +89,10 @@ function getFallbackABI(contractName) {
 // Load ABIs
 const VAULT_ABI = loadContractABI('AbunfiVault');
 const USDC_ABI = loadContractABI('MockERC20'); // Using MockERC20 ABI for USDC
-const STRATEGY_ABI = loadContractABI('AaveStrategy');
+const AAVE_STRATEGY_ABI = loadContractABI('AaveStrategy');
+const COMPOUND_STRATEGY_ABI = loadContractABI('CompoundStrategy');
+const LIQUID_STAKING_STRATEGY_ABI = loadContractABI('LiquidStakingStrategy');
+const LIQUIDITY_PROVIDING_STRATEGY_ABI = loadContractABI('LiquidityProvidingStrategy');
 
 class BlockchainService {
   constructor() {
@@ -76,7 +100,12 @@ class BlockchainService {
     this.signer = null;
     this.vaultContract = null;
     this.usdcContract = null;
-    this.strategyContract = null;
+    this.strategyContracts = {
+      aave: null,
+      compound: null,
+      liquidStaking: null,
+      liquidityProviding: null
+    };
     this.initialized = false;
   }
 
@@ -109,10 +138,35 @@ class BlockchainService {
         );
       }
 
+      // Initialize strategy contracts
       if (process.env.AAVE_STRATEGY_ADDRESS && process.env.AAVE_STRATEGY_ADDRESS !== '0x...') {
-        this.strategyContract = new ethers.Contract(
+        this.strategyContracts.aave = new ethers.Contract(
           process.env.AAVE_STRATEGY_ADDRESS,
-          STRATEGY_ABI,
+          AAVE_STRATEGY_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.COMPOUND_STRATEGY_ADDRESS && process.env.COMPOUND_STRATEGY_ADDRESS !== '0x...') {
+        this.strategyContracts.compound = new ethers.Contract(
+          process.env.COMPOUND_STRATEGY_ADDRESS,
+          COMPOUND_STRATEGY_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.LIQUID_STAKING_STRATEGY_ADDRESS && process.env.LIQUID_STAKING_STRATEGY_ADDRESS !== '0x...') {
+        this.strategyContracts.liquidStaking = new ethers.Contract(
+          process.env.LIQUID_STAKING_STRATEGY_ADDRESS,
+          LIQUID_STAKING_STRATEGY_ABI,
+          this.provider
+        );
+      }
+
+      if (process.env.LIQUIDITY_PROVIDING_STRATEGY_ADDRESS && process.env.LIQUIDITY_PROVIDING_STRATEGY_ADDRESS !== '0x...') {
+        this.strategyContracts.liquidityProviding = new ethers.Contract(
+          process.env.LIQUIDITY_PROVIDING_STRATEGY_ADDRESS,
+          LIQUIDITY_PROVIDING_STRATEGY_ABI,
           this.provider
         );
       }
@@ -154,21 +208,111 @@ class BlockchainService {
 
   async getVaultStats() {
     try {
-      if (!this.vaultContract || !this.strategyContract) {
-        throw new Error('Contracts not initialized');
+      if (!this.vaultContract) {
+        throw new Error('Vault contract not initialized');
       }
 
       const totalAssets = await this.vaultContract.totalAssets();
-      const strategyAPY = await this.strategyContract.getAPY();
-      const strategyName = await this.strategyContract.name();
+
+      // Get all strategies info from vault contract
+      let strategiesInfo = [];
+      try {
+        const allStrategiesInfo = await this.vaultContract.getAllStrategiesInfo();
+        strategiesInfo = {
+          addresses: allStrategiesInfo[0],
+          names: allStrategiesInfo[1],
+          totalAssetsAmounts: allStrategiesInfo[2],
+          apys: allStrategiesInfo[3],
+          weights: allStrategiesInfo[4]
+        };
+      } catch (error) {
+        logger.warn('Could not get strategies info from vault:', error.message);
+      }
+
+      // Calculate weighted average APY
+      let weightedAPY = 0;
+      if (strategiesInfo.apys && strategiesInfo.weights) {
+        let totalWeight = 0;
+        for (let i = 0; i < strategiesInfo.apys.length; i++) {
+          const apy = Number(strategiesInfo.apys[i]);
+          const weight = Number(strategiesInfo.weights[i]);
+          weightedAPY += (apy * weight);
+          totalWeight += weight;
+        }
+        if (totalWeight > 0) {
+          weightedAPY = weightedAPY / totalWeight / 100; // Convert from basis points
+        }
+      }
 
       return {
         totalAssets: ethers.formatUnits(totalAssets, 6),
-        currentAPY: Number(strategyAPY) / 100, // Convert from basis points
-        strategyName
+        currentAPY: weightedAPY,
+        strategiesCount: strategiesInfo.names ? strategiesInfo.names.length : 0,
+        strategies: strategiesInfo
       };
     } catch (error) {
       logger.error('Error getting vault stats:', error);
+      throw error;
+    }
+  }
+
+  // Strategy-specific methods
+  async getAllStrategiesInfo() {
+    try {
+      const strategies = [];
+
+      // Get info from each strategy contract
+      for (const [strategyType, contract] of Object.entries(this.strategyContracts)) {
+        if (contract) {
+          try {
+            const [totalAssets, apy, name] = await Promise.all([
+              contract.totalAssets(),
+              contract.getAPY(),
+              contract.name()
+            ]);
+
+            strategies.push({
+              type: strategyType,
+              name,
+              totalAssets: ethers.formatUnits(totalAssets, 6),
+              apy: Number(apy) / 100, // Convert from basis points
+              address: await contract.getAddress()
+            });
+          } catch (error) {
+            logger.warn(`Failed to get info for ${strategyType} strategy:`, error.message);
+          }
+        }
+      }
+
+      return strategies;
+    } catch (error) {
+      logger.error('Error getting all strategies info:', error);
+      throw error;
+    }
+  }
+
+  async getStrategyInfo(strategyType) {
+    try {
+      const contract = this.strategyContracts[strategyType];
+      if (!contract) {
+        throw new Error(`Strategy contract not found: ${strategyType}`);
+      }
+
+      const [totalAssets, apy, name] = await Promise.all([
+        contract.totalAssets(),
+        contract.getAPY(),
+        contract.name()
+      ]);
+
+      return {
+        type: strategyType,
+        name,
+        totalAssets: ethers.formatUnits(totalAssets, 6),
+        apy: Number(apy) / 100, // Convert from basis points
+        address: await contract.getAddress()
+      };
+    } catch (error) {
+      logger.error(`Error getting ${strategyType} strategy info:`, error);
       throw error;
     }
   }

@@ -4,11 +4,17 @@ import { useWeb3Auth } from '../contexts/Web3AuthContext';
 // Import ABIs directly from submodule
 import AbunfiVaultABI from '../../contracts-submodule/exports/AbunfiVault.json';
 import AaveStrategyABI from '../../contracts-submodule/exports/AaveStrategy.json';
+import CompoundStrategyABI from '../../contracts-submodule/exports/CompoundStrategy.json';
+import LiquidStakingStrategyABI from '../../contracts-submodule/exports/LiquidStakingStrategy.json';
+import LiquidityProvidingStrategyABI from '../../contracts-submodule/exports/LiquidityProvidingStrategy.json';
 import MockERC20ABI from '../../contracts-submodule/exports/MockERC20.json';
 
 const ABIS = {
   AbunfiVault: AbunfiVaultABI,
   AaveStrategy: AaveStrategyABI,
+  CompoundStrategy: CompoundStrategyABI,
+  LiquidStakingStrategy: LiquidStakingStrategyABI,
+  LiquidityProvidingStrategy: LiquidityProvidingStrategyABI,
   MockERC20: MockERC20ABI
 };
 
@@ -101,8 +107,64 @@ export const useContractAddresses = () => {
   return useMemo(() => ({
     vault: process.env.REACT_APP_VAULT_CONTRACT_ADDRESS,
     aaveStrategy: process.env.REACT_APP_AAVE_STRATEGY_ADDRESS,
+    compoundStrategy: process.env.REACT_APP_COMPOUND_STRATEGY_ADDRESS,
+    liquidStakingStrategy: process.env.REACT_APP_LIQUID_STAKING_STRATEGY_ADDRESS,
+    liquidityProvidingStrategy: process.env.REACT_APP_LIQUIDITY_PROVIDING_STRATEGY_ADDRESS,
     usdc: process.env.REACT_APP_USDC_CONTRACT_ADDRESS,
   }), []);
+};
+
+/**
+ * Specific hooks for each contract type
+ */
+export const useVaultContract = (address) => useContract('AbunfiVault', address);
+export const useAaveStrategyContract = (address) => useContract('AaveStrategy', address);
+export const useCompoundStrategyContract = (address) => useContract('CompoundStrategy', address);
+export const useLiquidStakingStrategyContract = (address) => useContract('LiquidStakingStrategy', address);
+export const useLiquidityProvidingStrategyContract = (address) => useContract('LiquidityProvidingStrategy', address);
+export const useERC20Contract = (address) => useContract('MockERC20', address);
+
+/**
+ * Hook to get all strategy contracts with their addresses
+ */
+export const useAllStrategyContracts = () => {
+  const addresses = useContractAddresses();
+
+  const aaveStrategy = useAaveStrategyContract(addresses.aaveStrategy);
+  const compoundStrategy = useCompoundStrategyContract(addresses.compoundStrategy);
+  const liquidStakingStrategy = useLiquidStakingStrategyContract(addresses.liquidStakingStrategy);
+  const liquidityProvidingStrategy = useLiquidityProvidingStrategyContract(addresses.liquidityProvidingStrategy);
+
+  return useMemo(() => ({
+    aave: {
+      contract: aaveStrategy.contract,
+      readOnlyContract: aaveStrategy.readOnlyContract,
+      address: addresses.aaveStrategy,
+      isReady: aaveStrategy.isReady,
+      name: 'Aave Strategy'
+    },
+    compound: {
+      contract: compoundStrategy.contract,
+      readOnlyContract: compoundStrategy.readOnlyContract,
+      address: addresses.compoundStrategy,
+      isReady: compoundStrategy.isReady,
+      name: 'Compound Strategy'
+    },
+    liquidStaking: {
+      contract: liquidStakingStrategy.contract,
+      readOnlyContract: liquidStakingStrategy.readOnlyContract,
+      address: addresses.liquidStakingStrategy,
+      isReady: liquidStakingStrategy.isReady,
+      name: 'Liquid Staking Strategy'
+    },
+    liquidityProviding: {
+      contract: liquidityProvidingStrategy.contract,
+      readOnlyContract: liquidityProvidingStrategy.readOnlyContract,
+      address: addresses.liquidityProvidingStrategy,
+      isReady: liquidityProvidingStrategy.isReady,
+      name: 'Liquidity Providing Strategy'
+    }
+  }), [aaveStrategy, compoundStrategy, liquidStakingStrategy, liquidityProvidingStrategy, addresses]);
 };
 
 /**
@@ -112,11 +174,11 @@ export const formatContractError = (error) => {
   if (error?.reason) {
     return error.reason;
   }
-  
+
   if (error?.data?.message) {
     return error.data.message;
   }
-  
+
   if (error?.message) {
     // Extract revert reason from error message
     const revertMatch = error.message.match(/revert (.+)/);
@@ -125,7 +187,7 @@ export const formatContractError = (error) => {
     }
     return error.message;
   }
-  
+
   return 'Unknown contract error';
 };
 
