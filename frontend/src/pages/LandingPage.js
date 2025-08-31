@@ -25,22 +25,22 @@ const features = [
   {
     icon: <TrendingUp sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'Lãi suất hấp dẫn',
-    description: 'Nhận lãi suất 6-12%/năm từ các chiến lược đầu tư đa dạng: Lending, Liquid Staking, Liquidity Providing'
+    description: 'Nhận lãi suất 6-15%/năm từ 5+ chiến lược đầu tư tiên tiến: Aave, Compound, Liquid Staking, Uniswap V4 FairFlow'
   },
   {
     icon: <AccountBalanceWallet sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Tiết kiệm dễ dàng',
-    description: 'Bắt đầu từ chỉ 10,000 VNĐ (~$4), phù hợp với mọi người'
+    title: 'Giao dịch miễn phí gas',
+    description: 'Công nghệ EIP-7702 tiên tiến - Giao dịch hoàn toàn miễn phí, không cần trả phí gas'
   },
   {
     icon: <Security sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'An toàn & minh bạch',
-    description: 'Smart contracts được kiểm toán, quản lý rủi ro thông minh với phân bổ tự động giữa các chiến lược'
+    description: 'Smart contracts được kiểm toán, quản lý rủi ro thông minh với phân bổ tự động giữa 5+ chiến lược DeFi'
   },
   {
     icon: <Speed sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'Đăng ký siêu tốc',
-    description: 'Đăng nhập bằng Google/Apple, không cần nhớ private key phức tạp'
+    description: 'Đăng nhập bằng Google/Apple, Smart Account tự động, không cần nhớ private key phức tạp'
   }
 ];
 
@@ -119,10 +119,10 @@ const LandingPage = () => {
             <Typography
               variant="h5"
               color="text.secondary"
-              sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}
+              sx={{ mb: 4, maxWidth: 700, mx: 'auto' }}
             >
-              Gửi tiết kiệm từ 10,000 VNĐ và nhận lãi suất 6-12%/năm từ các chiến lược đầu tư đa dạng.
-              Đơn giản, an toàn, minh bạch.
+              Gửi tiết kiệm từ 10,000 VNĐ và nhận lãi suất 6-15%/năm từ 5+ chiến lược DeFi tiên tiến.
+              Giao dịch miễn phí gas với công nghệ EIP-7702. Đơn giản, an toàn, minh bạch.
             </Typography>
             
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -152,27 +152,37 @@ const LandingPage = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <Grid container spacing={4} sx={{ mb: 8 }}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
-                  6-12%
+                  6-15%
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                   Lãi suất hàng năm
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
-                  10K VNĐ
+                  5+
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Số tiền tối thiểu
+                  Chiến lược DeFi
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
+                  $0
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Phí giao dịch
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
                   24/7
@@ -245,12 +255,12 @@ const LandingPage = () => {
             <Typography
               variant="h6"
               color="text.secondary"
-              sx={{ textAlign: 'center', mb: 6, maxWidth: 700, mx: 'auto' }}
+              sx={{ textAlign: 'center', mb: 6, maxWidth: 800, mx: 'auto' }}
             >
-              Tiền của bạn được phân bổ thông minh giữa các chiến lược đầu tư khác nhau để tối ưu hóa lợi nhuận và giảm thiểu rủi ro
+              Tiền của bạn được phân bổ thông minh giữa 5+ chiến lược DeFi tiên tiến với công nghệ EIP-7702 gasless transactions
             </Typography>
 
-            <Grid container spacing={4}>
+            <Grid container spacing={3}>
               {/* Lending Strategy */}
               <Grid item xs={12} md={6} lg={4}>
                 <Card sx={{ height: '100%', border: '2px solid', borderColor: 'success.light' }}>
@@ -260,7 +270,7 @@ const LandingPage = () => {
                       Lending Protocols
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Aave, Compound - Cho vay tài sản để nhận lãi suất ổn định
+                      Aave V3, Compound V3 - Cho vay tài sản để nhận lãi suất ổn định
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -271,7 +281,7 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        APY: 4-6%
+                        APY: 4-8%
                       </Typography>
                       <Typography variant="caption" sx={{
                         bgcolor: 'info.light',
@@ -282,6 +292,57 @@ const LandingPage = () => {
                         fontSize: '0.7rem'
                       }}>
                         Rủi ro thấp
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Uniswap V4 FairFlow Strategy - NEW! */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ height: '100%', border: '3px solid', borderColor: 'secondary.main', position: 'relative' }}>
+                  <Box sx={{
+                    position: 'absolute',
+                    top: -10,
+                    right: 10,
+                    bgcolor: 'secondary.main',
+                    color: 'white',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold'
+                  }}>
+                    🆕 MỚI!
+                  </Box>
+                  <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🦄</Typography>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      Uniswap V4 FairFlow
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Chiến lược stablecoin tiên tiến với Uniswap V4 hooks
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'secondary.light',
+                        color: 'secondary.dark',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
+                      }}>
+                        APY: 8-15%
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'warning.light',
+                        color: 'warning.dark',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
+                      }}>
+                        Rủi ro TB
                       </Typography>
                     </Box>
                   </CardContent>
@@ -308,11 +369,11 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        APY: 5-8%
+                        APY: 5-10%
                       </Typography>
                       <Typography variant="caption" sx={{
-                        bgcolor: 'secondary.light',
-                        color: 'secondary.dark',
+                        bgcolor: 'info.light',
+                        color: 'info.dark',
                         px: 1.5,
                         py: 0.5,
                         borderRadius: 1,
@@ -334,7 +395,7 @@ const LandingPage = () => {
                       Liquid Staking
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Lido, Rocket Pool - Stake ETH và nhận liquid staking tokens
+                      Lido stETH, Rocket Pool rETH - Stake ETH và nhận liquid tokens
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -345,8 +406,49 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        APY: 4-6%
+                        APY: 4-7%
                       </Typography>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'warning.light',
+                        color: 'warning.dark',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
+                      }}>
+                        Rủi ro TB
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* EIP-7702 Gasless Transactions - NEW! */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ height: '100%', border: '3px solid', borderColor: 'error.main', position: 'relative' }}>
+                  <Box sx={{
+                    position: 'absolute',
+                    top: -10,
+                    right: 10,
+                    bgcolor: 'error.main',
+                    color: 'white',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold'
+                  }}>
+                    🔥 HOT!
+                  </Box>
+                  <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ mb: 2 }}>⚡</Typography>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      EIP-7702 Gasless
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Giao dịch hoàn toàn miễn phí gas với Smart Account
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
                         bgcolor: 'error.light',
                         color: 'error.dark',
@@ -355,7 +457,17 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        Rủi ro TB-Cao
+                        Phí: $0
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        bgcolor: 'success.light',
+                        color: 'success.dark',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: '0.7rem'
+                      }}>
+                        Tiện lợi 100%
                       </Typography>
                     </Box>
                   </CardContent>
@@ -363,12 +475,15 @@ const LandingPage = () => {
               </Grid>
             </Grid>
 
-            <Box sx={{ textAlign: 'center', mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                🤖 Quản lý rủi ro thông minh
+            <Box sx={{ textAlign: 'center', mt: 4, p: 4, bgcolor: 'grey.50', borderRadius: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                🤖 Quản lý rủi ro thông minh + EIP-7702 Gasless
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                Hệ thống tự động phân bổ funds giữa 5+ chiến lược DeFi dựa trên mức độ rủi ro, APY và điều kiện thị trường
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Hệ thống tự động phân bổ funds giữa các chiến lược dựa trên mức độ rủi ro, APY và điều kiện thị trường để tối ưu hóa lợi nhuận
+                ⚡ <strong>Giao dịch miễn phí gas</strong> với công nghệ EIP-7702 - Không cần trả phí gas cho mọi giao dịch!
               </Typography>
             </Box>
           </Box>
@@ -391,10 +506,10 @@ const LandingPage = () => {
             }}
           >
             <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>
-              Sẵn sàng bắt đầu?
+              Sẵn sàng trải nghiệm DeFi thế hệ mới?
             </Typography>
             <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-              Tham gia cùng hàng nghìn người đã tin tưởng Abunfi
+              Giao dịch miễn phí gas + 5+ chiến lược DeFi tiên tiến + Lãi suất 6-15%/năm
             </Typography>
             <Button
               variant="contained"
