@@ -19,6 +19,39 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [portfolio, setPortfolio] = useState(null);
 
+  // Check for existing JWT token on app startup
+  useEffect(() => {
+    const checkExistingAuth = async () => {
+      const token = localStorage.getItem('abunfi_token');
+      if (token && !user && !isAuthenticated) {
+        setIsLoading(true);
+        try {
+          // Verify token and get user data
+          const response = await fetch('/api/user/profile', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData.user);
+          } else {
+            // Token is invalid, remove it
+            localStorage.removeItem('abunfi_token');
+          }
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          localStorage.removeItem('abunfi_token');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    checkExistingAuth();
+  }, [user, isAuthenticated]);
+
   // Auto-login when Web3Auth is authenticated
   useEffect(() => {
     const handleAutoLogin = async () => {

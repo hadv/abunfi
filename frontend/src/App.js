@@ -27,7 +27,11 @@ const ProtectedRoute = ({ children }) => {
     return <LoadingScreen />;
   }
 
-  if (!isAuthenticated || !user) {
+  // Check for Web3Auth authentication OR JWT token (for development login)
+  const hasJWTToken = localStorage.getItem('abunfi_token');
+  const isLoggedIn = isAuthenticated || (hasJWTToken && user);
+
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
@@ -43,7 +47,11 @@ const PublicRoute = ({ children }) => {
     return <LoadingScreen />;
   }
 
-  if (isAuthenticated && user) {
+  // Check for Web3Auth authentication OR JWT token (for development login)
+  const hasJWTToken = localStorage.getItem('abunfi_token');
+  const isLoggedIn = isAuthenticated || (hasJWTToken && user);
+
+  if (isLoggedIn) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -59,7 +67,11 @@ const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <LoadingScreen />;
   }
 
-  if (!isAuthenticated || !user) {
+  // Check for Web3Auth authentication OR JWT token (for development login)
+  const hasJWTToken = localStorage.getItem('abunfi_token');
+  const isLoggedIn = isAuthenticated || (hasJWTToken && user);
+
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
