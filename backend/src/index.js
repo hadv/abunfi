@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 
 const { connectDB, disconnectDB, databaseService } = require('./config/database');
 const blockchainService = require('./config/blockchain');
+const websocketService = require('./services/websocketService');
 const logger = require('./utils/logger');
 
 // Import routes
@@ -15,6 +16,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const vaultRoutes = require('./routes/vault');
 const transactionRoutes = require('./routes/transaction');
+const strategyManagerRoutes = require('./routes/strategyManager');
 
 const app = express();
 
@@ -85,7 +87,8 @@ app.get('/health', async (req, res) => {
       },
       blockchain: {
         status: blockchainService.initialized ? 'connected' : 'disconnected'
-      }
+      },
+      websocket: websocketService.getStats()
     };
 
     const statusCode = dbHealth.overall ? 200 : 503;
@@ -105,6 +108,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/vault', vaultRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/admin/strategies', strategyManagerRoutes);
 
 // Welcome endpoint
 app.get('/', (req, res) => {
@@ -117,7 +121,8 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       user: '/api/user',
       vault: '/api/vault',
-      transactions: '/api/transactions'
+      transactions: '/api/transactions',
+      strategyManager: '/api/admin/strategies'
     }
   });
 });
@@ -153,12 +158,14 @@ app.use((err, req, res, next) => {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully');
+  websocketService.cleanup();
   await disconnectDB();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   logger.info('SIGINT received, shutting down gracefully');
+  websocketService.cleanup();
   await disconnectDB();
   process.exit(0);
 });
@@ -181,6 +188,10 @@ const server = app.listen(PORT, () => {
   logger.info(`🚀 Abunfi API server running on port ${PORT}`);
   logger.info(`📱 Environment: ${process.env.NODE_ENV}`);
   logger.info(`🌐 CORS origin: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
+
+  // Initialize WebSocket service
+  websocketService.initialize(server);
+  logger.info(`🔌 WebSocket service initialized on /ws`);
 });
 
 module.exports = { app, server };

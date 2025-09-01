@@ -16,6 +16,7 @@ import DashboardPage from './pages/DashboardPage';
 import SavingsPage from './pages/SavingsPage';
 import TransactionsPage from './pages/TransactionsPage';
 import ProfilePage from './pages/ProfilePage';
+import StrategyManagerDashboard from './pages/StrategyManagerDashboard';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -43,6 +44,27 @@ const PublicRoute = ({ children }) => {
   }
 
   if (isAuthenticated && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+// Role-based Protected Route Component
+const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
+  const { isAuthenticated, isLoading } = useWeb3Auth();
+  const { user, isLoading: userLoading } = useUser();
+
+  if (isLoading || userLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const userRole = user.role || 'user';
+  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -108,15 +130,25 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/profile" 
+        <Route
+          path="/profile"
           element={
             <ProtectedRoute>
               <Layout>
                 <ProfilePage />
               </Layout>
             </ProtectedRoute>
-          } 
+          }
+        />
+        <Route
+          path="/strategy-manager"
+          element={
+            <RoleProtectedRoute allowedRoles={['strategy_manager', 'admin']}>
+              <Layout>
+                <StrategyManagerDashboard />
+              </Layout>
+            </RoleProtectedRoute>
+          }
         />
 
         {/* Catch all route */}

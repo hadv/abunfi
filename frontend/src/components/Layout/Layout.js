@@ -23,20 +23,14 @@ import {
   History,
   Person,
   Logout,
-  AccountBalanceWallet
+  AccountBalanceWallet,
+  Analytics
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { useWeb3Auth } from '../../contexts/Web3AuthContext';
 
 const drawerWidth = 240;
-
-const menuItems = [
-  { text: 'Tổng quan', icon: <Dashboard />, path: '/dashboard' },
-  { text: 'Tiết kiệm', icon: <Savings />, path: '/savings' },
-  { text: 'Lịch sử', icon: <History />, path: '/transactions' },
-  { text: 'Hồ sơ', icon: <Person />, path: '/profile' },
-];
 
 const Layout = ({ children }) => {
   const theme = useTheme();
@@ -47,6 +41,29 @@ const Layout = ({ children }) => {
   const { logout: web3Logout } = useWeb3Auth();
 
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Get menu items based on user role
+  const getMenuItems = () => {
+    const baseItems = [
+      { text: 'Tổng quan', icon: <Dashboard />, path: '/dashboard' },
+      { text: 'Tiết kiệm', icon: <Savings />, path: '/savings' },
+      { text: 'Lịch sử', icon: <History />, path: '/transactions' },
+      { text: 'Hồ sơ', icon: <Person />, path: '/profile' },
+    ];
+
+    // Add Strategy Manager Dashboard for authorized users
+    if (user?.role === 'strategy_manager' || user?.role === 'admin') {
+      baseItems.splice(1, 0, {
+        text: 'Strategy Manager',
+        icon: <Analytics />,
+        path: '/strategy-manager'
+      });
+    }
+
+    return baseItems;
+  };
+
+  const menuItems = getMenuItems();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleDrawerToggle = () => {
