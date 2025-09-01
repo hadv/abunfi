@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const blockchainService = require('../services/blockchainService');
+const blockchainService = require('../config/blockchain');
 const { cacheWithTTL } = require('../utils/cache');
 
 const strategyManagerController = {

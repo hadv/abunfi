@@ -74,6 +74,17 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const login = (userData) => {
+    try {
+      setUser(userData);
+      // Load portfolio after login
+      loadPortfolio();
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       setUser(null);
@@ -92,6 +103,7 @@ export const UserProvider = ({ children }) => {
     user,
     isLoading,
     portfolio,
+    login,
     updateProfile,
     logout,
     refreshPortfolio,
