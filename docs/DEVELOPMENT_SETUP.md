@@ -221,33 +221,22 @@ Expected output:
 1. Open `http://localhost:3000`
 2. You'll need to implement a temporary login for development
 
-### 2. Development Login (Temporary)
+### 2. Development Login
 
-Add this temporary route to `backend/src/routes/auth.js` for development:
+The application now includes a built-in development login feature:
 
-```javascript
-// Development login endpoint (REMOVE IN PRODUCTION)
-router.post('/dev-login', async (req, res) => {
-  if (process.env.NODE_ENV !== 'development') {
-    return res.status(403).json({ error: 'Development login not allowed' });
-  }
-  
-  const { email } = req.body;
-  const user = await UserRepository.findByEmail(email);
-  
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-  
-  res.json({
-    success: true,
-    token,
-    user: UserRepository.toPublicJSON(user)
-  });
-});
-```
+1. **Access Development Login**:
+   - Open `http://localhost:3000`
+   - Click the **"Development Login"** button (only visible in development mode)
+
+2. **Quick Login Options**:
+   - Click any of the pre-configured test accounts for instant login
+   - Or manually enter an email address
+
+3. **Test Accounts Available**:
+   - `manager@abunfi.com` - Strategy Manager (full dashboard access)
+   - `admin@abunfi.com` - Admin (full dashboard access)
+   - `user@abunfi.com` - Regular User (dashboard access denied)
 
 ### 3. Test User Accounts
 

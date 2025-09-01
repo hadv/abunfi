@@ -229,6 +229,54 @@ const authController = {
       logger.error('Reset password error:', error);
       res.status(500).json({ error: 'Password reset failed' });
     }
+  },
+
+  // Development login (ONLY for development environment)
+  devLogin: async (req, res) => {
+    try {
+      // Only allow in development environment
+      if (process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({
+          error: 'Development login is only available in development environment'
+        });
+      }
+
+      const { email } = req.body;
+
+      // Find user by email
+      const user = await UserRepository.findByEmail(email);
+
+      if (!user) {
+        return res.status(404).json({
+          error: 'User not found. Please check the email address.'
+        });
+      }
+
+      if (!user.is_active) {
+        return res.status(403).json({
+          error: 'User account is not active'
+        });
+      }
+
+      // Update login info
+      await UserRepository.updateLoginInfo(user.id);
+
+      // Generate token
+      const token = generateToken(user.id);
+
+      logger.info(`Development login successful for user: ${email} (${user.role})`);
+
+      res.json({
+        success: true,
+        token,
+        user: UserRepository.toPublicJSON(user),
+        message: 'Development login successful'
+      });
+
+    } catch (error) {
+      logger.error('Development login error:', error);
+      res.status(500).json({ error: 'Development login failed' });
+    }
   }
 };
 

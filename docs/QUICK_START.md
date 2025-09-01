@@ -45,9 +45,10 @@ cd frontend && npm start
 ## 🎯 Test Strategy Manager Dashboard
 
 1. **Open**: `http://localhost:3000`
-2. **Login as**: `manager@abunfi.com` (Strategy Manager)
-3. **Navigate to**: `/strategy-manager`
-4. **Verify**: Real-time dashboard with charts and controls
+2. **Click**: "Development Login" button
+3. **Quick Login**: Click "Strategy Manager" account or enter `manager@abunfi.com`
+4. **Auto-redirect**: Will automatically navigate to `/strategy-manager`
+5. **Verify**: Real-time dashboard with charts and controls
 
 ## ✅ Verify Setup
 

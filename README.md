@@ -110,12 +110,18 @@ New real-time dashboard for strategy managers:
 - **Role-based Access**: Strategy managers and admins only
 - **WebSocket Integration**: Live updates every 30 seconds
 
-**Access**: `http://localhost:3000/strategy-manager`
+**Access**: `http://localhost:3000` → Click "Development Login"
 
 **Test Accounts**:
 - `manager@abunfi.com` (Strategy Manager) - ✅ Full access
 - `admin@abunfi.com` (Admin) - ✅ Full access
 - `user@abunfi.com` (Regular User) - ❌ Access denied
+
+**How to Login**:
+1. Open `http://localhost:3000`
+2. Click "Development Login" button (development mode only)
+3. Select a test account or enter email manually
+4. Automatically redirected to appropriate dashboard
 
 ## 📚 Documentation
 
