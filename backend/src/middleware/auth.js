@@ -6,30 +6,20 @@ const authenticate = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
-    console.log('🔐 Auth middleware: Token received:', !!token);
-    console.log('🔐 Auth middleware: JWT_SECRET exists:', !!process.env.JWT_SECRET);
-
     if (!token) {
-      console.log('❌ Auth middleware: No token provided');
       return res.status(401).json({ error: 'Access token required' });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('🔐 Auth middleware: Token decoded:', { userId: decoded.userId });
-
     const user = await UserRepository.findById(decoded.userId);
-    console.log('🔐 Auth middleware: User found:', !!user, user ? { id: user.id, role: user.role, is_active: user.is_active } : null);
 
     if (!user || !user.is_active) {
-      console.log('❌ Auth middleware: Invalid user or inactive');
       return res.status(401).json({ error: 'Invalid token or user not found' });
     }
 
     req.user = user;
-    console.log('✅ Auth middleware: Authentication successful');
     next();
   } catch (error) {
-    console.log('❌ Auth middleware: Error:', error.message);
     logger.error('Authentication error:', error);
     res.status(401).json({ error: 'Invalid token' });
   }

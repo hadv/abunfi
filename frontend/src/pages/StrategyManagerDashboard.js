@@ -48,12 +48,10 @@ const StrategyManagerDashboard = () => {
   const [strategyPerformance, setStrategyPerformance] = useState(null);
   const [compoundInterest, setCompoundInterest] = useState(null);
 
-  // WebSocket connection for real-time updates
+  // WebSocket connection for real-time updates - DISABLED (React dev mode causes infinite loops)
   const { isConnected, lastMessage } = useWebSocket('/ws', {
     onMessage: handleWebSocketMessage,
-    enabled: (user?.role === 'strategy_manager' || user?.role === 'admin') && !!localStorage.getItem('abunfi_token'),
-    reconnectAttempts: 2, // Reduce attempts to prevent long loops
-    reconnectInterval: 10000 // Increase interval to 10 seconds
+    enabled: false // DISABLED: React StrictMode/HMR causes rapid mount/unmount cycles
   });
 
   // Check if user has access

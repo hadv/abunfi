@@ -37,12 +37,14 @@ const useWebSocket = (url, options = {}) => {
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = (event) => {
+        console.log('🔌 Frontend WebSocket: Connection opened');
         setIsConnected(true);
         setConnectionStatus('Connected');
         reconnectCount.current = 0;
-        
+
         // Send subscription message for strategy updates
         if (ws.current.readyState === WebSocket.OPEN) {
+          console.log('🔌 Frontend WebSocket: Sending subscription message');
           ws.current.send(JSON.stringify({
             type: 'subscribe_strategy_updates'
           }));
