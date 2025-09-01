@@ -17,7 +17,7 @@ services:
       REDIS_URL: redis://redis:6379
       # Application config
       JWT_SECRET: your-super-secret-jwt-key
-      RPC_URL: https://arb1.arbitrum.io/rpc
+      RPC_URL: https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
       CORS_ORIGIN: http://localhost:3000
     ports:
       - "3001:3001"
@@ -41,8 +41,8 @@ services:
     environment:
       REACT_APP_API_URL: http://localhost:3001/api
       REACT_APP_WEB3AUTH_CLIENT_ID: demo-client-id
-      REACT_APP_CHAIN_ID: 42161
-      REACT_APP_RPC_URL: https://arb1.arbitrum.io/rpc
+      REACT_APP_CHAIN_ID: 11155111
+      REACT_APP_RPC_URL: https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
     ports:
       - "3000:3000"
     depends_on:

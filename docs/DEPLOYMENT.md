@@ -38,28 +38,30 @@ docker-compose down
 
 ### Smart Contracts
 
-#### Arbitrum Mainnet
+#### Sepolia Testnet (Recommended for Production Testing)
 ```bash
-cd contracts
+cd contracts-submodule
 
 # Configure environment
 cp .env.example .env
-# Update .env with mainnet configuration
+# Update .env with Sepolia testnet configuration
+# Set SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+# Set PRIVATE_KEY=your_private_key_here
+# Set ETHERSCAN_API_KEY=your_etherscan_api_key
 
+# Deploy to Sepolia
+npm run deploy:sepolia
+
+# Verify contracts (automatic with --verify flag)
+```
+
+#### Arbitrum Mainnet (Alternative)
+```bash
 # Deploy to Arbitrum
 npm run deploy -- --network arbitrumOne
 
 # Verify contracts
 npm run verify -- --network arbitrumOne
-```
-
-#### Base Mainnet
-```bash
-# Deploy to Base
-npm run deploy -- --network base
-
-# Verify contracts
-npm run verify -- --network base
 ```
 
 ### Backend API
@@ -153,19 +155,21 @@ server {
 ### Smart Contracts (.env)
 ```bash
 PRIVATE_KEY=your_private_key
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+ETHERSCAN_API_KEY=your_etherscan_api_key
+# Optional: Keep Arbitrum config for alternative deployment
 ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
-BASE_RPC_URL=https://mainnet.base.org
 ARBISCAN_API_KEY=your_arbiscan_api_key
-BASESCAN_API_KEY=your_basescan_api_key
 ```
 
 ### Backend (.env.production)
 ```bash
 NODE_ENV=production
 PORT=3001
-MONGODB_URI=mongodb://username:password@host:port/abunfi
+DATABASE_URL=postgresql://username:password@host:port/abunfi
 JWT_SECRET=your_super_secret_jwt_key
-RPC_URL=https://arb1.arbitrum.io/rpc
+RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+CHAIN_ID=11155111
 VAULT_CONTRACT_ADDRESS=0x...
 CORS_ORIGIN=https://abunfi.com
 ```
@@ -174,7 +178,8 @@ CORS_ORIGIN=https://abunfi.com
 ```bash
 REACT_APP_API_URL=https://api.abunfi.com
 REACT_APP_WEB3AUTH_CLIENT_ID=your_web3auth_client_id
-REACT_APP_CHAIN_ID=42161
+REACT_APP_CHAIN_ID=11155111
+REACT_APP_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
 REACT_APP_VAULT_CONTRACT_ADDRESS=0x...
 ```
 
