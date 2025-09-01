@@ -55,6 +55,13 @@ class WebSocketService {
 
   handleConnection(ws, req) {
     const user = req.user;
+
+    if (!user) {
+      logger.error('WebSocket connection failed: No user found in request');
+      ws.close(1008, 'Authentication failed');
+      return;
+    }
+
     const userId = user.id;
     const userRole = user.role || 'user';
 

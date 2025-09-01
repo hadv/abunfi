@@ -51,7 +51,7 @@ const StrategyManagerDashboard = () => {
   // WebSocket connection for real-time updates
   const { isConnected, lastMessage } = useWebSocket('/ws', {
     onMessage: handleWebSocketMessage,
-    enabled: user?.role === 'strategy_manager' || user?.role === 'admin'
+    enabled: (user?.role === 'strategy_manager' || user?.role === 'admin') && !!localStorage.getItem('abunfi_token')
   });
 
   // Check if user has access
