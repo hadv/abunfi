@@ -24,6 +24,9 @@ const DevLogin = ({ onClose }) => {
   const { login } = useUser();
   const navigate = useNavigate();
 
+  // Test if component is working
+  console.log('🧪 DevLogin: Component rendered');
+
   const testAccounts = [
     {
       email: 'manager@abunfi.com',
@@ -144,6 +147,18 @@ const DevLogin = ({ onClose }) => {
               {error}
             </Alert>
           )}
+
+          {/* Test Button */}
+          <Box sx={{ mb: 2 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => console.log('🧪 Test button clicked!')}
+              sx={{ mb: 2 }}
+            >
+              🧪 Test Click (Check Console)
+            </Button>
+          </Box>
 
           {/* Manual Email Input */}
           <Box sx={{ mb: 3 }}>
