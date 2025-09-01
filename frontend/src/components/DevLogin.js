@@ -110,6 +110,7 @@ const DevLogin = ({ onClose }) => {
   };
 
   const handleQuickLogin = (account) => {
+    console.log('🖱️ DevLogin: Quick login clicked for account:', account);
     setEmail(account.email);
     handleLogin(account.email);
   };
