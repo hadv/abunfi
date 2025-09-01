@@ -38,16 +38,18 @@ api.interceptors.response.use(
       switch (status) {
         case 401:
           // Unauthorized - clear token and redirect to login
-          // But don't redirect if we're on the login page or if this is a token verification call
-          const isLoginPage = window.location.pathname === '/login';
-          const isTokenVerification = error.config?.url?.includes('/user/profile');
+          // TEMPORARILY DISABLED FOR DEBUGGING
+          console.error('🚨 API 401 Error - NOT redirecting for debugging:', {
+            url: error.config?.url,
+            pathname: window.location.pathname,
+            error: error.response?.data
+          });
 
           localStorage.removeItem('abunfi_token');
+          toast.error('Authentication failed - check console for details');
 
-          if (!isLoginPage && !isTokenVerification) {
-            window.location.href = '/login';
-            toast.error('Phiên đăng nhập đã hết hạn');
-          }
+          // Temporarily comment out redirect to see what's happening
+          // window.location.href = '/login';
           break;
           
         case 403:

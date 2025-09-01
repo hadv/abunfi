@@ -40,8 +40,12 @@ const ProtectedRoute = ({ children }) => {
   });
 
   if (!isLoggedIn) {
-    console.log('❌ ProtectedRoute: Not logged in, redirecting to login');
-    return <Navigate to="/login" replace />;
+    console.log('❌ ProtectedRoute: Not logged in, WOULD redirect to login (temporarily disabled for debugging)');
+    // Temporarily disable redirect for debugging
+    // return <Navigate to="/login" replace />;
+    return <div style={{padding: '20px', background: 'red', color: 'white'}}>
+      DEBUG: Would redirect to login - check console
+    </div>;
   }
 
   console.log('✅ ProtectedRoute: Access granted');
@@ -82,7 +86,10 @@ const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
   const isLoggedIn = isAuthenticated || (hasJWTToken && user);
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    console.log('❌ RoleProtectedRoute: Not logged in, WOULD redirect to login (temporarily disabled for debugging)');
+    return <div style={{padding: '20px', background: 'red', color: 'white'}}>
+      DEBUG: RoleProtectedRoute would redirect to login - check console
+    </div>;
   }
 
   const userRole = user.role || 'user';
