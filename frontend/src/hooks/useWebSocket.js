@@ -30,7 +30,7 @@ const useWebSocket = (url, options = {}) => {
       }
 
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = process.env.REACT_APP_WS_URL || window.location.host;
+      const host = process.env.REACT_APP_WS_URL || 'localhost:3001';
       const wsUrl = `${protocol}//${host}${url}?token=${token}`;
 
       setConnectionStatus('Connecting...');
