@@ -4,8 +4,8 @@ const databaseService = require('../services/DatabaseService');
 const blockchainService = require('../config/blockchain');
 const logger = require('../utils/logger');
 
-// MongoDB models for flexible data
-const MongoUser = require('../models/User');
+// MongoDB models for flexible data (commented out since we're using PostgreSQL only)
+// const MongoUser = require('../models/User');
 
 const hybridUserController = {
   // Create user (hybrid approach)
@@ -35,32 +35,8 @@ const hybridUserController = {
         is_email_verified: false
       });
 
-      // Create user in MongoDB (flexible data like preferences)
-      try {
-        const mongoUser = new MongoUser({
-          _id: postgresUser.id, // Use same ID
-          email,
-          walletAddress,
-          name,
-          socialId,
-          socialProvider,
-          preferences: preferences || {
-            language: 'vi',
-            currency: 'VND',
-            notifications: {
-              email: true,
-              push: true,
-              sms: false
-            }
-          }
-        });
-
-        await mongoUser.save();
-        logger.info(`User created in MongoDB: ${postgresUser.id}`);
-      } catch (mongoError) {
-        logger.warn('Failed to create user in MongoDB:', mongoError.message);
-        // Continue - MongoDB is for flexible data only
-      }
+      // Note: MongoDB usage removed - all data now stored in PostgreSQL
+      // Preferences are stored in the PostgreSQL users table as JSONB
 
       // Generate referral code
       await UserRepository.generateReferralCode(postgresUser.id);

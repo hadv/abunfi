@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const UserRepository = require('../models/postgres/UserRepository');
 const logger = require('../utils/logger');
 
 const authenticate = async (req, res, next) => {
@@ -11,7 +11,7 @@ const authenticate = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
+    const user = await UserRepository.findById(decoded.userId);
 
     if (!user || !user.isActive) {
       return res.status(401).json({ error: 'Invalid token or user not found' });
