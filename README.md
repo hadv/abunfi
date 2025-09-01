@@ -49,11 +49,30 @@ abunfi-contracts/       # Smart contracts repository (separate)
 
 ## 🛠️ Tech Stack
 
-- **Blockchain**: Arbitrum/Base (Layer 2)
-- **Smart Contracts**: Solidity, Foundry (submodule: [abunfi-contracts](https://github.com/hadv/abunfi-contracts))
-- **Backend**: Node.js, Express, MongoDB
-- **Frontend**: React, ethers.js, Web3Auth
-- **DeFi Integration**: Aave, Curve, Lido, Rocket Pool, Uniswap V3
+### Frontend
+- **React 18** với TypeScript
+- **Material-UI** cho giao diện người dùng
+- **Web3Auth** cho xác thực đa nền tảng
+- **Ethers.js** cho tương tác blockchain
+- **Recharts** cho data visualization
+- **WebSocket** cho real-time updates
+
+### Backend
+- **Node.js** với Express.js
+- **PostgreSQL** cho dữ liệu tài chính
+- **Redis** cho caching và sessions
+- **JWT** cho xác thực API
+- **WebSocket** cho cập nhật real-time
+- **Role-based Access Control** cho Strategy Manager
+
+### Blockchain
+- **Arbitrum One** (Layer 2 của Ethereum)
+- **Solidity** cho smart contracts
+- **Foundry** cho testing và deployment
+- **Account Abstraction** cho UX tốt hơn
+
+### DeFi Integration
+- **Aave, Curve, Lido, Rocket Pool, Uniswap V3**
 
 ## 📋 Yêu cầu hệ thống
 
@@ -61,24 +80,51 @@ abunfi-contracts/       # Smart contracts repository (separate)
 - npm hoặc yarn
 - Git
 
-## 🏃‍♂️ Bắt đầu nhanh
+## 🚀 Development Setup
+
+### ⚡ Quick Start (5 minutes)
 
 ```bash
 # Clone repository
-git clone <repo-url>
+git clone https://github.com/hadv/abunfi.git
 cd abunfi
 
-# Cài đặt dependencies
-npm install
+# Automated database setup
+chmod +x scripts/setup-local-db.sh
+./scripts/setup-local-db.sh
 
-# Chạy development server
-npm run dev
+# Install dependencies
+cd backend && npm install
+cd ../frontend && npm install
+
+# Start development servers
+cd backend && npm run dev    # Terminal 1
+cd frontend && npm start     # Terminal 2
 ```
+
+### 🎯 Strategy Manager Dashboard
+
+New real-time dashboard for strategy managers:
+- **Real-time Data Visualization**: Funds distribution, APY comparison, compound interest
+- **Interactive Controls**: Allocation management with auto-rebalancing
+- **Role-based Access**: Strategy managers and admins only
+- **WebSocket Integration**: Live updates every 30 seconds
+
+**Access**: `http://localhost:3000/strategy-manager`
+
+**Test Accounts**:
+- `manager@abunfi.com` (Strategy Manager) - ✅ Full access
+- `admin@abunfi.com` (Admin) - ✅ Full access
+- `user@abunfi.com` (Regular User) - ❌ Access denied
 
 ## 📚 Documentation
 
-Xem thêm tài liệu chi tiết trong thư mục `docs/`:
+### Development Guides
+- **[Quick Start Guide](docs/QUICK_START.md)** - Get running in 5 minutes ⚡
+- **[Development Setup](docs/DEVELOPMENT_SETUP.md)** - Comprehensive setup guide 🔧
+- **[Strategy Manager Dashboard](docs/STRATEGY_MANAGER_DASHBOARD.md)** - Dashboard documentation 📊
 
+### Technical Documentation
 - [`STRATEGIES.md`](docs/STRATEGIES.md) - Chi tiết về các chiến lược đầu tư
 - [`DEPLOYMENT.md`](docs/DEPLOYMENT.md) - Hướng dẫn deployment
 - [`README.md`](docs/README.md) - Tài liệu kỹ thuật
