@@ -40,8 +40,9 @@ class WebSocketService {
             return false;
           }
 
-          // Store user info for later use
+          // Store user info for later use - try multiple approaches
           info.req.user = user;
+          info.req.userData = user; // Alternative storage
           console.log('✅ WebSocket verification: Success');
           return true;
         } catch (error) {
@@ -62,10 +63,32 @@ class WebSocketService {
     logger.info('WebSocket service initialized');
   }
 
-  handleConnection(ws, req) {
-    const user = req.user;
+  async handleConnection(ws, req) {
+    console.log('🔌 WebSocket handleConnection: req.user exists:', !!req.user);
+    console.log('🔌 WebSocket handleConnection: req.userData exists:', !!req.userData);
+    console.log('🔌 WebSocket handleConnection: req keys:', Object.keys(req));
+
+    let user = req.user || req.userData;
+
+    // If user is not found in req, try to extract from URL and verify again
+    if (!user) {
+      try {
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        const token = url.searchParams.get('token');
+
+        if (token) {
+          console.log('🔌 WebSocket handleConnection: Attempting to verify token directly');
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          user = await UserRepository.findById(decoded.userId);
+          console.log('🔌 WebSocket handleConnection: User found via token:', !!user);
+        }
+      } catch (error) {
+        console.log('❌ WebSocket handleConnection: Token verification failed:', error.message);
+      }
+    }
 
     if (!user) {
+      console.log('❌ WebSocket handleConnection: No user found in request');
       logger.error('WebSocket connection failed: No user found in request');
       ws.close(1008, 'Authentication failed');
       return;
@@ -96,7 +119,8 @@ class WebSocketService {
     });
 
     // Handle disconnection
-    ws.on('close', () => {
+    ws.on('close', (code, reason) => {
+      console.log('🔌 WebSocket close event:', { userId, code, reason: reason?.toString(), userRole });
       this.handleDisconnection(ws, userId);
     });
 

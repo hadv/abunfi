@@ -48,10 +48,10 @@ const StrategyManagerDashboard = () => {
   const [strategyPerformance, setStrategyPerformance] = useState(null);
   const [compoundInterest, setCompoundInterest] = useState(null);
 
-  // WebSocket connection for real-time updates
+  // WebSocket connection for real-time updates (temporarily disabled for debugging)
   const { isConnected, lastMessage } = useWebSocket('/ws', {
     onMessage: handleWebSocketMessage,
-    enabled: (user?.role === 'strategy_manager' || user?.role === 'admin') && !!localStorage.getItem('abunfi_token')
+    enabled: false // Temporarily disabled to prevent reconnection loop
   });
 
   // Check if user has access
