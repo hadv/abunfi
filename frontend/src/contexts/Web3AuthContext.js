@@ -16,9 +16,9 @@ export const useWeb3Auth = () => {
 
 // Mock configuration for development
 const chainConfig = {
-  chainId: "0xa4b1", // Arbitrum One
-  rpcTarget: "https://arb1.arbitrum.io/rpc",
-  displayName: "Arbitrum One",
+  chainId: "0xaa36a7", // Sepolia Testnet
+  rpcTarget: "https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+  displayName: "Sepolia Testnet",
 };
 
 export const Web3AuthProvider = ({ children }) => {
