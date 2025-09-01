@@ -7,12 +7,14 @@ import {
   Button,
   Divider,
   CircularProgress,
-  Alert
+  Alert,
+  Dialog
 } from '@mui/material';
-import { Google, Apple, Phone } from '@mui/icons-material';
+import { Google, Apple, Phone, Code } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
+import DevLogin from '../components/DevLogin';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
@@ -20,6 +22,7 @@ const LoginPage = () => {
   const { login } = useWeb3Auth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showDevLogin, setShowDevLogin] = useState(false);
 
   const handleSocialLogin = async (provider) => {
     try {
@@ -175,10 +178,34 @@ const LoginPage = () => {
               size="large"
               onClick={() => handleSocialLogin('google')}
               disabled={isLoading}
-              sx={{ py: 1.5, mb: 3 }}
+              sx={{ py: 1.5, mb: 2 }}
             >
               Dùng thử Demo
             </Button>
+
+            {/* Development Login */}
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<Code />}
+                onClick={() => setShowDevLogin(true)}
+                disabled={isLoading}
+                sx={{
+                  py: 1.5,
+                  mb: 3,
+                  borderColor: 'warning.main',
+                  color: 'warning.main',
+                  '&:hover': {
+                    borderColor: 'warning.dark',
+                    backgroundColor: 'warning.light',
+                    color: 'warning.dark'
+                  }
+                }}
+              >
+                Development Login
+              </Button>
+            )}
 
             {/* Terms */}
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
@@ -206,6 +233,16 @@ const LoginPage = () => {
           </Paper>
         </motion.div>
       </Container>
+
+      {/* Development Login Dialog */}
+      <Dialog
+        open={showDevLogin}
+        onClose={() => setShowDevLogin(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DevLogin onClose={() => setShowDevLogin(false)} />
+      </Dialog>
     </Box>
   );
 };

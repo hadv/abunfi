@@ -16,6 +16,7 @@ import DashboardPage from './pages/DashboardPage';
 import SavingsPage from './pages/SavingsPage';
 import TransactionsPage from './pages/TransactionsPage';
 import ProfilePage from './pages/ProfilePage';
+import StrategyManagerDashboard from './pages/StrategyManagerDashboard';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -23,13 +24,31 @@ const ProtectedRoute = ({ children }) => {
   const { user, isLoading: userLoading } = useUser();
 
   if (isLoading || userLoading) {
+    console.log('🔄 ProtectedRoute: Loading...', { isLoading, userLoading });
     return <LoadingScreen />;
   }
 
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
+  // Check for Web3Auth authentication OR JWT token (for development login)
+  const hasJWTToken = localStorage.getItem('abunfi_token');
+  const isLoggedIn = isAuthenticated || (hasJWTToken && user);
+
+  console.log('🛡️ ProtectedRoute: Auth check', {
+    isAuthenticated,
+    hasJWTToken: !!hasJWTToken,
+    user: !!user,
+    isLoggedIn
+  });
+
+  if (!isLoggedIn) {
+    console.log('❌ ProtectedRoute: Not logged in, WOULD redirect to login (temporarily disabled for debugging)');
+    // Temporarily disable redirect for debugging
+    // return <Navigate to="/login" replace />;
+    return <div style={{padding: '20px', background: 'red', color: 'white'}}>
+      DEBUG: Would redirect to login - check console
+    </div>;
   }
 
+  console.log('✅ ProtectedRoute: Access granted');
   return children;
 };
 
@@ -42,7 +61,39 @@ const PublicRoute = ({ children }) => {
     return <LoadingScreen />;
   }
 
-  if (isAuthenticated && user) {
+  // Check for Web3Auth authentication OR JWT token (for development login)
+  const hasJWTToken = localStorage.getItem('abunfi_token');
+  const isLoggedIn = isAuthenticated || (hasJWTToken && user);
+
+  if (isLoggedIn) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+// Role-based Protected Route Component
+const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
+  const { isAuthenticated, isLoading } = useWeb3Auth();
+  const { user, isLoading: userLoading } = useUser();
+
+  if (isLoading || userLoading) {
+    return <LoadingScreen />;
+  }
+
+  // Check for Web3Auth authentication OR JWT token (for development login)
+  const hasJWTToken = localStorage.getItem('abunfi_token');
+  const isLoggedIn = isAuthenticated || (hasJWTToken && user);
+
+  if (!isLoggedIn) {
+    console.log('❌ RoleProtectedRoute: Not logged in, WOULD redirect to login (temporarily disabled for debugging)');
+    return <div style={{padding: '20px', background: 'red', color: 'white'}}>
+      DEBUG: RoleProtectedRoute would redirect to login - check console
+    </div>;
+  }
+
+  const userRole = user.role || 'user';
+  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -108,15 +159,25 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/profile" 
+        <Route
+          path="/profile"
           element={
             <ProtectedRoute>
               <Layout>
                 <ProfilePage />
               </Layout>
             </ProtectedRoute>
-          } 
+          }
+        />
+        <Route
+          path="/strategy-manager"
+          element={
+            <RoleProtectedRoute allowedRoles={['strategy_manager', 'admin']}>
+              <Layout>
+                <StrategyManagerDashboard />
+              </Layout>
+            </RoleProtectedRoute>
+          }
         />
 
         {/* Catch all route */}

@@ -8,8 +8,8 @@ class UserRepository {
       INSERT INTO users (
         email, wallet_address, name, social_id, social_provider,
         kyc_status, kyc_data, preferences, metadata, two_factor_enabled,
-        is_active, is_email_verified, referral_code, referred_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        is_active, is_email_verified, referral_code, referred_by, role
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *
     `;
 
@@ -37,7 +37,8 @@ class UserRepository {
       userData.is_active !== false, // Default to true
       userData.is_email_verified || false,
       userData.referral_code,
-      userData.referred_by
+      userData.referred_by,
+      userData.role || 'user'
     ];
 
     try {
@@ -133,7 +134,7 @@ class UserRepository {
       'name', 'social_id', 'social_provider', 'kyc_status', 'kyc_data',
       'preferences', 'metadata', 'two_factor_enabled', 'two_factor_secret',
       'is_email_verified', 'email_verification_token', 'password_reset_token',
-      'password_reset_expires', 'last_login_at', 'login_count'
+      'password_reset_expires', 'last_login_at', 'login_count', 'role'
     ];
 
     const updates = [];

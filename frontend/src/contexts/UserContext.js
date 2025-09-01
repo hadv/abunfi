@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useWeb3Auth } from './Web3AuthContext';
 import { userService } from '../services/userService';
 import { authService } from '../services/authService';
+import api from '../services/api';
 
 const UserContext = createContext();
 
@@ -18,6 +19,33 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [portfolio, setPortfolio] = useState(null);
+
+  // Check for existing JWT token on app startup
+  useEffect(() => {
+    const checkExistingAuth = async () => {
+      const token = localStorage.getItem('abunfi_token');
+      console.log('🔍 UserContext: Checking existing auth', { token: !!token, user: !!user, isAuthenticated });
+
+      if (token && !user && !isAuthenticated) {
+        console.log('🔄 UserContext: Verifying token...');
+        setIsLoading(true);
+        try {
+          // Verify token and get user data using userService
+          const userData = await userService.getProfile();
+          console.log('✅ UserContext: Token verified, user data:', userData.user);
+          setUser(userData.user);
+        } catch (error) {
+          console.error('❌ UserContext: Token verification failed:', error);
+          // Token is invalid, remove it
+          localStorage.removeItem('abunfi_token');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    checkExistingAuth();
+  }, [user, isAuthenticated]);
 
   // Auto-login when Web3Auth is authenticated
   useEffect(() => {
@@ -74,6 +102,19 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const login = (userData) => {
+    try {
+      console.log('🔐 UserContext: Login called with user data:', userData);
+      setUser(userData);
+      // Load portfolio after login
+      loadPortfolio();
+      console.log('✅ UserContext: User set successfully');
+    } catch (error) {
+      console.error('❌ UserContext: Login error:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       setUser(null);
@@ -92,6 +133,7 @@ export const UserProvider = ({ children }) => {
     user,
     isLoading,
     portfolio,
+    login,
     updateProfile,
     logout,
     refreshPortfolio,
