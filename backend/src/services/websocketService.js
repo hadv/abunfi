@@ -19,24 +19,33 @@ class WebSocketService {
         try {
           const url = new URL(info.req.url, `http://${info.req.headers.host}`);
           const token = url.searchParams.get('token');
-          
+
+          console.log('🔌 WebSocket verification: Token received:', !!token);
+
           if (!token) {
+            console.log('❌ WebSocket verification: No token provided');
             logger.warn('WebSocket connection rejected: No token provided');
             return false;
           }
 
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          console.log('🔌 WebSocket verification: Token decoded:', { userId: decoded.userId });
+
           const user = await UserRepository.findById(decoded.userId);
-          
+          console.log('🔌 WebSocket verification: User found:', !!user, user ? { id: user.id, role: user.role, is_active: user.is_active } : null);
+
           if (!user || !user.is_active) {
+            console.log('❌ WebSocket verification: Invalid user or inactive');
             logger.warn('WebSocket connection rejected: Invalid user');
             return false;
           }
 
           // Store user info for later use
           info.req.user = user;
+          console.log('✅ WebSocket verification: Success');
           return true;
         } catch (error) {
+          console.log('❌ WebSocket verification failed:', error.message);
           logger.warn('WebSocket connection rejected:', error.message);
           return false;
         }

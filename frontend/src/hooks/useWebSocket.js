@@ -7,8 +7,8 @@ const useWebSocket = (url, options = {}) => {
     onClose,
     onError,
     enabled = true,
-    reconnectAttempts = 5,
-    reconnectInterval = 3000
+    reconnectAttempts = 3,
+    reconnectInterval = 5000
   } = options;
 
   const [isConnected, setIsConnected] = useState(false);
@@ -60,19 +60,32 @@ const useWebSocket = (url, options = {}) => {
       ws.current.onclose = (event) => {
         setIsConnected(false);
         setConnectionStatus('Disconnected');
-        
+
+        console.log('🔌 WebSocket closed:', {
+          wasClean: event.wasClean,
+          code: event.code,
+          reason: event.reason,
+          reconnectCount: reconnectCount.current,
+          maxAttempts: reconnectAttempts
+        });
+
         if (onClose) onClose(event);
 
         // Attempt to reconnect if not a clean close and we haven't exceeded max attempts
-        if (!event.wasClean && reconnectCount.current < reconnectAttempts && enabled) {
+        // Don't reconnect if it's an authentication error (code 1008)
+        if (!event.wasClean &&
+            event.code !== 1008 &&
+            reconnectCount.current < reconnectAttempts &&
+            enabled) {
           reconnectCount.current += 1;
           setConnectionStatus(`Reconnecting... (${reconnectCount.current}/${reconnectAttempts})`);
-          
+
           reconnectTimeoutId.current = setTimeout(() => {
             connect();
           }, reconnectInterval);
-        } else if (reconnectCount.current >= reconnectAttempts) {
-          setConnectionStatus('Connection failed');
+        } else if (reconnectCount.current >= reconnectAttempts || event.code === 1008) {
+          setConnectionStatus(event.code === 1008 ? 'Authentication failed' : 'Connection failed');
+          console.log('🚫 WebSocket reconnection stopped:', event.code === 1008 ? 'Authentication failed' : 'Max attempts reached');
         }
       };
 
