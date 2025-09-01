@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useWeb3Auth } from './Web3AuthContext';
 import { userService } from '../services/userService';
 import { authService } from '../services/authService';
+import api from '../services/api';
 
 const UserContext = createContext();
 
@@ -26,22 +27,12 @@ export const UserProvider = ({ children }) => {
       if (token && !user && !isAuthenticated) {
         setIsLoading(true);
         try {
-          // Verify token and get user data
-          const response = await fetch('/api/user/profile', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (response.ok) {
-            const userData = await response.json();
-            setUser(userData.user);
-          } else {
-            // Token is invalid, remove it
-            localStorage.removeItem('abunfi_token');
-          }
+          // Verify token and get user data using userService
+          const userData = await userService.getProfile();
+          setUser(userData.user);
         } catch (error) {
           console.error('Token verification failed:', error);
+          // Token is invalid, remove it
           localStorage.removeItem('abunfi_token');
         } finally {
           setIsLoading(false);

@@ -38,9 +38,16 @@ api.interceptors.response.use(
       switch (status) {
         case 401:
           // Unauthorized - clear token and redirect to login
+          // But don't redirect if we're on the login page or if this is a token verification call
+          const isLoginPage = window.location.pathname === '/login';
+          const isTokenVerification = error.config?.url?.includes('/user/profile');
+
           localStorage.removeItem('abunfi_token');
-          window.location.href = '/login';
-          toast.error('Phiên đăng nhập đã hết hạn');
+
+          if (!isLoginPage && !isTokenVerification) {
+            window.location.href = '/login';
+            toast.error('Phiên đăng nhập đã hết hạn');
+          }
           break;
           
         case 403:
