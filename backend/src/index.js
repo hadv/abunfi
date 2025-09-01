@@ -28,6 +28,9 @@ blockchainService.initialize().catch(err => {
   logger.error('Failed to initialize blockchain service:', err);
 });
 
+// Trust proxy for rate limiting (needed for development proxy)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
