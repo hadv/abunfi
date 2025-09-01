@@ -24,6 +24,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, isLoading: userLoading } = useUser();
 
   if (isLoading || userLoading) {
+    console.log('🔄 ProtectedRoute: Loading...', { isLoading, userLoading });
     return <LoadingScreen />;
   }
 
@@ -31,10 +32,19 @@ const ProtectedRoute = ({ children }) => {
   const hasJWTToken = localStorage.getItem('abunfi_token');
   const isLoggedIn = isAuthenticated || (hasJWTToken && user);
 
+  console.log('🛡️ ProtectedRoute: Auth check', {
+    isAuthenticated,
+    hasJWTToken: !!hasJWTToken,
+    user: !!user,
+    isLoggedIn
+  });
+
   if (!isLoggedIn) {
+    console.log('❌ ProtectedRoute: Not logged in, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
+  console.log('✅ ProtectedRoute: Access granted');
   return children;
 };
 

@@ -57,10 +57,12 @@ const DevLogin = ({ onClose }) => {
       return;
     }
 
+    console.log('🔐 DevLogin: Starting login for:', loginEmail);
     setIsLoading(true);
     setError('');
 
     try {
+      console.log('📡 DevLogin: Making API call to /api/auth/dev-login');
       const response = await fetch('/api/auth/dev-login', {
         method: 'POST',
         headers: {
@@ -70,32 +72,36 @@ const DevLogin = ({ onClose }) => {
       });
 
       const data = await response.json();
+      console.log('📡 DevLogin: API response:', { ok: response.ok, status: response.status, data });
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');
       }
 
       // Store token
+      console.log('💾 DevLogin: Storing token in localStorage');
       localStorage.setItem('abunfi_token', data.token);
-      
+
       // Update user context
+      console.log('👤 DevLogin: Updating user context with:', data.user);
       login(data.user);
 
       // Show success message
       toast.success(`Logged in as ${data.user.name} (${data.user.role})`);
 
       // Navigate based on role
-      if (data.user.role === 'strategy_manager' || data.user.role === 'admin') {
-        navigate('/strategy-manager');
-      } else {
-        navigate('/dashboard');
-      }
+      const targetPath = (data.user.role === 'strategy_manager' || data.user.role === 'admin')
+        ? '/strategy-manager'
+        : '/dashboard';
+
+      console.log('🧭 DevLogin: Navigating to:', targetPath);
+      navigate(targetPath);
 
       // Close modal if provided
       if (onClose) onClose();
 
     } catch (error) {
-      console.error('Dev login failed:', error);
+      console.error('❌ DevLogin: Login failed:', error);
       setError(error.message);
       toast.error('Login failed');
     } finally {

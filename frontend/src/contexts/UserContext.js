@@ -24,14 +24,18 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const checkExistingAuth = async () => {
       const token = localStorage.getItem('abunfi_token');
+      console.log('🔍 UserContext: Checking existing auth', { token: !!token, user: !!user, isAuthenticated });
+
       if (token && !user && !isAuthenticated) {
+        console.log('🔄 UserContext: Verifying token...');
         setIsLoading(true);
         try {
           // Verify token and get user data using userService
           const userData = await userService.getProfile();
+          console.log('✅ UserContext: Token verified, user data:', userData.user);
           setUser(userData.user);
         } catch (error) {
-          console.error('Token verification failed:', error);
+          console.error('❌ UserContext: Token verification failed:', error);
           // Token is invalid, remove it
           localStorage.removeItem('abunfi_token');
         } finally {
@@ -100,11 +104,13 @@ export const UserProvider = ({ children }) => {
 
   const login = (userData) => {
     try {
+      console.log('🔐 UserContext: Login called with user data:', userData);
       setUser(userData);
       // Load portfolio after login
       loadPortfolio();
+      console.log('✅ UserContext: User set successfully');
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ UserContext: Login error:', error);
       throw error;
     }
   };
