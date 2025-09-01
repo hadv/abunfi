@@ -75,7 +75,8 @@ psql -d abunfi -f scripts/add-user-roles.sql
 ### 2. Backend Dependencies
 ```bash
 cd backend
-npm install ws@^8.14.2
+npm install
+# Note: Redis dependency removed - now uses in-memory cache for simplicity
 ```
 
 ### 3. Environment Variables

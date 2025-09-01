@@ -6,6 +6,7 @@
 set -e
 
 echo "🚀 Setting up Abunfi database for local development..."
+echo "📝 Note: Using in-memory cache instead of Redis for simplicity"
 
 # Database configuration
 DB_NAME="abunfi"

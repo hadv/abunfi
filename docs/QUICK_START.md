@@ -1,6 +1,6 @@
 # ⚡ Quick Start Guide
 
-Get Abunfi running locally in 5 minutes!
+Get Abunfi running locally in 5 minutes! (No Redis required - uses in-memory cache)
 
 ## 🚀 One-Command Setup
 

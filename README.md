@@ -60,7 +60,7 @@ abunfi-contracts/       # Smart contracts repository (separate)
 ### Backend
 - **Node.js** với Express.js
 - **PostgreSQL** cho dữ liệu tài chính
-- **Redis** cho caching và sessions
+- **In-memory Cache** cho caching và sessions (thay thế Redis)
 - **JWT** cho xác thực API
 - **WebSocket** cho cập nhật real-time
 - **Role-based Access Control** cho Strategy Manager

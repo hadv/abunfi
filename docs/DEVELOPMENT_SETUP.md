@@ -11,7 +11,6 @@ This guide will help you set up the Abunfi project for local development, includ
 - **npm** or **yarn** package manager
 
 ### Optional but Recommended
-- **Redis** (for caching) - [Download](https://redis.io/download/)
 - **VS Code** with extensions:
   - PostgreSQL (by Chris Kolkman)
   - ES7+ React/Redux/React-Native snippets
@@ -117,8 +116,8 @@ PORT=3001
 # Database Configuration
 DATABASE_URL=postgresql://abunfi_user:abunfi_password@localhost:5432/abunfi
 
-# Redis Configuration (optional)
-REDIS_URL=redis://localhost:6379
+# Cache Configuration (using in-memory cache)
+# No Redis needed - using server memory for caching
 
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-for-development

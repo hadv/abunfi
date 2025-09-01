@@ -1,13 +1,13 @@
 const postgresDB = require('../config/postgres');
-const redisClient = require('../config/redis');
+const { memoryCache } = require('../utils/memoryCache');
 const logger = require('../utils/logger');
 
 /**
- * Database Service - PostgreSQL + Redis architecture
+ * Database Service - PostgreSQL + Memory Cache architecture
  *
  * Data Distribution Strategy:
  * - PostgreSQL: All application data with JSONB for flexible fields
- * - Redis: Caching, sessions, temporary data - High performance needed
+ * - Memory Cache: Caching, sessions, temporary data - Simple in-memory storage
  */
 class DatabaseService {
   constructor() {
@@ -22,9 +22,8 @@ class DatabaseService {
       await postgresDB.connect();
       logger.info('✓ PostgreSQL connected');
 
-      // Initialize Redis
-      await redisClient.connect();
-      logger.info('✓ Redis connected');
+      // Initialize Memory Cache (always available)
+      logger.info('✓ Memory Cache initialized');
 
       this.isInitialized = true;
       logger.info('Database Service initialized successfully');
@@ -38,7 +37,7 @@ class DatabaseService {
   async disconnect() {
     try {
       await postgresDB.disconnect();
-      await redisClient.disconnect();
+      memoryCache.clear(); // Clear memory cache
       this.isInitialized = false;
       logger.info('Database Service disconnected');
     } catch (error) {
@@ -50,11 +49,11 @@ class DatabaseService {
   async healthCheck() {
     const health = {
       postgres: await postgresDB.healthCheck(),
-      redis: await redisClient.healthCheck(),
+      memoryCache: memoryCache.healthCheck(),
       overall: false
     };
 
-    health.overall = health.postgres; // Redis is optional
+    health.overall = health.postgres; // Memory cache is always available
     return health;
   }
 
@@ -62,7 +61,7 @@ class DatabaseService {
   async getStats() {
     return {
       postgres: postgresDB.getPoolStats(),
-      redis: await redisClient.getInfo()
+      memoryCache: memoryCache.getInfo()
     };
   }
 
@@ -75,42 +74,43 @@ class DatabaseService {
     return await postgresDB.transaction(callback);
   }
 
-  // Redis operations (for caching)
+  // Memory Cache operations (for caching)
   async cache(key, fetchFunction, ttl = 300) {
-    return await redisClient.cache(key, fetchFunction, ttl);
+    return await memoryCache.cacheWithTTL(key, fetchFunction, ttl);
   }
 
   async setCache(key, value, ttl = 300) {
-    return await redisClient.setJSON(key, value, ttl);
+    return memoryCache.setJSON(key, value, ttl);
   }
 
   async getCache(key) {
-    return await redisClient.getJSON(key);
+    return memoryCache.getJSON(key);
   }
 
   async deleteCache(key) {
-    return await redisClient.del(key);
+    return memoryCache.delete(key);
   }
 
   // Session management
   async setSession(sessionId, data, ttl = 86400) { // 24 hours default
-    return await redisClient.setJSON(`session:${sessionId}`, data, ttl);
+    return memoryCache.setJSON(`session:${sessionId}`, data, ttl);
   }
 
   async getSession(sessionId) {
-    return await redisClient.getJSON(`session:${sessionId}`);
+    return memoryCache.getJSON(`session:${sessionId}`);
   }
 
   async deleteSession(sessionId) {
-    return await redisClient.del(`session:${sessionId}`);
+    return memoryCache.delete(`session:${sessionId}`);
   }
 
   // Rate limiting
   async checkRateLimit(key, limit, window) {
-    const current = await redisClient.get(`rate_limit:${key}`);
-    
+    const rateLimitKey = `rate_limit:${key}`;
+    const current = memoryCache.get(rateLimitKey);
+
     if (!current) {
-      await redisClient.set(`rate_limit:${key}`, '1', { EX: window });
+      memoryCache.set(rateLimitKey, '1', window);
       return { allowed: true, remaining: limit - 1 };
     }
 
@@ -119,7 +119,7 @@ class DatabaseService {
       return { allowed: false, remaining: 0 };
     }
 
-    await redisClient.set(`rate_limit:${key}`, (count + 1).toString(), { XX: true });
+    memoryCache.set(rateLimitKey, (count + 1).toString(), window);
     return { allowed: true, remaining: limit - count - 1 };
   }
 

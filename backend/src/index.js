@@ -80,9 +80,9 @@ app.get('/health', async (req, res) => {
           status: dbHealth.postgres ? 'connected' : 'disconnected',
           stats: dbStats.postgres
         },
-        redis: {
-          status: dbHealth.redis ? 'connected' : 'disconnected',
-          stats: dbStats.redis ? 'connected' : 'disconnected'
+        memoryCache: {
+          status: dbHealth.memoryCache ? 'connected' : 'disconnected',
+          stats: dbStats.memoryCache
         }
       },
       blockchain: {
