@@ -43,6 +43,12 @@ abunfi-contracts/       # Smart contracts repository (separate)
 ### ⚖️ Chiến lược Cân bằng (Rủi ro trung bình)
 - **Liquidity Providing**: Cung cấp thanh khoản cho các cặp stablecoin (USDC/USDT) trên Curve, Uniswap V3 - APY 5-8%
 
+### 🦄 Chiến lược Uniswap V4 FairFlow (Rủi ro trung bình - MỚI!)
+- **Concentrated Liquidity**: Sử dụng Uniswap V4 với concentrated liquidity cho stablecoin pairs - APY 8-12%
+- **Dynamic Fee Optimization**: Tối ưu hóa phí động dựa trên điều kiện thị trường
+- **Automated Rebalancing**: Tự động rebalance để duy trì hiệu quả tối ưu
+- **Gas Efficiency**: Tận dụng kiến trúc singleton của V4 để giảm chi phí gas
+
 ### 🚀 Chiến lược Nâng cao (Rủi ro trung bình-cao)
 - **Liquid Staking**: stETH, rETH để kiếm lợi nhuận từ staking Ethereum - APY 4-6%
 - **Yield Farming**: Convex, Yearn Finance - APY 8-15%

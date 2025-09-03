@@ -17,6 +17,7 @@ import {
   Timeline
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import UniswapV4StrategyCard from './UniswapV4StrategyCard';
 
 const StrategyPerformanceGrid = ({ strategies, detailed = false }) => {
   const theme = useTheme();
@@ -73,17 +74,21 @@ const StrategyPerformanceGrid = ({ strategies, detailed = false }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card 
-                  variant="outlined" 
-                  sx={{ 
-                    height: '100%',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      boxShadow: theme.shadows[4],
-                      transform: 'translateY(-2px)'
-                    }
-                  }}
-                >
+                {/* Special handling for Uniswap V4 strategy */}
+                {strategy.name?.includes('Uniswap V4') ? (
+                  <UniswapV4StrategyCard strategy={strategy} />
+                ) : (
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      height: '100%',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        boxShadow: theme.shadows[4],
+                        transform: 'translateY(-2px)'
+                      }
+                    }}
+                  >
                   <CardContent>
                     {/* Strategy Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -224,6 +229,7 @@ const StrategyPerformanceGrid = ({ strategies, detailed = false }) => {
                     </Box>
                   </CardContent>
                 </Card>
+                )}
               </motion.div>
             </Grid>
           ))}

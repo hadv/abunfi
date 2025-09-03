@@ -41,17 +41,17 @@ const strategyManagerController = {
           // Mock data if blockchain is not available
           if (!blockchainData) {
             blockchainData = {
-              totalAssets: '75000000', // $75M total
-              strategiesCount: 4,
-              activeStrategies: 4,
-              totalAPY: 8.45,
+              totalAssets: '95000000', // $95M total
+              strategiesCount: 5,
+              activeStrategies: 5,
+              totalAPY: 8.84,
               strategies: [
                 {
                   address: '0x1234...aave',
                   name: 'Aave USDC Strategy',
-                  totalAssets: '30000000', // $30M
+                  totalAssets: '25000000', // $25M
                   apy: 7.8,
-                  allocation: 40.0,
+                  allocation: 26.3,
                   riskScore: 25,
                   isActive: true,
                   lastUpdate: new Date().toISOString()
@@ -59,9 +59,19 @@ const strategyManagerController = {
                 {
                   address: '0x1234...compound',
                   name: 'Compound V3 USDC Strategy',
-                  totalAssets: '25000000', // $25M
+                  totalAssets: '20000000', // $20M
                   apy: 8.9,
-                  allocation: 33.3,
+                  allocation: 21.1,
+                  riskScore: 30,
+                  isActive: true,
+                  lastUpdate: new Date().toISOString()
+                },
+                {
+                  address: '0x1234...uniswapv4',
+                  name: 'Uniswap V4 FairFlow Stablecoin Strategy',
+                  totalAssets: '30000000', // $30M
+                  apy: 10.2,
+                  allocation: 31.6,
                   riskScore: 30,
                   isActive: true,
                   lastUpdate: new Date().toISOString()
@@ -71,7 +81,7 @@ const strategyManagerController = {
                   name: 'Lido Liquid Staking',
                   totalAssets: '15000000', // $15M
                   apy: 5.2,
-                  allocation: 20.0,
+                  allocation: 15.8,
                   riskScore: 15,
                   isActive: true,
                   lastUpdate: new Date().toISOString()
@@ -81,7 +91,7 @@ const strategyManagerController = {
                   name: 'Uniswap V3 LP Strategy',
                   totalAssets: '5000000', // $5M
                   apy: 12.1,
-                  allocation: 6.7,
+                  allocation: 5.3,
                   riskScore: 65,
                   isActive: true,
                   lastUpdate: new Date().toISOString()
@@ -135,17 +145,25 @@ const strategyManagerController = {
           if (!blockchainData) {
             blockchainData = [
               {
-                name: 'Aave USDC',
+                name: 'Uniswap V4 FairFlow',
                 value: 30000000,
-                percentage: 40.0,
+                percentage: 31.6,
+                apy: 10.2,
+                riskScore: 30,
+                color: '#9c27b0'
+              },
+              {
+                name: 'Aave USDC',
+                value: 25000000,
+                percentage: 26.3,
                 apy: 7.8,
                 riskScore: 25,
                 color: '#1976d2'
               },
               {
                 name: 'Compound V3',
-                value: 25000000,
-                percentage: 33.3,
+                value: 20000000,
+                percentage: 21.1,
                 apy: 8.9,
                 riskScore: 30,
                 color: '#388e3c'
@@ -153,7 +171,7 @@ const strategyManagerController = {
               {
                 name: 'Lido Staking',
                 value: 15000000,
-                percentage: 20.0,
+                percentage: 15.8,
                 apy: 5.2,
                 riskScore: 15,
                 color: '#f57c00'
@@ -161,7 +179,7 @@ const strategyManagerController = {
               {
                 name: 'Uniswap V3 LP',
                 value: 5000000,
-                percentage: 6.7,
+                percentage: 5.3,
                 apy: 12.1,
                 riskScore: 65,
                 color: '#d32f2f'
@@ -301,6 +319,7 @@ function getStrategyColor(strategyName) {
   const colors = {
     'Aave USDC Strategy': '#1976d2',
     'Compound V3 USDC Strategy': '#388e3c',
+    'Uniswap V4 FairFlow Stablecoin Strategy': '#9c27b0',
     'Lido Liquid Staking': '#f57c00',
     'Uniswap V3 LP Strategy': '#d32f2f'
   };
@@ -362,6 +381,7 @@ async function getStrategiesData() {
   return [
     { name: 'Aave USDC Strategy', apy: 7.8 },
     { name: 'Compound V3 USDC Strategy', apy: 8.9 },
+    { name: 'Uniswap V4 FairFlow Stablecoin Strategy', apy: 10.2 },
     { name: 'Lido Liquid Staking', apy: 5.2 },
     { name: 'Uniswap V3 LP Strategy', apy: 12.1 }
   ];
@@ -371,6 +391,7 @@ function generateMockPerformanceData(period) {
   const strategies = [
     { name: 'Aave USDC Strategy', baseAPY: 7.8, volatility: 0.5 },
     { name: 'Compound V3 USDC Strategy', baseAPY: 8.9, volatility: 0.7 },
+    { name: 'Uniswap V4 FairFlow Stablecoin Strategy', baseAPY: 10.2, volatility: 0.8 },
     { name: 'Lido Liquid Staking', baseAPY: 5.2, volatility: 0.3 },
     { name: 'Uniswap V3 LP Strategy', baseAPY: 12.1, volatility: 2.1 }
   ];
