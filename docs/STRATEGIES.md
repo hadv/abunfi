@@ -100,7 +100,46 @@ Sử dụng các liquid staking tokens để kiếm lợi nhuận từ Ethereum 
 
 ---
 
-### 🌾 4. Yield Farming Strategy (Nâng cao - Tương lai)
+### 🦄 4. Uniswap V4 FairFlow Stablecoin Strategy (Nâng cao)
+**File**: `UniswapV4FairFlowStablecoinStrategy.sol`
+**Mức rủi ro**: Trung bình (25-35)
+**APY dự kiến**: 8-12%
+
+#### Mô tả
+Chiến lược tiên tiến sử dụng Uniswap V4 FairFlow để cung cấp thanh khoản tập trung cho các cặp stablecoin với tối ưu hóa phí động và quản lý range tự động.
+
+#### Tính năng chính
+- **Concentrated Liquidity**: Quản lý thanh khoản trong range 0.2%-1.0% quanh tỷ lệ 1:1
+- **Dynamic Range Management**: Tự động điều chỉnh range dựa trên volatility thị trường
+- **Automated Rebalancing**: Tự động rebalance khi giá di chuyển ra khỏi range tối ưu
+- **Dynamic Fee Optimization**: Điều chỉnh phí theo thời gian thực dựa trên điều kiện thị trường
+- **Auto-Compounding**: Tự động reinvest phí thu được để tối đa hóa lợi nhuận
+
+#### Uniswap V4 Innovations
+- **Hooks System**: Sử dụng custom hooks cho quản lý tự động
+- **Singleton Architecture**: Tận dụng cải tiến hiệu quả gas của V4
+- **Flash Accounting**: Theo dõi balance và settlement được tối ưu
+- **Market-Responsive Fees**: Phí thích ứng với điều kiện thị trường
+
+#### Supported Pairs
+- **USDC/USDT**: Cặp stablecoin chính với volume cao nhất
+- **USDC/DAI**: Cặp ổn định với slippage thấp
+- **USDT/DAI**: Cặp phụ cho đa dạng hóa
+
+#### Risk Management
+- **Impermanent Loss Protection**: Giảm thiểu IL thông qua quản lý range chặt chẽ
+- **Emergency Exit**: Cơ chế an toàn cho điều kiện thị trường cực đoan
+- **Slippage Controls**: Kiểm soát tolerance và bảo vệ có thể cấu hình
+- **Access Controls**: Hạn chế vault và owner phù hợp
+
+#### Performance Metrics
+- **Capital Efficiency**: Tối đa hóa việc tạo phí thông qua concentrated liquidity
+- **Gas Optimization**: Tận dụng kiến trúc singleton của V4
+- **Real-time Optimization**: Điều chỉnh liên tục theo điều kiện thị trường
+
+---
+
+### 🌾 5. Yield Farming Strategy (Nâng cao - Tương lai)
 **File**: `YieldFarmingStrategy.sol`
 **Mức rủi ro**: Cao (40-60)
 **APY dự kiến**: 8-15%
