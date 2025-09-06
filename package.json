@@ -17,6 +17,10 @@
     "contracts:build": "cd contracts-submodule && forge build",
     "contracts:test": "cd contracts-submodule && forge test",
     "contracts:deploy": "cd contracts-submodule && forge script script/Deploy.s.sol --broadcast",
+    "contracts:deploy:sepolia": "cd contracts-submodule && npm run deploy:sepolia-security",
+    "test:security": "cd test/security && npm test",
+    "test:sepolia": "cd test/security && npx mocha SepoliaSecurityTest.js --timeout 60000",
+    "setup:sepolia": "npm run contracts:deploy:sepolia && npm run test:sepolia",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [

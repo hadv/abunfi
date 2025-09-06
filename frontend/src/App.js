@@ -8,6 +8,7 @@ import { useUser } from './contexts/UserContext';
 // Components
 import Layout from './components/Layout/Layout';
 import LoadingScreen from './components/LoadingScreen';
+import SecurityNotifications from './components/security/SecurityNotifications';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -183,6 +184,9 @@ function App() {
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* Security Notifications - Global */}
+      <SecurityNotifications />
     </Box>
   );
 }
