@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useWeb3Auth } from './Web3AuthContext';
 import { userService } from '../services/userService';
 import { authService } from '../services/authService';
+import securityAuthService from '../services/securityAuthService';
 import api from '../services/api';
 
 const UserContext = createContext();
@@ -63,12 +64,13 @@ export const UserProvider = ({ children }) => {
             avatar: userInfo.profileImage
           };
 
-          const response = await authService.socialLogin(loginData);
+          // Use enhanced social login with security checks
+          const response = await securityAuthService.socialLoginWithSecurity(loginData);
           setUser(response.user);
-          
+
           // Store token
           localStorage.setItem('abunfi_token', response.token);
-          
+
           // Load portfolio
           await loadPortfolio();
         } catch (error) {

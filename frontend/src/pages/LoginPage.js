@@ -10,32 +10,40 @@ import {
   Alert,
   Dialog
 } from '@mui/material';
-import { Google, Apple, Phone, Code } from '@mui/icons-material';
+import { Google, Apple, Phone, Code, Security } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
 import DevLogin from '../components/DevLogin';
+import AntiAbuseEducation from '../components/security/AntiAbuseEducation';
+import { useSecurityAuth } from '../services/securityAuthService';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useWeb3Auth();
+  const { socialLoginWithSecurity } = useSecurityAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showDevLogin, setShowDevLogin] = useState(false);
+  const [showSecurityInfo, setShowSecurityInfo] = useState(false);
 
   const handleSocialLogin = async (provider) => {
     try {
       setIsLoading(true);
       setError('');
-      
-      await login(provider);
-      toast.success('Đăng nhập thành công!');
+
+      // Use enhanced login with security checks
+      const result = await login(provider);
+
+      // The security checks will be performed automatically in the UserContext
+      // when Web3Auth authentication is detected
+      toast.success('Login successful! Welcome to Abunfi.');
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      setError('Đăng nhập thất bại. Vui lòng thử lại.');
-      toast.error('Đăng nhập thất bại');
+      setError('Login failed. Please try again.');
+      toast.error('Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -207,17 +215,33 @@ const LoginPage = () => {
               </Button>
             )}
 
+            {/* Security Information */}
+            <Box sx={{ mt: 3, mb: 2 }}>
+              <Button
+                startIcon={<Security />}
+                variant="outlined"
+                size="small"
+                onClick={() => setShowSecurityInfo(true)}
+                sx={{
+                  textTransform: 'none',
+                  borderColor: 'info.main',
+                  color: 'info.main'
+                }}
+              >
+                Security & Rate Limiting Info
+              </Button>
+            </Box>
+
             {/* Terms */}
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-              Bằng cách đăng nhập, bạn đồng ý với{' '}
+              By logging in, you agree to our{' '}
               <Typography component="span" color="primary" sx={{ cursor: 'pointer' }}>
-                Điều khoản sử dụng
+                Terms of Service
               </Typography>{' '}
-              và{' '}
+              and{' '}
               <Typography component="span" color="primary" sx={{ cursor: 'pointer' }}>
-                Chính sách bảo mật
-              </Typography>{' '}
-              của chúng tôi.
+                Privacy Policy
+              </Typography>.
             </Typography>
 
             {/* Back to Home */}
@@ -227,7 +251,7 @@ const LoginPage = () => {
                 onClick={() => navigate('/')}
                 sx={{ textTransform: 'none' }}
               >
-                ← Quay lại trang chủ
+                ← Back to Home
               </Button>
             </Box>
           </Paper>
@@ -243,6 +267,12 @@ const LoginPage = () => {
       >
         <DevLogin onClose={() => setShowDevLogin(false)} />
       </Dialog>
+
+      {/* Security Information Dialog */}
+      <AntiAbuseEducation
+        showDialog={showSecurityInfo}
+        onClose={() => setShowSecurityInfo(false)}
+      />
     </Box>
   );
 };
