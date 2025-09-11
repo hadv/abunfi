@@ -1,0 +1,33 @@
+{
+  "name": "abunfi-security-tests",
+  "version": "1.0.0",
+  "description": "Security testing suite for Abunfi DOS/Sybil attack prevention",
+  "main": "SepoliaSecurityTest.js",
+  "scripts": {
+    "test": "mocha SepoliaSecurityTest.js --timeout 60000",
+    "test:verbose": "mocha SepoliaSecurityTest.js --timeout 60000 --reporter spec",
+    "test:watch": "mocha SepoliaSecurityTest.js --timeout 60000 --watch",
+    "install": "npm install"
+  },
+  "dependencies": {
+    "chai": "^4.3.7",
+    "ethers": "^6.7.1",
+    "mocha": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1"
+  },
+  "keywords": [
+    "security",
+    "testing",
+    "blockchain",
+    "dos-prevention",
+    "sybil-prevention",
+    "rate-limiting",
+    "sepolia",
+    "ethereum"
+  ],
+  "author": "Abunfi Team",
+  "license": "MIT"
+}

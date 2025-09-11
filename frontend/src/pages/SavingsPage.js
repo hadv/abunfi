@@ -18,12 +18,19 @@ import { Add, Remove, TrendingUp, Info } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { NumericFormat } from 'react-number-format';
 import toast from 'react-hot-toast';
+import GaslessTransactionSecurity from '../components/security/GaslessTransactionSecurity';
+import { useSecurityAuth } from '../services/securityAuthService';
+import { useWeb3Auth } from '../contexts/Web3AuthContext';
 
 const SavingsPage = () => {
+  const { walletAddress } = useWeb3Auth();
+  const { canPerformGaslessTransaction } = useSecurityAuth();
   const [tabValue, setTabValue] = useState(0);
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawShares, setWithdrawShares] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [canProceedWithTransaction, setCanProceedWithTransaction] = useState(false);
+  const [estimatedGasCost, setEstimatedGasCost] = useState('0.005'); // Mock estimated gas cost
 
   // Mock data
   const currentAPY = 8.2;
@@ -35,17 +42,39 @@ const SavingsPage = () => {
     setTabValue(newValue);
   };
 
+  const handleTransactionValidation = (canProceed, securityStatus) => {
+    setCanProceedWithTransaction(canProceed);
+    if (!canProceed && securityStatus) {
+      console.log('Transaction blocked by security policy:', securityStatus);
+    }
+  };
+
   const handleDeposit = async () => {
     if (!depositAmount || parseFloat(depositAmount) < minimumDeposit) {
-      toast.error(`Số tiền tối thiểu là ${minimumDeposit.toLocaleString()} VNĐ`);
+      toast.error(`Minimum amount is ${minimumDeposit.toLocaleString()} VND`);
+      return;
+    }
+
+    // Check security before proceeding
+    if (!canProceedWithTransaction) {
+      toast.error('Transaction blocked by security policy. Please check your rate limits.');
       return;
     }
 
     setIsLoading(true);
     try {
+      // Check gasless transaction eligibility
+      const eligibility = await canPerformGaslessTransaction(walletAddress, estimatedGasCost);
+
+      if (!eligibility.canProceed) {
+        toast.error(`Cannot proceed: ${eligibility.reason}`);
+        setIsLoading(false);
+        return;
+      }
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Gửi tiết kiệm thành công!');
+      toast.success('Deposit successful!');
       setDepositAmount('');
     } catch (error) {
       toast.error('Có lỗi xảy ra, vui lòng thử lại');
@@ -119,15 +148,23 @@ const SavingsPage = () => {
                 {/* Deposit Tab */}
                 {tabValue === 0 && (
                   <Box>
+                    {/* Security Status */}
+                    <GaslessTransactionSecurity
+                      onTransactionValidated={handleTransactionValidation}
+                      estimatedGasCost={estimatedGasCost}
+                      transactionType="deposit"
+                      showDetails={true}
+                    />
+
                     <Alert severity="info" sx={{ mb: 3 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Info fontSize="small" />
-                        Số tiền tối thiểu: {minimumDeposit.toLocaleString()} VNĐ (~$4)
+                        Minimum amount: {minimumDeposit.toLocaleString()} VND (~$4)
                       </Box>
                     </Alert>
 
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-                      Số tiền muốn gửi
+                      Amount to Deposit
                     </Typography>
 
                     <NumericFormat
@@ -137,7 +174,7 @@ const SavingsPage = () => {
                       onValueChange={(values) => setDepositAmount(values.value)}
                       thousandSeparator=","
                       suffix=" VNĐ"
-                      placeholder="Nhập số tiền"
+                      placeholder="Enter amount"
                       sx={{ mb: 3 }}
                       size="large"
                     />
@@ -145,13 +182,13 @@ const SavingsPage = () => {
                     {depositAmount && (
                       <Box sx={{ mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          Ước tính nhận được:
+                          Estimated to receive:
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                           {estimatedShares} shares
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Lãi suất dự kiến: {currentAPY}%/năm
+                          Expected APY: {currentAPY}%/year
                         </Typography>
                       </Box>
                     )}
@@ -161,13 +198,13 @@ const SavingsPage = () => {
                       variant="contained"
                       size="large"
                       onClick={handleDeposit}
-                      disabled={isLoading || !depositAmount}
+                      disabled={isLoading || !depositAmount || !canProceedWithTransaction}
                       sx={{ py: 1.5 }}
                     >
                       {isLoading ? (
                         <CircularProgress size={24} color="inherit" />
                       ) : (
-                        'Gửi tiết kiệm'
+                        'Deposit (Gasless)'
                       )}
                     </Button>
                   </Box>
