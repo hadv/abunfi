@@ -51,7 +51,7 @@ const SavingsPage = () => {
 
   const handleDeposit = async () => {
     if (!depositAmount || parseFloat(depositAmount) < minimumDeposit) {
-      toast.error(`Minimum amount is ${minimumDeposit.toLocaleString()} VND`);
+      toast.error(`Minimum amount is $${minimumDeposit.toLocaleString()}`);
       return;
     }
 
@@ -90,7 +90,7 @@ const SavingsPage = () => {
     }
 
     if (parseFloat(withdrawShares) > userShares) {
-      toast.error('Số shares vượt quá số dư hiện có');
+      toast.error('Number of shares exceeds current balance');
       return;
     }
 
@@ -98,7 +98,7 @@ const SavingsPage = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Rút tiền thành công!');
+      toast.success('Withdrawal successful!');
       setWithdrawShares('');
     } catch (error) {
       toast.error('Có lỗi xảy ra, vui lòng thử lại');
@@ -214,7 +214,7 @@ const SavingsPage = () => {
                 {tabValue === 1 && (
                   <Box>
                     <Alert severity="warning" sx={{ mb: 3 }}>
-                      Bạn có thể rút tiền bất cứ lúc nào. Không có phí rút tiền.
+                      You can withdraw money at any time. No withdrawal fees.
                     </Alert>
 
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
@@ -269,10 +269,10 @@ const SavingsPage = () => {
                     {withdrawShares && (
                       <Box sx={{ mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          Ước tính nhận được:
+                          Estimated to receive:
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          {estimatedWithdrawAmount} VNĐ
+                          ${estimatedWithdrawAmount}
                         </Typography>
                       </Box>
                     )}
@@ -308,7 +308,7 @@ const SavingsPage = () => {
             <Card sx={{ mb: 3 }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Thông tin tài khoản
+                  Account Information
                 </Typography>
                 
                 <Box sx={{ mb: 2 }}>
@@ -322,10 +322,10 @@ const SavingsPage = () => {
 
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="body2" color="text.secondary">
-                    Giá trị mỗi share
+                    Value per share
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {sharePrice.toLocaleString()} VNĐ
+                    ${sharePrice.toLocaleString()}
                   </Typography>
                 </Box>
 

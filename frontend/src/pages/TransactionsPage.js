@@ -177,7 +177,7 @@ const TransactionsPage = () => {
           Lịch sử giao dịch
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Theo dõi tất cả các giao dịch và hoạt động của bạn
+          Track all your transactions and activities
         </Typography>
       </Box>
 
@@ -263,8 +263,8 @@ const TransactionsPage = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           {getStatusIcon(transaction.status)}
                           <Chip
-                            label={transaction.status === 'confirmed' ? 'Thành công' : 
-                                   transaction.status === 'pending' ? 'Đang xử lý' : 'Thất bại'}
+                            label={transaction.status === 'confirmed' ? 'Success' :
+                                   transaction.status === 'pending' ? 'Processing' : 'Failed'}
                             color={getStatusColor(transaction.status)}
                             size="small"
                           />
@@ -320,10 +320,10 @@ const TransactionsPage = () => {
               <Box sx={{ textAlign: 'center', py: 8 }}>
                 <History sx={{ fontSize: 64, color: 'grey.400', mb: 2 }} />
                 <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                  Không có giao dịch nào
+                  No Transactions
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {searchTerm ? 'Không tìm thấy giao dịch phù hợp' : 'Bạn chưa có giao dịch nào'}
+                  {searchTerm ? 'No matching transactions found' : 'You have no transactions yet'}
                 </Typography>
               </Box>
             )}

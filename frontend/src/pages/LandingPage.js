@@ -158,7 +158,7 @@ const LandingPage = () => {
                   6-15%
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Lãi suất hàng năm
+                  Annual Interest Rate
                 </Typography>
               </Box>
             </Grid>
@@ -168,7 +168,7 @@ const LandingPage = () => {
                   5+
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Chiến lược DeFi
+                  DeFi Strategies
                 </Typography>
               </Box>
             </Grid>
@@ -250,7 +250,7 @@ const LandingPage = () => {
               component="h2"
               sx={{ textAlign: 'center', mb: 2, fontWeight: 'bold' }}
             >
-              Chiến lược đầu tư đa dạng
+              Diversified Investment Strategies
             </Typography>
             <Typography
               variant="h6"

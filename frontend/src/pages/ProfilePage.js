@@ -212,7 +212,7 @@ const ProfilePage = () => {
 
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Địa chỉ ví
+                    Wallet Address
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Typography 
@@ -234,7 +234,7 @@ const ProfilePage = () => {
                 </Box>
 
                 <Alert severity="info">
-                  Đây là địa chỉ ví thông minh được tạo tự động cho bạn. Bạn có thể sử dụng nó để nhận tiền từ các ví khác.
+                  This is a smart wallet address automatically created for you. You can use it to receive money from other wallets.
                 </Alert>
               </CardContent>
             </Card>
@@ -263,7 +263,7 @@ const ProfilePage = () => {
                         onChange={(e) => handleInputChange('notifications.email', e.target.checked)}
                       />
                     }
-                    label="Thông báo qua Email"
+                    label="Email Notifications"
                   />
                   <FormControlLabel
                     control={
@@ -272,7 +272,7 @@ const ProfilePage = () => {
                         onChange={(e) => handleInputChange('notifications.push', e.target.checked)}
                       />
                     }
-                    label="Thông báo đẩy"
+                    label="Push Notifications"
                   />
                   <FormControlLabel
                     control={
@@ -281,7 +281,7 @@ const ProfilePage = () => {
                         onChange={(e) => handleInputChange('notifications.sms', e.target.checked)}
                       />
                     }
-                    label="Thông báo SMS"
+                    label="SMS Notifications"
                   />
                 </Box>
               </CardContent>

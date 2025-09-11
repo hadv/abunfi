@@ -75,9 +75,9 @@ const DashboardPage = () => {
     setIsRefreshing(true);
     try {
       await refreshPortfolio();
-      toast.success('Dữ liệu đã được cập nhật');
+      toast.success('Data has been updated');
     } catch (error) {
-      toast.error('Không thể cập nhật dữ liệu');
+      toast.error('Unable to update data');
     } finally {
       setIsRefreshing(false);
     }
@@ -241,7 +241,7 @@ const DashboardPage = () => {
             <Card sx={{ mb: 3 }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-                  Hành động nhanh
+                  Quick Actions
                 </Typography>
                 
                 <Button
@@ -308,7 +308,7 @@ const DashboardPage = () => {
             <Card>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Phân bổ Strategies
+                  Strategy Allocation
                 </Typography>
 
                 {displayPortfolio.strategies.map((strategy, index) => (
@@ -327,10 +327,10 @@ const DashboardPage = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2" color="text.secondary">
-                        {strategy.allocation}% phân bổ
+                        {strategy.allocation}% allocation
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                        {(strategy.balance).toLocaleString()} VNĐ
+                        ${(strategy.balance).toLocaleString()}
                       </Typography>
                     </Box>
 

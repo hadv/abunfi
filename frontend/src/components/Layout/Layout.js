@@ -210,7 +210,7 @@ const Layout = ({ children }) => {
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          Đăng xuất
+          Logout
         </MenuItem>
       </Menu>
 
