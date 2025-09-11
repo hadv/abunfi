@@ -64,7 +64,7 @@ const LandingPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                zIndex: 1
+                zIndex: 0
               }}
             >
               <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '1.1rem' }}>
@@ -79,7 +79,7 @@ const LandingPage = () => {
                 fontSize: '1.5rem',
                 fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
                 marginLeft: '-8px',
-                zIndex: 0
+                zIndex: 1
               }}
             >
               bunfi
