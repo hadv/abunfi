@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const securityController = require('../controllers/securityController');
-const auth = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
 const { validationResult } = require('express-validator');
 
@@ -86,9 +86,9 @@ const validateSecurityEventsQuery = [
  * @desc Get security status for a wallet address
  * @access Private
  */
-router.get('/status/:walletAddress', 
-  auth, 
-  validateWalletAddress, 
+router.get('/status/:walletAddress',
+  authenticate,
+  validateWalletAddress,
   securityController.getSecurityStatus
 );
 
@@ -97,9 +97,9 @@ router.get('/status/:walletAddress',
  * @desc Check if a transaction can be sponsored (rate limiting check)
  * @access Private
  */
-router.post('/check-eligibility/:walletAddress', 
-  auth, 
-  validateTransactionEligibility, 
+router.post('/check-eligibility/:walletAddress',
+  authenticate,
+  validateTransactionEligibility,
   securityController.checkTransactionEligibility
 );
 
@@ -108,9 +108,9 @@ router.post('/check-eligibility/:walletAddress',
  * @desc Get security recommendations for a user
  * @access Private
  */
-router.get('/recommendations/:walletAddress', 
-  auth, 
-  validateWalletAddress, 
+router.get('/recommendations/:walletAddress',
+  authenticate,
+  validateWalletAddress,
   securityController.getSecurityRecommendations
 );
 
@@ -119,9 +119,9 @@ router.get('/recommendations/:walletAddress',
  * @desc Record a security event
  * @access Private
  */
-router.post('/events', 
-  auth, 
-  validateSecurityEvent, 
+router.post('/events',
+  authenticate,
+  validateSecurityEvent,
   securityController.recordSecurityEvent
 );
 
@@ -130,9 +130,9 @@ router.post('/events',
  * @desc Get security events for a wallet
  * @access Private
  */
-router.get('/events/:walletAddress', 
-  auth, 
-  validateSecurityEventsQuery, 
+router.get('/events/:walletAddress',
+  authenticate,
+  validateSecurityEventsQuery,
   securityController.getSecurityEvents
 );
 
@@ -155,7 +155,7 @@ router.get('/health', (req, res) => {
  * @desc Get security configuration (rate limits, etc.)
  * @access Private
  */
-router.get('/config', auth, (req, res) => {
+router.get('/config', authenticate, (req, res) => {
   res.json({
     success: true,
     data: {

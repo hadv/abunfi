@@ -1,36 +1,36 @@
-# 🎉 Abunfi MVP - Hoàn thành thành công!
+# 🎉 Abunfi MVP - Successfully Completed!
 
-## 📋 Tổng quan dự án
+## 📋 Project Overview
 
-**Abunfi** là một nền tảng DeFi tiết kiệm dễ dàng được thiết kế đặc biệt cho người Việt Nam. MVP này đã được triển khai hoàn chỉnh với đầy đủ các tính năng cốt lõi theo yêu cầu ban đầu.
+**Abunfi** is an easy DeFi savings platform designed for global users. This MVP has been fully deployed with all core features according to the initial requirements.
 
-## ✅ Các tính năng đã hoàn thành
+## ✅ Completed Features
 
-### 🔐 Đăng ký siêu tốc
-- ✅ Tích hợp Web3Auth cho social login (Google, Apple, Facebook)
-- ✅ Web3Auth tự động tạo ví blockchain an toàn
-- ✅ Không cần nhớ private key phức tạp
-- ✅ Đăng nhập bằng số điện thoại
+### 🔐 Super Fast Registration
+- ✅ Web3Auth integration for social login (Google, Apple, Facebook)
+- ✅ Web3Auth automatically creates secure blockchain wallets
+- ✅ No need to remember complex private keys
+- ✅ Phone number login support
 
-### 💰 Tiết kiệm dễ dàng
-- ✅ Số tiền tối thiểu: 10,000 VNĐ (~$4 USDC)
-- ✅ Lãi suất hấp dẫn: ~8%/năm từ Aave Protocol
-- ✅ Rút tiền linh hoạt 24/7
-- ✅ Tự động compound lãi suất
+### 💰 Easy Savings
+- ✅ Minimum amount: $10 USDC
+- ✅ Attractive interest rates: ~8%/year from Aave Protocol
+- ✅ Flexible withdrawals 24/7
+- ✅ Automatic compound interest
 
-### 🎨 Giao diện thân thiện
-- ✅ Thiết kế Material-UI đẹp mắt
-- ✅ Hiển thị số liệu bằng VNĐ
-- ✅ Dashboard trực quan với biểu đồ
-- ✅ Responsive design cho mobile
+### 🎨 User-Friendly Interface
+- ✅ Beautiful Material-UI design
+- ✅ Display figures in USD
+- ✅ Intuitive dashboard with charts
+- ✅ Responsive design for mobile
 
-### 🛡️ An toàn & minh bạch
-- ✅ Smart contracts sử dụng OpenZeppelin
-- ✅ Tích hợp với Aave V3 Protocol
-- ✅ Mọi giao dịch đều minh bạch trên blockchain
-- ✅ Test coverage cho smart contracts
+### 🛡️ Safe & Transparent
+- ✅ Smart contracts using OpenZeppelin
+- ✅ Integration with Aave V3 Protocol
+- ✅ All transactions transparent on blockchain
+- ✅ Test coverage for smart contracts
 
-## 🏗️ Kiến trúc đã triển khai
+## 🏗️ Deployed Architecture
 
 ```
 Frontend (React)     Backend (Node.js)     Smart Contracts
@@ -43,7 +43,7 @@ Frontend (React)     Backend (Node.js)     Smart Contracts
 └─────────────┘    └─────────────┘    └─────────────┘
 ```
 
-## 📁 Cấu trúc dự án
+## 📁 Project Structure
 
 ```
 abunfi/
@@ -81,21 +81,21 @@ abunfi/
 └── package.json           # Root package.json
 ```
 
-## 🚀 Cách chạy dự án
+## 🚀 How to Run the Project
 
 ### 1. Quick Start
 ```bash
-# Clone và setup
+# Clone and setup
 git clone <repository-url>
 cd abunfi
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
 
-# Chạy development
+# Run development
 npm run dev
 ```
 
-### 2. Truy cập ứng dụng
+### 2. Access the Application
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
 - **Hardhat Network**: http://localhost:8545
@@ -107,25 +107,25 @@ docker-compose up -d
 
 ## 🎯 Demo Flow
 
-1. **Truy cập trang chủ** → Giao diện landing page hấp dẫn
-2. **Đăng nhập** → Chọn Google/Apple/Facebook login
-3. **Dashboard** → Xem tổng quan tài khoản và lợi nhuận
-4. **Gửi tiết kiệm** → Nhập số tiền từ 10,000 VNĐ
-5. **Theo dõi** → Xem lãi suất tích lũy theo thời gian thực
-6. **Rút tiền** → Rút một phần hoặc toàn bộ bất cứ lúc nào
+1. **Access Homepage** → Attractive landing page interface
+2. **Login** → Choose Google/Apple/Facebook login
+3. **Dashboard** → View account overview and profits
+4. **Deposit Savings** → Enter amount from $10
+5. **Track** → View accumulated interest in real-time
+6. **Withdraw** → Withdraw partial or full amount anytime
 
-## 🔧 Công nghệ sử dụng
+## 🔧 Technologies Used
 
 ### Frontend
 - **React 18** + **Material-UI** + **Framer Motion**
-- **Web3Auth** cho social login
-- **ethers.js** cho blockchain interaction
-- **React Query** cho data fetching
+- **Web3Auth** for social login
+- **ethers.js** for blockchain interaction
+- **React Query** for data fetching
 
-### Backend  
+### Backend
 - **Node.js** + **Express** + **MongoDB**
 - **JWT** authentication
-- **ethers.js** cho blockchain integration
+- **ethers.js** for blockchain integration
 - **Winston** logging
 
 ### Smart Contracts
@@ -139,23 +139,23 @@ docker-compose up -d
 - **Base** (alternative L2)
 - **USDC** stablecoin
 
-## 📊 Tính năng nổi bật
+## 📊 Key Features
 
 ### 🎨 UI/UX Excellence
-- Giao diện tiếng Việt hoàn toàn
-- Thiết kế responsive cho mọi thiết bị
-- Animations mượt mà với Framer Motion
+- Fully English interface for global users
+- Responsive design for all devices
+- Smooth animations with Framer Motion
 - Dark/Light mode support
 
 ### 🔒 Security First
-- Smart contracts sử dụng OpenZeppelin
-- Account Abstraction cho UX tốt nhất
-- JWT authentication với refresh tokens
-- Rate limiting và input validation
+- Smart contracts using OpenZeppelin
+- Account Abstraction for best UX
+- JWT authentication with refresh tokens
+- Rate limiting and input validation
 
 ### ⚡ Performance
-- React Query cho caching thông minh
-- Code splitting và lazy loading
+- React Query for smart caching
+- Code splitting and lazy loading
 - Optimized smart contracts
 - Database indexing
 
@@ -165,12 +165,12 @@ docker-compose up -d
 - Real-time blockchain data
 - Gas-optimized transactions
 
-## 🎯 Roadmap tiếp theo
+## 🎯 Next Roadmap
 
 ### Phase 2 (Q2 2024)
 - [ ] Mobile app (React Native)
 - [ ] Advanced yield strategies
-- [ ] Referral system với rewards
+- [ ] Referral system with rewards
 - [ ] KYC integration
 
 ### Phase 3 (Q3 2024)
@@ -179,23 +179,23 @@ docker-compose up -d
 - [ ] Advanced analytics dashboard
 - [ ] Institutional features
 
-## 📞 Liên hệ & Support
+## 📞 Contact & Support
 
 - **Documentation**: `/docs/README.md`
 - **Deployment Guide**: `/docs/DEPLOYMENT.md`
 - **Issues**: GitHub Issues
-- **Demo**: Chạy `npm run dev` để xem demo
+- **Demo**: Run `npm run dev` to see demo
 
-## 🏆 Kết luận
+## 🏆 Conclusion
 
-MVP Abunfi đã được triển khai thành công với đầy đủ các tính năng theo yêu cầu:
+MVP Abunfi has been successfully deployed with all required features:
 
-✅ **Smart Contracts**: Vault, Strategy, Account Abstraction  
-✅ **Backend API**: User management, transactions, yield tracking  
-✅ **Frontend App**: Landing, login, dashboard, savings, transactions, profile  
-✅ **Web3 Integration**: Social login, wallet abstraction, DeFi protocols  
-✅ **Testing & Deployment**: Test cases, Docker, deployment scripts  
+✅ **Smart Contracts**: Vault, Strategy, Account Abstraction
+✅ **Backend API**: User management, transactions, yield tracking
+✅ **Frontend App**: Landing, login, dashboard, savings, transactions, profile
+✅ **Web3 Integration**: Social login, wallet abstraction, DeFi protocols
+✅ **Testing & Deployment**: Test cases, Docker, deployment scripts
 
-Dự án sẵn sàng cho demo, testing và triển khai production. Tất cả code đều được tổ chức rõ ràng, có documentation đầy đủ và tuân thủ best practices.
+The project is ready for demo, testing and production deployment. All code is well-organized, fully documented and follows best practices.
 
-**🎉 Chúc mừng! MVP Abunfi đã hoàn thành thành công! 🎉**
+**🎉 Congratulations! MVP Abunfi has been successfully completed! 🎉**

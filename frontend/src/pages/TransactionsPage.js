@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 
 // Mock transaction data
 const mockTransactions = [
@@ -131,22 +131,22 @@ const TransactionsPage = () => {
   const getTypeName = (type) => {
     switch (type) {
       case 'deposit':
-        return 'Gửi tiết kiệm';
+        return 'Deposit';
       case 'withdraw':
-        return 'Rút tiền';
+        return 'Withdrawal';
       case 'yield_harvest':
-        return 'Lãi suất';
+        return 'Yield';
       case 'referral_bonus':
-        return 'Thưởng giới thiệu';
+        return 'Referral Bonus';
       default:
-        return 'Khác';
+        return 'Other';
     }
   };
 
-  const formatVND = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -174,10 +174,10 @@ const TransactionsPage = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Lịch sử giao dịch
+          Transaction History
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Theo dõi tất cả các giao dịch và hoạt động của bạn
+          Track all your transactions and activities
         </Typography>
       </Box>
 
@@ -192,15 +192,15 @@ const TransactionsPage = () => {
             <Box sx={{ p: 3, pb: 0 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
-                  <Tab label="Tất cả" />
-                  <Tab label="Gửi tiền" />
-                  <Tab label="Rút tiền" />
-                  <Tab label="Lãi suất" />
+                  <Tab label="All" />
+                  <Tab label="Deposits" />
+                  <Tab label="Withdrawals" />
+                  <Tab label="Yield" />
                 </Tabs>
 
                 <TextField
                   size="small"
-                  placeholder="Tìm kiếm giao dịch..."
+                  placeholder="Search transactions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   InputProps={{
@@ -220,11 +220,11 @@ const TransactionsPage = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Loại</TableCell>
-                    <TableCell>Số tiền</TableCell>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Amount</TableCell>
                     <TableCell>Shares</TableCell>
-                    <TableCell>Trạng thái</TableCell>
-                    <TableCell>Thời gian</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Time</TableCell>
                     <TableCell>Hash</TableCell>
                   </TableRow>
                 </TableHead>
@@ -249,7 +249,7 @@ const TransactionsPage = () => {
                           }}
                         >
                           {transaction.type === 'withdraw' ? '-' : '+'}
-                          {formatVND(transaction.amount)}
+                          {formatUSD(transaction.amount)}
                         </Typography>
                       </TableCell>
                       
@@ -263,8 +263,8 @@ const TransactionsPage = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           {getStatusIcon(transaction.status)}
                           <Chip
-                            label={transaction.status === 'confirmed' ? 'Thành công' : 
-                                   transaction.status === 'pending' ? 'Đang xử lý' : 'Thất bại'}
+                            label={transaction.status === 'confirmed' ? 'Success' :
+                                   transaction.status === 'pending' ? 'Processing' : 'Failed'}
                             color={getStatusColor(transaction.status)}
                             size="small"
                           />
@@ -273,7 +273,7 @@ const TransactionsPage = () => {
                       
                       <TableCell>
                         <Typography variant="body2" color="text.secondary">
-                          {format(transaction.timestamp, 'dd/MM/yyyy HH:mm', { locale: vi })}
+                          {format(transaction.timestamp, 'MM/dd/yyyy HH:mm', { locale: enUS })}
                         </Typography>
                       </TableCell>
                       
@@ -320,10 +320,10 @@ const TransactionsPage = () => {
               <Box sx={{ textAlign: 'center', py: 8 }}>
                 <History sx={{ fontSize: 64, color: 'grey.400', mb: 2 }} />
                 <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                  Không có giao dịch nào
+                  No Transactions
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {searchTerm ? 'Không tìm thấy giao dịch phù hợp' : 'Bạn chưa có giao dịch nào'}
+                  {searchTerm ? 'No matching transactions found' : 'You have no transactions yet'}
                 </Typography>
               </Box>
             )}

@@ -32,7 +32,6 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       setError('');
-
       // Use enhanced login with security checks
       const result = await login(provider);
 
@@ -94,10 +93,10 @@ const LoginPage = () => {
                 </Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-                Chào mừng đến Abunfi
+                Welcome to Abunfi
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Đăng nhập để bắt đầu hành trình tiết kiệm của bạn
+                Login to start your savings journey
               </Typography>
             </Box>
 
@@ -131,7 +130,7 @@ const LoginPage = () => {
                 {isLoading ? (
                   <CircularProgress size={20} />
                 ) : (
-                  'Đăng nhập với Google'
+                  'Login with Google'
                 )}
               </Button>
 
@@ -153,7 +152,7 @@ const LoginPage = () => {
                   }
                 }}
               >
-                Đăng nhập với Apple
+                Login with Apple
               </Button>
 
               <Button
@@ -169,13 +168,13 @@ const LoginPage = () => {
                   color: 'primary.main'
                 }}
               >
-                Đăng nhập với số điện thoại
+                Login with Phone Number
               </Button>
             </Box>
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                Hoặc
+                Or
               </Typography>
             </Divider>
 
@@ -188,7 +187,7 @@ const LoginPage = () => {
               disabled={isLoading}
               sx={{ py: 1.5, mb: 2 }}
             >
-              Dùng thử Demo
+              Try Demo
             </Button>
 
             {/* Development Login */}

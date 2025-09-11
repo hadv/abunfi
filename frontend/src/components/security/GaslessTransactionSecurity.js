@@ -50,7 +50,7 @@ const GaslessTransactionSecurity = ({
   const [securityStatus, setSecurityStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSecurityDialog, setShowSecurityDialog] = useState(false);
-  const [showDetails, setShowDetailsExpanded] = useState(false);
+  const [showDetailsExpanded, setShowDetailsExpanded] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
 
   const loadSecurityStatus = async () => {

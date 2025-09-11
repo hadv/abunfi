@@ -21,7 +21,7 @@ router.post('/social-login',
 // Phone login/register
 router.post('/phone-login',
   [
-    body('phone').isMobilePhone('vi-VN').withMessage('Valid Vietnamese phone number is required'),
+    body('phone').isMobilePhone().withMessage('Valid phone number is required'),
     body('verificationCode').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
     body('walletAddress').isEthereumAddress().withMessage('Valid wallet address is required')
   ],
@@ -32,7 +32,7 @@ router.post('/phone-login',
 // Send phone verification
 router.post('/send-phone-verification',
   [
-    body('phone').isMobilePhone('vi-VN').withMessage('Valid Vietnamese phone number is required')
+    body('phone').isMobilePhone().withMessage('Valid phone number is required')
   ],
   validateRequest,
   authController.sendPhoneVerification

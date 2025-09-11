@@ -42,13 +42,13 @@ class RateLimitingService {
       const accountState = await this.paymasterContract.getAccountState(userAddress);
       
       const result = {
-        dailyGasUsed: ethers.utils.formatEther(accountState.dailyGasUsed),
+        dailyGasUsed: ethers.formatEther(accountState.dailyGasUsed),
         dailyTxCount: accountState.dailyTxCount.toNumber(),
         lastResetTime: new Date(accountState.lastResetTime.toNumber() * 1000),
         isWhitelisted: accountState.isWhitelisted,
         customPolicy: {
-          dailyGasLimit: ethers.utils.formatEther(accountState.customPolicy.dailyGasLimit),
-          perTxGasLimit: ethers.utils.formatEther(accountState.customPolicy.perTxGasLimit),
+          dailyGasLimit: ethers.formatEther(accountState.customPolicy.dailyGasLimit),
+          perTxGasLimit: ethers.formatEther(accountState.customPolicy.perTxGasLimit),
           dailyTxLimit: accountState.customPolicy.dailyTxLimit.toNumber(),
           requiresWhitelist: accountState.customPolicy.requiresWhitelist,
           isActive: accountState.customPolicy.isActive
@@ -86,8 +86,8 @@ class RateLimitingService {
       const policy = await this.paymasterContract.getEffectivePolicy(userAddress);
       
       const result = {
-        dailyGasLimit: ethers.utils.formatEther(policy.dailyGasLimit),
-        perTxGasLimit: ethers.utils.formatEther(policy.perTxGasLimit),
+        dailyGasLimit: ethers.formatEther(policy.dailyGasLimit),
+        perTxGasLimit: ethers.formatEther(policy.perTxGasLimit),
         dailyTxLimit: policy.dailyTxLimit.toNumber(),
         requiresWhitelist: policy.requiresWhitelist,
         isActive: policy.isActive
@@ -124,7 +124,7 @@ class RateLimitingService {
       const allowance = await this.paymasterContract.getRemainingDailyAllowance(userAddress);
       
       const result = {
-        gasAllowance: ethers.utils.formatEther(allowance.gasAllowance),
+        gasAllowance: ethers.formatEther(allowance.gasAllowance),
         txAllowance: allowance.txAllowance.toNumber(),
         gasAllowanceWei: allowance.gasAllowance,
         txAllowanceRaw: allowance.txAllowance
@@ -154,7 +154,7 @@ class RateLimitingService {
       const validation = await this.paymasterContract.validateUserOperation(userOp, context);
       return {
         canSponsor: validation.success,
-        gasPrice: ethers.utils.formatUnits(validation.gasPrice, 'gwei')
+        gasPrice: ethers.formatUnits(validation.gasPrice, 'gwei')
       };
     } catch (error) {
       console.error('Failed to validate user operation:', error);

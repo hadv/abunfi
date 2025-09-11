@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const LoadingScreen = ({ message = 'Đang tải...' }) => {
+const LoadingScreen = ({ message = 'Loading...' }) => {
   return (
     <Box
       sx={{

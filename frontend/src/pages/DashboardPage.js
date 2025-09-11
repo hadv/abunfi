@@ -75,18 +75,18 @@ const DashboardPage = () => {
     setIsRefreshing(true);
     try {
       await refreshPortfolio();
-      toast.success('Dữ liệu đã được cập nhật');
+      toast.success('Data has been updated');
     } catch (error) {
-      toast.error('Không thể cập nhật dữ liệu');
+      toast.error('Unable to update data');
     } finally {
       setIsRefreshing(false);
     }
   };
 
-  const formatVND = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -100,10 +100,10 @@ const DashboardPage = () => {
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Xin chào, {user?.name || 'Bạn'}! 👋
+            Hello, {user?.name || 'User'}! 👋
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Đây là tổng quan về tài khoản tiết kiệm của bạn
+            Here's an overview of your savings account
           </Typography>
         </Box>
         <IconButton 
@@ -133,7 +133,7 @@ const DashboardPage = () => {
               <CardContent sx={{ p: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Tổng tài sản
+                    Total Assets
                   </Typography>
                   <Chip 
                     label={`APY ${displayPortfolio.currentAPY}%`}
@@ -147,30 +147,30 @@ const DashboardPage = () => {
                     end={displayPortfolio.totalBalance}
                     duration={2}
                     separator=","
-                    suffix=" VNĐ"
+                    suffix=" USD"
                   />
                 </Typography>
                 
                 <Box sx={{ display: 'flex', gap: 4, mb: 3 }}>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Tiền gửi
+                      Deposits
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      {formatVND(displayPortfolio.totalDeposits)}
+                      {formatUSD(displayPortfolio.totalDeposits)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Lợi nhuận
+                      Profit
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.main' }}>
-                      +{formatVND(displayPortfolio.earnedYield)}
+                      +{formatUSD(displayPortfolio.earnedYield)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Tăng trưởng
+                      Growth
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.main' }}>
                       +{yieldPercentage.toFixed(2)}%
@@ -204,7 +204,7 @@ const DashboardPage = () => {
             <Card>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-                  Lịch sử lợi nhuận
+                  Profit History
                 </Typography>
                 <Box sx={{ height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -213,8 +213,8 @@ const DashboardPage = () => {
                       <XAxis dataKey="date" />
                       <YAxis />
                       <Tooltip 
-                        formatter={(value) => [formatVND(value), 'Lợi nhuận']}
-                        labelFormatter={(label) => `Tháng ${label}`}
+                        formatter={(value) => [formatUSD(value), 'Profit']}
+                        labelFormatter={(label) => `Month ${label}`}
                       />
                       <Line 
                         type="monotone" 
@@ -241,7 +241,7 @@ const DashboardPage = () => {
             <Card sx={{ mb: 3 }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-                  Hành động nhanh
+                  Quick Actions
                 </Typography>
                 
                 <Button
@@ -252,7 +252,7 @@ const DashboardPage = () => {
                   onClick={() => navigate('/savings')}
                   sx={{ mb: 2, py: 1.5 }}
                 >
-                  Gửi tiết kiệm
+                  Deposit Savings
                 </Button>
                 
                 <Button
@@ -263,7 +263,7 @@ const DashboardPage = () => {
                   onClick={() => navigate('/savings')}
                   sx={{ mb: 2, py: 1.5 }}
                 >
-                  Rút tiền
+                  Withdraw
                 </Button>
                 
                 <Button
@@ -274,7 +274,7 @@ const DashboardPage = () => {
                   onClick={() => navigate('/transactions')}
                   sx={{ py: 1.5 }}
                 >
-                  Xem lịch sử
+                  View History
                 </Button>
               </CardContent>
             </Card>
@@ -293,7 +293,7 @@ const DashboardPage = () => {
                   {displayPortfolio.currentAPY}%
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Lãi suất hiện tại
+                  Current APY
                 </Typography>
               </CardContent>
             </Card>
@@ -308,7 +308,7 @@ const DashboardPage = () => {
             <Card>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Phân bổ Strategies
+                  Strategy Allocation
                 </Typography>
 
                 {displayPortfolio.strategies.map((strategy, index) => (
@@ -327,10 +327,10 @@ const DashboardPage = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2" color="text.secondary">
-                        {strategy.allocation}% phân bổ
+                        {strategy.allocation}% allocation
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                        {(strategy.balance).toLocaleString()} VNĐ
+                        ${(strategy.balance).toLocaleString()}
                       </Typography>
                     </Box>
 

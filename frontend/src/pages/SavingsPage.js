@@ -35,8 +35,8 @@ const SavingsPage = () => {
   // Mock data
   const currentAPY = 8.2;
   const userShares = 1.25;
-  const sharePrice = 1000000; // VND per share
-  const minimumDeposit = 10000; // VND
+  const sharePrice = 40; // USD per share
+  const minimumDeposit = 10; // USD
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -51,7 +51,7 @@ const SavingsPage = () => {
 
   const handleDeposit = async () => {
     if (!depositAmount || parseFloat(depositAmount) < minimumDeposit) {
-      toast.error(`Minimum amount is ${minimumDeposit.toLocaleString()} VND`);
+      toast.error(`Minimum amount is $${minimumDeposit.toLocaleString()}`);
       return;
     }
 
@@ -90,7 +90,7 @@ const SavingsPage = () => {
     }
 
     if (parseFloat(withdrawShares) > userShares) {
-      toast.error('Số shares vượt quá số dư hiện có');
+      toast.error('Number of shares exceeds current balance');
       return;
     }
 
@@ -98,7 +98,7 @@ const SavingsPage = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Rút tiền thành công!');
+      toast.success('Withdrawal successful!');
       setWithdrawShares('');
     } catch (error) {
       toast.error('Có lỗi xảy ra, vui lòng thử lại');
@@ -115,10 +115,10 @@ const SavingsPage = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Tiết kiệm & Rút tiền
+          Savings & Withdrawals
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Gửi tiết kiệm hoặc rút tiền từ tài khoản của bạn
+          Deposit savings or withdraw funds from your account
         </Typography>
       </Box>
 
@@ -133,14 +133,14 @@ const SavingsPage = () => {
             <Card>
               <CardContent sx={{ p: 4 }}>
                 <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }}>
-                  <Tab 
-                    icon={<Add />} 
-                    label="Gửi tiết kiệm" 
+                  <Tab
+                    icon={<Add />}
+                    label="Deposit"
                     iconPosition="start"
                   />
-                  <Tab 
-                    icon={<Remove />} 
-                    label="Rút tiền" 
+                  <Tab
+                    icon={<Remove />}
+                    label="Withdraw"
                     iconPosition="start"
                   />
                 </Tabs>
@@ -159,7 +159,7 @@ const SavingsPage = () => {
                     <Alert severity="info" sx={{ mb: 3 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Info fontSize="small" />
-                        Minimum amount: {minimumDeposit.toLocaleString()} VND (~$4)
+                        Minimum amount: ${(minimumDeposit/25000).toFixed(0)}
                       </Box>
                     </Alert>
 
@@ -173,7 +173,7 @@ const SavingsPage = () => {
                       value={depositAmount}
                       onValueChange={(values) => setDepositAmount(values.value)}
                       thousandSeparator=","
-                      suffix=" VNĐ"
+                      prefix="$"
                       placeholder="Enter amount"
                       sx={{ mb: 3 }}
                       size="large"
@@ -204,7 +204,7 @@ const SavingsPage = () => {
                       {isLoading ? (
                         <CircularProgress size={24} color="inherit" />
                       ) : (
-                        'Deposit (Gasless)'
+                        'Deposit Savings'
                       )}
                     </Button>
                   </Box>
@@ -214,7 +214,7 @@ const SavingsPage = () => {
                 {tabValue === 1 && (
                   <Box>
                     <Alert severity="warning" sx={{ mb: 3 }}>
-                      Bạn có thể rút tiền bất cứ lúc nào. Không có phí rút tiền.
+                      You can withdraw money at any time. No withdrawal fees.
                     </Alert>
 
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
@@ -269,10 +269,10 @@ const SavingsPage = () => {
                     {withdrawShares && (
                       <Box sx={{ mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          Ước tính nhận được:
+                          Estimated to receive:
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          {estimatedWithdrawAmount} VNĐ
+                          ${estimatedWithdrawAmount}
                         </Typography>
                       </Box>
                     )}
@@ -288,7 +288,7 @@ const SavingsPage = () => {
                       {isLoading ? (
                         <CircularProgress size={24} color="inherit" />
                       ) : (
-                        'Rút tiền'
+                        'Withdraw'
                       )}
                     </Button>
                   </Box>
@@ -308,7 +308,7 @@ const SavingsPage = () => {
             <Card sx={{ mb: 3 }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Thông tin tài khoản
+                  Account Information
                 </Typography>
                 
                 <Box sx={{ mb: 2 }}>
@@ -322,10 +322,10 @@ const SavingsPage = () => {
 
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="body2" color="text.secondary">
-                    Giá trị mỗi share
+                    Value per share
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {sharePrice.toLocaleString()} VNĐ
+                    ${sharePrice.toLocaleString()}
                   </Typography>
                 </Box>
 
@@ -335,7 +335,7 @@ const SavingsPage = () => {
                   <TrendingUp sx={{ color: 'success.main' }} />
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Lãi suất hiện tại
+                      Current APY
                     </Typography>
                     <Chip 
                       label={`${currentAPY}% APY`}
@@ -356,23 +356,23 @@ const SavingsPage = () => {
             <Card>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Cách thức hoạt động
+                  How It Works
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  • Tiền của bạn được đầu tư vào các giao thức DeFi uy tín như Aave và Compound
+                  • Your funds are invested in trusted DeFi protocols like Aave and Compound
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  • Hệ thống tự động phân bổ funds để tối ưu hóa lợi nhuận
+                  • The system automatically allocates funds to optimize returns
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  • Lãi suất được tính hàng ngày và tự động cộng dồn
+                  • Interest is calculated daily and automatically compounded
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  • Bạn có thể rút tiền bất cứ lúc nào mà không mất phí
+                  • You can withdraw funds anytime without fees
                 </Typography>
               </CardContent>
             </Card>
@@ -387,7 +387,7 @@ const SavingsPage = () => {
             <Card sx={{ mt: 3 }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Protocols được sử dụng
+                  Protocols Used
                 </Typography>
 
                 <Box sx={{ mb: 2 }}>
@@ -395,10 +395,10 @@ const SavingsPage = () => {
                     🏦 Aave Protocol
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Lãi suất hiện tại: ~{(currentAPY * 0.6).toFixed(1)}%/năm
+                    Current APY: ~{(currentAPY * 0.6).toFixed(1)}%/year
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Giao thức lending hàng đầu với thanh khoản cao và bảo mật tốt
+                    Leading lending protocol with high liquidity and strong security
                   </Typography>
                 </Box>
 
@@ -409,15 +409,15 @@ const SavingsPage = () => {
                     🔷 Compound Protocol
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Lãi suất hiện tại: ~{(currentAPY * 0.4).toFixed(1)}%/năm
+                    Current APY: ~{(currentAPY * 0.4).toFixed(1)}%/year
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Giao thức lending tiên phong với cơ chế lãi suất tự động
+                    Pioneer lending protocol with automatic interest mechanism
                   </Typography>
                 </Box>
 
                 <Alert severity="info" sx={{ mt: 2 }}>
-                  Hệ thống tự động phân bổ funds giữa các protocols để tối ưu hóa lợi nhuận và giảm thiểu rủi ro
+                  The system automatically allocates funds between protocols to optimize returns and minimize risk
                 </Alert>
               </CardContent>
             </Card>

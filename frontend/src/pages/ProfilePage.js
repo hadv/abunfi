@@ -36,8 +36,8 @@ const ProfilePage = () => {
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    language: user?.preferences?.language || 'vi',
-    currency: user?.preferences?.currency || 'VND',
+    language: user?.preferences?.language || 'en',
+    currency: user?.preferences?.currency || 'USD',
     notifications: {
       email: user?.preferences?.notifications?.email || true,
       push: user?.preferences?.notifications?.push || true,
@@ -67,9 +67,9 @@ const ProfilePage = () => {
     try {
       await updateProfile(formData);
       setIsEditing(false);
-      toast.success('Cập nhật thông tin thành công!');
+      toast.success('Profile updated successfully!');
     } catch (error) {
-      toast.error('Có lỗi xảy ra, vui lòng thử lại');
+      toast.error('An error occurred, please try again');
     }
   };
 
@@ -91,14 +91,14 @@ const ProfilePage = () => {
 
   const copyWalletAddress = () => {
     navigator.clipboard.writeText(walletAddress);
-    toast.success('Đã sao chép địa chỉ ví!');
+    toast.success('Wallet address copied!');
   };
 
   const generateReferralLink = () => {
     const referralCode = user?.referralCode || 'ABC123';
     const link = `https://abunfi.com/ref/${referralCode}`;
     navigator.clipboard.writeText(link);
-    toast.success('Đã sao chép link giới thiệu!');
+    toast.success('Referral link copied!');
   };
 
   return (
@@ -106,10 +106,10 @@ const ProfilePage = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Hồ sơ cá nhân
+          Personal Profile
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Quản lý thông tin tài khoản và cài đặt của bạn
+          Manage your account information and settings
         </Typography>
       </Box>
 
@@ -127,7 +127,7 @@ const ProfilePage = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Person />
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      Thông tin cá nhân
+                      Personal Information
                     </Typography>
                   </Box>
                   <Button
@@ -142,7 +142,7 @@ const ProfilePage = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      label="Họ và tên"
+                      label="Full Name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       disabled={!isEditing}
@@ -160,7 +160,7 @@ const ProfilePage = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      label="Số điện thoại"
+                      label="Phone Number"
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       disabled={!isEditing}
@@ -168,14 +168,14 @@ const ProfilePage = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth disabled={!isEditing}>
-                      <InputLabel>Ngôn ngữ</InputLabel>
+                      <InputLabel>Language</InputLabel>
                       <Select
                         value={formData.language}
                         onChange={(e) => handleInputChange('language', e.target.value)}
-                        label="Ngôn ngữ"
+                        label="Language"
                       >
-                        <MenuItem value="vi">Tiếng Việt</MenuItem>
                         <MenuItem value="en">English</MenuItem>
+                        <MenuItem value="vi">Vietnamese</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -184,10 +184,10 @@ const ProfilePage = () => {
                 {isEditing && (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
                     <Button variant="contained" onClick={handleSave}>
-                      Lưu thay đổi
+                      Save Changes
                     </Button>
                     <Button variant="outlined" onClick={handleCancel}>
-                      Hủy
+                      Cancel
                     </Button>
                   </Box>
                 )}
@@ -206,13 +206,13 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <AccountBalanceWallet />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Thông tin ví
+                    Wallet Information
                   </Typography>
                 </Box>
 
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Địa chỉ ví
+                    Wallet Address
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Typography 
@@ -228,13 +228,13 @@ const ProfilePage = () => {
                       {walletAddress}
                     </Typography>
                     <Button size="small" onClick={copyWalletAddress}>
-                      Sao chép
+                      Copy
                     </Button>
                   </Box>
                 </Box>
 
                 <Alert severity="info">
-                  Đây là địa chỉ ví thông minh được tạo tự động cho bạn. Bạn có thể sử dụng nó để nhận tiền từ các ví khác.
+                  This is a smart wallet address automatically created for you. You can use it to receive money from other wallets.
                 </Alert>
               </CardContent>
             </Card>
@@ -251,7 +251,7 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <Notifications />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Cài đặt thông báo
+                    Notification Settings
                   </Typography>
                 </Box>
 
@@ -263,7 +263,7 @@ const ProfilePage = () => {
                         onChange={(e) => handleInputChange('notifications.email', e.target.checked)}
                       />
                     }
-                    label="Thông báo qua Email"
+                    label="Email Notifications"
                   />
                   <FormControlLabel
                     control={
@@ -272,7 +272,7 @@ const ProfilePage = () => {
                         onChange={(e) => handleInputChange('notifications.push', e.target.checked)}
                       />
                     }
-                    label="Thông báo đẩy"
+                    label="Push Notifications"
                   />
                   <FormControlLabel
                     control={
@@ -281,7 +281,7 @@ const ProfilePage = () => {
                         onChange={(e) => handleInputChange('notifications.sms', e.target.checked)}
                       />
                     }
-                    label="Thông báo SMS"
+                    label="SMS Notifications"
                   />
                 </Box>
               </CardContent>
@@ -312,7 +312,7 @@ const ProfilePage = () => {
                   {user?.email}
                 </Typography>
                 <Chip
-                  label={user?.kycStatus === 'verified' ? 'Đã xác minh' : 'Chưa xác minh'}
+                  label={user?.kycStatus === 'verified' ? 'Verified' : 'Not Verified'}
                   color={user?.kycStatus === 'verified' ? 'success' : 'warning'}
                   size="small"
                 />
@@ -331,12 +331,12 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <Share />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Giới thiệu bạn bè
+                    Refer Friends
                   </Typography>
                 </Box>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Mã giới thiệu của bạn:
+                  Your referral code:
                 </Typography>
                 <Typography 
                   variant="h6" 
@@ -359,11 +359,11 @@ const ProfilePage = () => {
                   onClick={generateReferralLink}
                   sx={{ mb: 2 }}
                 >
-                  Sao chép link giới thiệu
+                  Copy Referral Link
                 </Button>
 
                 <Typography variant="body2" color="text.secondary">
-                  Bạn đã giới thiệu: <strong>{user?.referralCount || 0}</strong> người
+                  You have referred: <strong>{user?.referralCount || 0}</strong> people
                 </Typography>
               </CardContent>
             </Card>

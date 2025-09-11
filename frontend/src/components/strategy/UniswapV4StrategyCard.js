@@ -91,6 +91,22 @@ const UniswapV4StrategyCard = ({ strategy }) => {
         }}
       />
 
+      {/* Kyber Badge */}
+      <Chip
+        label="Kyber Hook"
+        size="small"
+        sx={{
+          position: 'absolute',
+          top: -8,
+          right: 70,
+          background: '#00d4aa',
+          color: 'white',
+          fontWeight: 'bold',
+          zIndex: 1,
+          fontSize: '0.65rem'
+        }}
+      />
+
       <CardContent>
         {/* Header */}
         <Box sx={{ mb: 2 }}>
@@ -222,13 +238,27 @@ const UniswapV4StrategyCard = ({ strategy }) => {
 
         {/* Additional Features */}
         <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Tooltip title="Powered by Kyber's FairFlow hook technology for optimal MEV protection and fair pricing">
+            <Chip
+              icon={<AutoAwesome sx={{ fontSize: 14 }} />}
+              label="Kyber FairFlow"
+              size="small"
+              variant="outlined"
+              sx={{
+                borderColor: '#00d4aa',
+                color: '#00d4aa',
+                backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                '& .MuiChip-icon': { color: '#00d4aa' }
+              }}
+            />
+          </Tooltip>
           <Tooltip title="Automated rebalancing based on market conditions">
             <Chip
               icon={<AutoAwesome sx={{ fontSize: 14 }} />}
               label="Auto-Rebalance"
               size="small"
               variant="outlined"
-              sx={{ 
+              sx={{
                 borderColor: 'rgba(255,255,255,0.5)',
                 color: 'white',
                 '& .MuiChip-icon': { color: 'white' }
@@ -241,7 +271,7 @@ const UniswapV4StrategyCard = ({ strategy }) => {
               label="Secure"
               size="small"
               variant="outlined"
-              sx={{ 
+              sx={{
                 borderColor: 'rgba(255,255,255,0.5)',
                 color: 'white',
                 '& .MuiChip-icon': { color: 'white' }

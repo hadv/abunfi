@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-The Uniswap V4 FairFlow Stablecoin Strategy is a cutting-edge liquidity provision strategy that leverages the latest innovations in Uniswap V4 to provide optimized yield generation for stablecoin pairs while minimizing impermanent loss.
+The Uniswap V4 FairFlow Stablecoin Strategy is a cutting-edge liquidity provision strategy that leverages Kyber's FairFlow hook technology and the latest innovations in Uniswap V4 to provide optimized yield generation for stablecoin pairs while minimizing impermanent loss and protecting against MEV attacks.
 
 ## 🚀 Key Features
 
@@ -12,11 +12,18 @@ The Uniswap V4 FairFlow Stablecoin Strategy is a cutting-edge liquidity provisio
 - **Automated Rebalancing**: Triggers rebalancing when price moves outside optimal range
 - **Position Monitoring**: Continuous monitoring of position health and performance
 
-### Uniswap V4 FairFlow Integration
-- **Hooks System**: Custom hook implementations for automated management
+### Kyber FairFlow Hook Technology
+- **MEV Protection**: Advanced protection against Maximum Extractable Value attacks
+- **Fair Pricing**: Ensures fair execution prices for all liquidity providers
+- **Dynamic Fee Optimization**: Intelligent fee adjustments based on market conditions
+- **Automated Rebalancing**: Smart rebalancing triggered by market volatility
+- **Gas Efficiency**: Optimized gas usage through Uniswap V4's singleton architecture
+
+### Uniswap V4 Integration
+- **Hooks System**: Custom hook implementations powered by Kyber's FairFlow technology
 - **Singleton Architecture**: Leverages V4's gas efficiency improvements
 - **Flash Accounting**: Optimized balance tracking and settlement
-- **Dynamic Fees**: Market-responsive fee adjustments based on conditions
+- **Native ETH Support**: Direct ETH handling without wrapping overhead
 
 ### Advanced Fee Optimization
 - **Market-Responsive Fees**: Adjusts fees based on volatility, volume, and liquidity
@@ -72,6 +79,12 @@ The Uniswap V4 FairFlow Stablecoin Strategy is a cutting-edge liquidity provisio
 - **Compounding Returns**: Automatic reinvestment of collected fees
 - **Optimized Capital Efficiency**: Maximum utilization of deposited capital
 - **Dynamic Optimization**: Real-time adjustments to market conditions
+
+### Kyber FairFlow Advantages
+- **MEV Protection**: Protects liquidity providers from sandwich attacks and front-running
+- **Fair Price Discovery**: Ensures optimal pricing through advanced algorithms
+- **Reduced Slippage**: Minimizes price impact for large transactions
+- **Enhanced Security**: Built-in protection mechanisms against malicious actors
 
 ### Operational Efficiency
 - **Automated Management**: No manual intervention required

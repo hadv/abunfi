@@ -45,10 +45,10 @@ const Layout = ({ children }) => {
   // Get menu items based on user role
   const getMenuItems = () => {
     const baseItems = [
-      { text: 'Tổng quan', icon: <Dashboard />, path: '/dashboard' },
-      { text: 'Tiết kiệm', icon: <Savings />, path: '/savings' },
-      { text: 'Lịch sử', icon: <History />, path: '/transactions' },
-      { text: 'Hồ sơ', icon: <Person />, path: '/profile' },
+      { text: 'Overview', icon: <Dashboard />, path: '/dashboard' },
+      { text: 'Savings', icon: <Savings />, path: '/savings' },
+      { text: 'History', icon: <History />, path: '/transactions' },
+      { text: 'Profile', icon: <Person />, path: '/profile' },
     ];
 
     // Add Strategy Manager Dashboard for authorized users
@@ -92,24 +92,34 @@ const Layout = ({ children }) => {
   const drawer = (
     <Box>
       <Toolbar>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
+              width: 28,
+              height: 28,
               borderRadius: '50%',
               bgcolor: 'primary.main',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              mr: 0.2
             }}
           >
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '0.95rem' }}>
               A
             </Typography>
           </Box>
-          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
-            Abunfi
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '1.3rem',
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
+            }}
+          >
+            bunfi
           </Typography>
         </Box>
       </Toolbar>
@@ -198,7 +208,7 @@ const Layout = ({ children }) => {
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
-          Hồ sơ
+          Profile
         </MenuItem>
         <MenuItem onClick={() => navigate('/profile')}>
           <ListItemIcon>
@@ -210,7 +220,7 @@ const Layout = ({ children }) => {
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          Đăng xuất
+          Logout
         </MenuItem>
       </Menu>
 
