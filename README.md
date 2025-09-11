@@ -1,12 +1,12 @@
 # Abunfi - Micro-Saving for All
 
-Abunfi là một ứng dụng DeFi tiết kiệm vi mô được thiết kế đặc biệt cho người Việt Nam, cho phép người dùng gửi tiết kiệm những khoản tiền nhỏ (từ 10,000 VNĐ) và nhận lãi suất hấp dẫn từ các chiến lược đầu tư DeFi đa dạng.
+Abunfi is a micro-savings DeFi application designed for global users, allowing people to save small amounts (starting from $10) and earn attractive interest rates from diverse DeFi investment strategies.
 
-## 🎯 Sứ mệnh
+## 🎯 Mission
 
-Phá vỡ rào cản tài chính, mang lại khả năng tiết kiệm và sinh lời cho tất cả mọi người, đặc biệt là giới trẻ và những người dùng phổ thông chưa quen với crypto.
+Breaking down financial barriers, bringing savings and earning opportunities to everyone, especially young people and everyday users who are new to crypto.
 
-## 🏗️ Kiến trúc
+## 🏗️ Architecture
 
 ```
 abunfi/
@@ -25,65 +25,65 @@ abunfi-contracts/       # Smart contracts repository (separate)
 └── exports/           # Contract ABIs for integration
 ```
 
-## 🚀 Tính năng chính
+## 🚀 Key Features
 
-- **Đăng ký siêu tốc**: Sử dụng Account Abstraction, đăng nhập bằng Google/Apple
-- **Gửi tiết kiệm dễ dàng**: Từ 10,000 VNĐ với giao diện thân thiện
-- **Lãi suất hấp dẫn**: 6-12%/năm từ các chiến lược đầu tư đa dạng
-- **Theo dõi lợi nhuận**: Dashboard trực quan, cập nhật real-time
-- **Rút tiền linh hoạt**: Rút cả gốc và lãi bất cứ lúc nào
-- **Quản lý rủi ro thông minh**: Phân bổ tự động giữa các chiến lược
+- **Super Fast Registration**: Using Account Abstraction, login with Google/Apple
+- **Easy Savings**: Starting from $10 with user-friendly interface
+- **Attractive Interest Rates**: 6-12% APY from diverse investment strategies
+- **Profit Tracking**: Intuitive dashboard with real-time updates
+- **Flexible Withdrawals**: Withdraw principal and interest anytime
+- **Smart Risk Management**: Automatic allocation between strategies
 
-## 💼 Chiến lược đầu tư
+## 💼 Investment Strategies
 
-### 🏦 Chiến lược Bảo thủ (Rủi ro thấp)
+### 🏦 Conservative Strategy (Low Risk)
 - **Lending Protocols**: Aave, Compound - APY 4-6%
 - **Stablecoin Farming**: Curve, Convex - APY 3-5%
 
-### ⚖️ Chiến lược Cân bằng (Rủi ro trung bình)
-- **Liquidity Providing**: Cung cấp thanh khoản cho các cặp stablecoin (USDC/USDT) trên Curve, Uniswap V3 - APY 5-8%
+### ⚖️ Balanced Strategy (Medium Risk)
+- **Liquidity Providing**: Providing liquidity for stablecoin pairs (USDC/USDT) on Curve, Uniswap V3 - APY 5-8%
 
-### 🦄 Chiến lược Uniswap V4 FairFlow (Rủi ro trung bình - MỚI!)
-- **Concentrated Liquidity**: Sử dụng Uniswap V4 với concentrated liquidity cho stablecoin pairs - APY 8-12%
-- **Dynamic Fee Optimization**: Tối ưu hóa phí động dựa trên điều kiện thị trường
-- **Automated Rebalancing**: Tự động rebalance để duy trì hiệu quả tối ưu
-- **Gas Efficiency**: Tận dụng kiến trúc singleton của V4 để giảm chi phí gas
+### 🦄 Uniswap V4 FairFlow Strategy (Medium Risk - NEW!)
+- **Concentrated Liquidity**: Using Uniswap V4 with concentrated liquidity for stablecoin pairs - APY 8-12%
+- **Dynamic Fee Optimization**: Dynamic fee optimization based on market conditions
+- **Automated Rebalancing**: Automatic rebalancing to maintain optimal efficiency
+- **Gas Efficiency**: Leveraging V4's singleton architecture to reduce gas costs
 
-### 🚀 Chiến lược Nâng cao (Rủi ro trung bình-cao)
-- **Liquid Staking**: stETH, rETH để kiếm lợi nhuận từ staking Ethereum - APY 4-6%
+### 🚀 Advanced Strategy (Medium-High Risk)
+- **Liquid Staking**: stETH, rETH to earn profits from Ethereum staking - APY 4-6%
 - **Yield Farming**: Convex, Yearn Finance - APY 8-15%
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** với TypeScript
-- **Material-UI** cho giao diện người dùng
-- **Web3Auth** cho xác thực đa nền tảng
-- **Ethers.js** cho tương tác blockchain
-- **Recharts** cho data visualization
-- **WebSocket** cho real-time updates
+- **React 18** with TypeScript
+- **Material-UI** for user interface
+- **Web3Auth** for multi-platform authentication
+- **Ethers.js** for blockchain interaction
+- **Recharts** for data visualization
+- **WebSocket** for real-time updates
 
 ### Backend
-- **Node.js** với Express.js
-- **PostgreSQL** cho dữ liệu tài chính
-- **In-memory Cache** cho caching và sessions (thay thế Redis)
-- **JWT** cho xác thực API
-- **WebSocket** cho cập nhật real-time
-- **Role-based Access Control** cho Strategy Manager
+- **Node.js** with Express.js
+- **PostgreSQL** for financial data
+- **In-memory Cache** for caching and sessions (Redis replacement)
+- **JWT** for API authentication
+- **WebSocket** for real-time updates
+- **Role-based Access Control** for Strategy Manager
 
 ### Blockchain
-- **Arbitrum One** (Layer 2 của Ethereum)
-- **Solidity** cho smart contracts
-- **Foundry** cho testing và deployment
-- **Account Abstraction** cho UX tốt hơn
+- **Arbitrum One** (Ethereum Layer 2)
+- **Solidity** for smart contracts
+- **Foundry** for testing and deployment
+- **Account Abstraction** for better UX
 
 ### DeFi Integration
 - **Aave, Curve, Lido, Rocket Pool, Uniswap V3**
 
-## 📋 Yêu cầu hệ thống
+## 📋 System Requirements
 
 - Node.js >= 18
-- npm hoặc yarn
+- npm or yarn
 - Git
 
 ## 🚀 Development Setup
@@ -137,20 +137,20 @@ New real-time dashboard for strategy managers:
 - **[Strategy Manager Dashboard](docs/STRATEGY_MANAGER_DASHBOARD.md)** - Dashboard documentation 📊
 
 ### Technical Documentation
-- [`STRATEGIES.md`](docs/STRATEGIES.md) - Chi tiết về các chiến lược đầu tư
-- [`DEPLOYMENT.md`](docs/DEPLOYMENT.md) - Hướng dẫn deployment
-- [`README.md`](docs/README.md) - Tài liệu kỹ thuật
+- [`STRATEGIES.md`](docs/STRATEGIES.md) - Details about investment strategies
+- [`DEPLOYMENT.md`](docs/DEPLOYMENT.md) - Deployment guide
+- [`README.md`](docs/README.md) - Technical documentation
 
-## 🔒 Bảo mật
+## 🔒 Security
 
-- Smart contracts được audit bởi các công ty bảo mật uy tín
-- Quản lý rủi ro tự động với phân bổ động
-- Đa dạng hóa giữa các protocols để giảm thiểu rủi ro tập trung
+- Smart contracts audited by reputable security firms
+- Automatic risk management with dynamic allocation
+- Diversification across protocols to minimize concentration risk
 - Emergency withdrawal mechanisms
 
-## 🤝 Đóng góp
+## 🤝 Contributing
 
-Chúng tôi hoan nghênh mọi đóng góp! Vui lòng đọc hướng dẫn đóng góp trước khi submit PR.
+We welcome all contributions! Please read the contribution guidelines before submitting PRs.
 
 ## 📄 License
 

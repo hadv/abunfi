@@ -24,18 +24,18 @@ import { useNavigate } from 'react-router-dom';
 const features = [
   {
     icon: <TrendingUp sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Lãi suất hấp dẫn',
-    description: 'Nhận lãi suất 6-15%/năm từ 5+ chiến lược đầu tư tiên tiến: Aave, Compound, Liquid Staking, Uniswap V4 FairFlow'
+    title: 'Attractive Interest Rates',
+    description: 'Earn 6-15% APY from 5+ advanced investment strategies: Aave, Compound, Liquid Staking, Uniswap V4 FairFlow'
   },
   {
     icon: <AccountBalanceWallet sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Giao dịch miễn phí gas',
-    description: 'Công nghệ EIP-7702 tiên tiến - Giao dịch hoàn toàn miễn phí, không cần trả phí gas'
+    title: 'Gas-Free Transactions',
+    description: 'Advanced EIP-7702 technology - Completely free transactions, no gas fees required'
   },
   {
     icon: <Security sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'An toàn & minh bạch',
-    description: 'Smart contracts được kiểm toán, quản lý rủi ro thông minh với phân bổ tự động giữa 5+ chiến lược DeFi'
+    title: 'Safe & Transparent',
+    description: 'Audited smart contracts, intelligent risk management with automatic allocation across 5+ DeFi strategies'
   },
   {
     icon: <Speed sx={{ fontSize: 40, color: 'primary.main' }} />,
@@ -121,8 +121,8 @@ const LandingPage = () => {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: 700, mx: 'auto' }}
             >
-              Gửi tiết kiệm từ 10,000 VNĐ và nhận lãi suất 6-15%/năm từ 5+ chiến lược DeFi tiên tiến.
-              Giao dịch miễn phí gas với công nghệ EIP-7702. Đơn giản, an toàn, minh bạch.
+              Start saving from $10 and earn 6-15% APY from 5+ advanced DeFi strategies.
+              Gas-free transactions with EIP-7702 technology. Simple, safe, transparent.
             </Typography>
             
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -132,14 +132,14 @@ const LandingPage = () => {
                 onClick={() => navigate('/login')}
                 sx={{ px: 4, py: 1.5 }}
               >
-                Bắt đầu tiết kiệm
+                Start Saving
               </Button>
               <Button
                 variant="outlined"
                 size="large"
                 sx={{ px: 4, py: 1.5 }}
               >
-                Tìm hiểu thêm
+                Learn More
               </Button>
             </Box>
           </Box>
@@ -506,10 +506,10 @@ const LandingPage = () => {
             }}
           >
             <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>
-              Sẵn sàng trải nghiệm DeFi thế hệ mới?
+              Ready to experience next-generation DeFi?
             </Typography>
             <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-              Giao dịch miễn phí gas + 5+ chiến lược DeFi tiên tiến + Lãi suất 6-15%/năm
+              Gas-free transactions + 5+ advanced DeFi strategies + 6-15% APY
             </Typography>
             <Button
               variant="contained"
@@ -525,7 +525,7 @@ const LandingPage = () => {
                 },
               }}
             >
-              Đăng ký ngay
+              Sign Up Now
             </Button>
           </Box>
         </motion.div>

@@ -1,6 +1,6 @@
 {
   "short_name": "Abunfi",
-  "name": "Abunfi - Tiết kiệm vi mô DeFi",
+  "name": "Abunfi - Micro DeFi Savings",
   "icons": [
     {
       "src": "favicon.ico",
@@ -12,5 +12,5 @@
   "display": "standalone",
   "theme_color": "#2563eb",
   "background_color": "#ffffff",
-  "description": "Tiết kiệm vi mô DeFi cho người Việt"
+  "description": "Micro DeFi Savings for Everyone"
 }

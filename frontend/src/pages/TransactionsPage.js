@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 
 // Mock transaction data
 const mockTransactions = [
@@ -131,22 +131,22 @@ const TransactionsPage = () => {
   const getTypeName = (type) => {
     switch (type) {
       case 'deposit':
-        return 'Gửi tiết kiệm';
+        return 'Deposit';
       case 'withdraw':
-        return 'Rút tiền';
+        return 'Withdrawal';
       case 'yield_harvest':
-        return 'Lãi suất';
+        return 'Yield';
       case 'referral_bonus':
-        return 'Thưởng giới thiệu';
+        return 'Referral Bonus';
       default:
-        return 'Khác';
+        return 'Other';
     }
   };
 
-  const formatVND = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -192,15 +192,15 @@ const TransactionsPage = () => {
             <Box sx={{ p: 3, pb: 0 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
-                  <Tab label="Tất cả" />
-                  <Tab label="Gửi tiền" />
-                  <Tab label="Rút tiền" />
-                  <Tab label="Lãi suất" />
+                  <Tab label="All" />
+                  <Tab label="Deposits" />
+                  <Tab label="Withdrawals" />
+                  <Tab label="Yield" />
                 </Tabs>
 
                 <TextField
                   size="small"
-                  placeholder="Tìm kiếm giao dịch..."
+                  placeholder="Search transactions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   InputProps={{
@@ -249,7 +249,7 @@ const TransactionsPage = () => {
                           }}
                         >
                           {transaction.type === 'withdraw' ? '-' : '+'}
-                          {formatVND(transaction.amount)}
+                          {formatUSD(transaction.amount)}
                         </Typography>
                       </TableCell>
                       
@@ -273,7 +273,7 @@ const TransactionsPage = () => {
                       
                       <TableCell>
                         <Typography variant="body2" color="text.secondary">
-                          {format(transaction.timestamp, 'dd/MM/yyyy HH:mm', { locale: vi })}
+                          {format(transaction.timestamp, 'MM/dd/yyyy HH:mm', { locale: enUS })}
                         </Typography>
                       </TableCell>
                       

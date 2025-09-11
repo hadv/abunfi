@@ -83,10 +83,10 @@ const DashboardPage = () => {
     }
   };
 
-  const formatVND = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -100,10 +100,10 @@ const DashboardPage = () => {
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Xin chào, {user?.name || 'Bạn'}! 👋
+            Hello, {user?.name || 'User'}! 👋
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Đây là tổng quan về tài khoản tiết kiệm của bạn
+            Here's an overview of your savings account
           </Typography>
         </Box>
         <IconButton 
@@ -133,7 +133,7 @@ const DashboardPage = () => {
               <CardContent sx={{ p: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Tổng tài sản
+                    Total Assets
                   </Typography>
                   <Chip 
                     label={`APY ${displayPortfolio.currentAPY}%`}
@@ -147,7 +147,7 @@ const DashboardPage = () => {
                     end={displayPortfolio.totalBalance}
                     duration={2}
                     separator=","
-                    suffix=" VNĐ"
+                    suffix=" USD"
                   />
                 </Typography>
                 
@@ -274,7 +274,7 @@ const DashboardPage = () => {
                   onClick={() => navigate('/transactions')}
                   sx={{ py: 1.5 }}
                 >
-                  Xem lịch sử
+                  View History
                 </Button>
               </CardContent>
             </Card>
@@ -293,7 +293,7 @@ const DashboardPage = () => {
                   {displayPortfolio.currentAPY}%
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Lãi suất hiện tại
+                  Current APY
                 </Typography>
               </CardContent>
             </Card>

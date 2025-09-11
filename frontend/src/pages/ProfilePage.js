@@ -36,8 +36,8 @@ const ProfilePage = () => {
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    language: user?.preferences?.language || 'vi',
-    currency: user?.preferences?.currency || 'VND',
+    language: user?.preferences?.language || 'en',
+    currency: user?.preferences?.currency || 'USD',
     notifications: {
       email: user?.preferences?.notifications?.email || true,
       push: user?.preferences?.notifications?.push || true,
@@ -142,7 +142,7 @@ const ProfilePage = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      label="Họ và tên"
+                      label="Full Name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       disabled={!isEditing}
@@ -160,7 +160,7 @@ const ProfilePage = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      label="Số điện thoại"
+                      label="Phone Number"
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       disabled={!isEditing}
@@ -168,14 +168,14 @@ const ProfilePage = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth disabled={!isEditing}>
-                      <InputLabel>Ngôn ngữ</InputLabel>
+                      <InputLabel>Language</InputLabel>
                       <Select
                         value={formData.language}
                         onChange={(e) => handleInputChange('language', e.target.value)}
-                        label="Ngôn ngữ"
+                        label="Language"
                       >
-                        <MenuItem value="vi">Tiếng Việt</MenuItem>
                         <MenuItem value="en">English</MenuItem>
+                        <MenuItem value="vi">Tiếng Việt</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -184,10 +184,10 @@ const ProfilePage = () => {
                 {isEditing && (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
                     <Button variant="contained" onClick={handleSave}>
-                      Lưu thay đổi
+                      Save Changes
                     </Button>
                     <Button variant="outlined" onClick={handleCancel}>
-                      Hủy
+                      Cancel
                     </Button>
                   </Box>
                 )}
@@ -312,7 +312,7 @@ const ProfilePage = () => {
                   {user?.email}
                 </Typography>
                 <Chip
-                  label={user?.kycStatus === 'verified' ? 'Đã xác minh' : 'Chưa xác minh'}
+                  label={user?.kycStatus === 'verified' ? 'Verified' : 'Not Verified'}
                   color={user?.kycStatus === 'verified' ? 'success' : 'warning'}
                   size="small"
                 />
