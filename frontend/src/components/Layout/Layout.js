@@ -45,10 +45,10 @@ const Layout = ({ children }) => {
   // Get menu items based on user role
   const getMenuItems = () => {
     const baseItems = [
-      { text: 'Tổng quan', icon: <Dashboard />, path: '/dashboard' },
-      { text: 'Tiết kiệm', icon: <Savings />, path: '/savings' },
-      { text: 'Lịch sử', icon: <History />, path: '/transactions' },
-      { text: 'Hồ sơ', icon: <Person />, path: '/profile' },
+      { text: 'Overview', icon: <Dashboard />, path: '/dashboard' },
+      { text: 'Savings', icon: <Savings />, path: '/savings' },
+      { text: 'History', icon: <History />, path: '/transactions' },
+      { text: 'Profile', icon: <Person />, path: '/profile' },
     ];
 
     // Add Strategy Manager Dashboard for authorized users
@@ -198,7 +198,7 @@ const Layout = ({ children }) => {
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
-          Hồ sơ
+          Profile
         </MenuItem>
         <MenuItem onClick={() => navigate('/profile')}>
           <ListItemIcon>

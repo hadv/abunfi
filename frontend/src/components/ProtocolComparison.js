@@ -166,7 +166,7 @@ const ProtocolComparison = ({ showDetailed = false }) => {
                         </Box>
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2">Phân bổ</Typography>
+                          <Typography variant="body2">Allocation</Typography>
                           <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                             {protocol.allocation}%
                           </Typography>
@@ -336,7 +336,7 @@ const ProtocolComparison = ({ showDetailed = false }) => {
                   <TableCell component="th" scope="row">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       Current APY
-                      <Tooltip title="Annual Percentage Yield - lãi suất hàng năm">
+                      <Tooltip title="Annual Percentage Yield - annual interest rate">
                         <Info fontSize="small" color="action" />
                       </Tooltip>
                     </Box>

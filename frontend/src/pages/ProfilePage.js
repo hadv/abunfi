@@ -67,9 +67,9 @@ const ProfilePage = () => {
     try {
       await updateProfile(formData);
       setIsEditing(false);
-      toast.success('Cập nhật thông tin thành công!');
+      toast.success('Profile updated successfully!');
     } catch (error) {
-      toast.error('Có lỗi xảy ra, vui lòng thử lại');
+      toast.error('An error occurred, please try again');
     }
   };
 
@@ -91,14 +91,14 @@ const ProfilePage = () => {
 
   const copyWalletAddress = () => {
     navigator.clipboard.writeText(walletAddress);
-    toast.success('Đã sao chép địa chỉ ví!');
+    toast.success('Wallet address copied!');
   };
 
   const generateReferralLink = () => {
     const referralCode = user?.referralCode || 'ABC123';
     const link = `https://abunfi.com/ref/${referralCode}`;
     navigator.clipboard.writeText(link);
-    toast.success('Đã sao chép link giới thiệu!');
+    toast.success('Referral link copied!');
   };
 
   return (
@@ -106,10 +106,10 @@ const ProfilePage = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Hồ sơ cá nhân
+          Personal Profile
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Quản lý thông tin tài khoản và cài đặt của bạn
+          Manage your account information and settings
         </Typography>
       </Box>
 
@@ -127,7 +127,7 @@ const ProfilePage = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Person />
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      Thông tin cá nhân
+                      Personal Information
                     </Typography>
                   </Box>
                   <Button
@@ -206,7 +206,7 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <AccountBalanceWallet />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Thông tin ví
+                    Wallet Information
                   </Typography>
                 </Box>
 
@@ -228,7 +228,7 @@ const ProfilePage = () => {
                       {walletAddress}
                     </Typography>
                     <Button size="small" onClick={copyWalletAddress}>
-                      Sao chép
+                      Copy
                     </Button>
                   </Box>
                 </Box>
@@ -251,7 +251,7 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <Notifications />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Cài đặt thông báo
+                    Notification Settings
                   </Typography>
                 </Box>
 
@@ -331,12 +331,12 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <Share />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Giới thiệu bạn bè
+                    Refer Friends
                   </Typography>
                 </Box>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Mã giới thiệu của bạn:
+                  Your referral code:
                 </Typography>
                 <Typography 
                   variant="h6" 
@@ -359,11 +359,11 @@ const ProfilePage = () => {
                   onClick={generateReferralLink}
                   sx={{ mb: 2 }}
                 >
-                  Sao chép link giới thiệu
+                  Copy Referral Link
                 </Button>
 
                 <Typography variant="body2" color="text.secondary">
-                  Bạn đã giới thiệu: <strong>{user?.referralCount || 0}</strong> người
+                  You have referred: <strong>{user?.referralCount || 0}</strong> people
                 </Typography>
               </CardContent>
             </Card>

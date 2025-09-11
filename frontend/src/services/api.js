@@ -53,19 +53,19 @@ api.interceptors.response.use(
           break;
           
         case 403:
-          toast.error('Bạn không có quyền thực hiện hành động này');
+          toast.error('You do not have permission to perform this action');
           break;
-          
+
         case 404:
-          toast.error('Không tìm thấy tài nguyên');
+          toast.error('Resource not found');
           break;
-          
+
         case 429:
-          toast.error('Quá nhiều yêu cầu, vui lòng thử lại sau');
+          toast.error('Too many requests, please try again later');
           break;
-          
+
         case 500:
-          toast.error('Lỗi server, vui lòng thử lại sau');
+          toast.error('Server error, please try again later');
           break;
           
         default:

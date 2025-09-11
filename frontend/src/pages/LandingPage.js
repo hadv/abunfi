@@ -39,8 +39,8 @@ const features = [
   },
   {
     icon: <Speed sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Đăng ký siêu tốc',
-    description: 'Đăng nhập bằng Google/Apple, Smart Account tự động, không cần nhớ private key phức tạp'
+    title: 'Super Fast Registration',
+    description: 'Login with Google/Apple, automatic Smart Account, no need to remember complex private keys'
   }
 ];
 
@@ -82,13 +82,13 @@ const LandingPage = () => {
             onClick={() => navigate('/login')}
             sx={{ mr: 2 }}
           >
-            Đăng nhập
+            Login
           </Button>
           <Button
             variant="contained"
             onClick={() => navigate('/login')}
           >
-            Bắt đầu
+            Get Started
           </Button>
         </Toolbar>
       </AppBar>
@@ -113,7 +113,7 @@ const LandingPage = () => {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Tiết kiệm dễ dàng cho mọi người
+              Easy Savings for Everyone
             </Typography>
             
             <Typography
@@ -206,7 +206,7 @@ const LandingPage = () => {
             component="h2"
             sx={{ textAlign: 'center', mb: 6, fontWeight: 'bold' }}
           >
-            Tại sao chọn Abunfi?
+            Why Choose Abunfi?
           </Typography>
           
           <Grid container spacing={4}>
@@ -257,7 +257,7 @@ const LandingPage = () => {
               color="text.secondary"
               sx={{ textAlign: 'center', mb: 6, maxWidth: 800, mx: 'auto' }}
             >
-              Tiền của bạn được phân bổ thông minh giữa 5+ chiến lược DeFi tiên tiến với công nghệ EIP-7702 gasless transactions
+              Your funds are intelligently allocated across 5+ advanced DeFi strategies with EIP-7702 gasless transaction technology
             </Typography>
 
             <Grid container spacing={3}>
@@ -270,7 +270,7 @@ const LandingPage = () => {
                       Lending Protocols
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Aave V3, Compound V3 - Cho vay tài sản để nhận lãi suất ổn định
+                      Aave V3, Compound V3 - Lend assets to earn stable interest rates
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -313,7 +313,7 @@ const LandingPage = () => {
                     fontSize: '0.7rem',
                     fontWeight: 'bold'
                   }}>
-                    🆕 MỚI!
+                    🆕 NEW!
                   </Box>
                   <CardContent sx={{ p: 3, textAlign: 'center' }}>
                     <Typography variant="h2" sx={{ mb: 2 }}>🦄</Typography>
@@ -321,7 +321,7 @@ const LandingPage = () => {
                       Uniswap V4 FairFlow
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Chiến lược stablecoin tiên tiến với Uniswap V4 hooks
+                      Advanced stablecoin strategy with Uniswap V4 hooks
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -358,7 +358,7 @@ const LandingPage = () => {
                       Liquidity Providing
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Curve, Uniswap V3 - Cung cấp thanh khoản cho các cặp stablecoin
+                      Curve, Uniswap V3 - Provide liquidity for stablecoin pairs
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -395,7 +395,7 @@ const LandingPage = () => {
                       Liquid Staking
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Lido stETH, Rocket Pool rETH - Stake ETH và nhận liquid tokens
+                      Lido stETH, Rocket Pool rETH - Stake ETH and receive liquid tokens
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -446,7 +446,7 @@ const LandingPage = () => {
                       EIP-7702 Gasless
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Giao dịch hoàn toàn miễn phí gas với Smart Account
+                      Completely gas-free transactions with Smart Account
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
@@ -477,13 +477,13 @@ const LandingPage = () => {
 
             <Box sx={{ textAlign: 'center', mt: 4, p: 4, bgcolor: 'grey.50', borderRadius: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                🤖 Quản lý rủi ro thông minh + EIP-7702 Gasless
+                🤖 Smart Risk Management + EIP-7702 Gasless
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                Hệ thống tự động phân bổ funds giữa 5+ chiến lược DeFi dựa trên mức độ rủi ro, APY và điều kiện thị trường
+                System automatically allocates funds across 5+ DeFi strategies based on risk level, APY and market conditions
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                ⚡ <strong>Giao dịch miễn phí gas</strong> với công nghệ EIP-7702 - Không cần trả phí gas cho mọi giao dịch!
+                ⚡ <strong>Gas-free transactions</strong> with EIP-7702 technology - No need to pay gas fees for any transaction!
               </Typography>
             </Box>
           </Box>
