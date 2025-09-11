@@ -92,7 +92,7 @@ const Layout = ({ children }) => {
   const drawer = (
     <Box>
       <Toolbar>
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
           <Box
             sx={{
               width: 28,
@@ -102,22 +102,20 @@ const Layout = ({ children }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mr: 0.1,
-              position: 'relative',
-              top: '1px'
+              mr: 0.2
             }}
           >
-            <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '0.95rem', lineHeight: 1 }}>
+            <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '0.95rem' }}>
               A
             </Typography>
           </Box>
           <Typography
+            variant="h6"
             noWrap
             component="div"
             sx={{
               fontWeight: 'bold',
               fontSize: '1.3rem',
-              lineHeight: 1,
               fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
             }}
           >
