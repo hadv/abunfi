@@ -175,7 +175,7 @@ const ProfilePage = () => {
                         label="Language"
                       >
                         <MenuItem value="en">English</MenuItem>
-                        <MenuItem value="vi">Tiếng Việt</MenuItem>
+                        <MenuItem value="vi">Vietnamese</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

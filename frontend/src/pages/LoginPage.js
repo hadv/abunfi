@@ -174,7 +174,7 @@ const LoginPage = () => {
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                Hoặc
+                Or
               </Typography>
             </Divider>
 
@@ -187,7 +187,7 @@ const LoginPage = () => {
               disabled={isLoading}
               sx={{ py: 1.5, mb: 2 }}
             >
-              Dùng thử Demo
+              Try Demo
             </Button>
 
             {/* Development Login */}
