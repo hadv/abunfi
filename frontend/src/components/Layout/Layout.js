@@ -92,7 +92,7 @@ const Layout = ({ children }) => {
   const drawer = (
     <Box>
       <Toolbar>
-        <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
           <Box
             sx={{
               width: 28,
@@ -102,7 +102,7 @@ const Layout = ({ children }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              zIndex: 0
+              mr: 0.2
             }}
           >
             <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '0.95rem' }}>
@@ -116,9 +116,7 @@ const Layout = ({ children }) => {
             sx={{
               fontWeight: 'bold',
               fontSize: '1.3rem',
-              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-              marginLeft: '-6px',
-              zIndex: 1
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
             }}
           >
             bunfi

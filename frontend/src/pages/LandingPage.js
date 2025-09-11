@@ -54,7 +54,7 @@ const LandingPage = () => {
       {/* Header */}
       <AppBar position="static" sx={{ bgcolor: 'background.paper', boxShadow: 1 }}>
         <Toolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
             <Box
               sx={{
                 width: 32,
@@ -64,7 +64,7 @@ const LandingPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                zIndex: 0
+                mr: 0.2
               }}
             >
               <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '1.1rem' }}>
@@ -77,9 +77,7 @@ const LandingPage = () => {
                 color: 'text.primary',
                 fontWeight: 'bold',
                 fontSize: '1.5rem',
-                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                marginLeft: '-8px',
-                zIndex: 1
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
               }}
             >
               bunfi
