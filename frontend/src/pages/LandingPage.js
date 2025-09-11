@@ -25,7 +25,7 @@ const features = [
   {
     icon: <TrendingUp sx={{ fontSize: 40, color: 'primary.main' }} />,
     title: 'Attractive Interest Rates',
-    description: 'Earn 6-15% APY from 5+ advanced investment strategies: Aave, Compound, Liquid Staking, Uniswap V4 FairFlow'
+    description: 'Earn 6-15% APY from 5+ advanced investment strategies: Aave, Compound, Liquid Staking, Uniswap V4 FairFlow (powered by Kyber)'
   },
   {
     icon: <AccountBalanceWallet sx={{ fontSize: 40, color: 'primary.main' }} />,
@@ -321,7 +321,7 @@ const LandingPage = () => {
                       Uniswap V4 FairFlow
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Advanced stablecoin strategy with Uniswap V4 hooks
+                      Advanced stablecoin strategy powered by Kyber's FairFlow hook technology for Uniswap V4
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Typography variant="caption" sx={{
