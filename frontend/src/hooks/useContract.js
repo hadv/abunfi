@@ -1,18 +1,20 @@
 import { useMemo } from 'react';
 import { ethers } from 'ethers';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
-// Import ABIs directly from submodule
-import AbunfiVaultABI from '../../contracts-submodule/exports/AbunfiVault.json';
-import StrategyManagerABI from '../../contracts-submodule/exports/StrategyManager.json';
-import AaveStrategyABI from '../../contracts-submodule/exports/AaveStrategy.json';
-import CompoundStrategyABI from '../../contracts-submodule/exports/CompoundStrategy.json';
-import LiquidStakingStrategyABI from '../../contracts-submodule/exports/LiquidStakingStrategy.json';
-import LiquidityProvidingStrategyABI from '../../contracts-submodule/exports/LiquidityProvidingStrategy.json';
-import UniswapV4FairFlowStablecoinStrategyABI from '../../contracts-submodule/exports/UniswapV4FairFlowStablecoinStrategy.json';
-import AbunfiSmartAccountABI from '../../contracts-submodule/exports/AbunfiSmartAccount.json';
-import EIP7702BundlerABI from '../../contracts-submodule/exports/EIP7702Bundler.json';
-import EIP7702PaymasterABI from '../../contracts-submodule/exports/EIP7702Paymaster.json';
-import MockERC20ABI from '../../contracts-submodule/exports/MockERC20.json';
+// Import ABIs from symlinked contracts directory
+import AbunfiVaultABI from '../contracts/AbunfiVault.json';
+import AaveStrategyABI from '../contracts/AaveStrategy.json';
+import MockERC20ABI from '../contracts/MockERC20.json';
+
+// Mock ABIs for contracts that don't exist yet
+const StrategyManagerABI = { abi: [] };
+const CompoundStrategyABI = { abi: [] };
+const LiquidStakingStrategyABI = { abi: [] };
+const LiquidityProvidingStrategyABI = { abi: [] };
+const UniswapV4FairFlowStablecoinStrategyABI = { abi: [] };
+const AbunfiSmartAccountABI = { abi: [] };
+const EIP7702BundlerABI = { abi: [] };
+const EIP7702PaymasterABI = { abi: [] };
 
 const ABIS = {
   AbunfiVault: AbunfiVaultABI,
@@ -70,7 +72,7 @@ export const useContract = (contractName, contractAddress) => {
       }
 
       // Use a default provider for read-only operations
-      const defaultProvider = new ethers.providers.JsonRpcProvider(
+      const defaultProvider = new ethers.JsonRpcProvider(
         process.env.REACT_APP_RPC_URL || 'https://arb1.arbitrum.io/rpc'
       );
       
@@ -94,13 +96,6 @@ export const useContract = (contractName, contractAddress) => {
  */
 export const useVaultContract = (vaultAddress) => {
   return useContract('AbunfiVault', vaultAddress);
-};
-
-/**
- * Hook specifically for the AaveStrategy contract
- */
-export const useAaveStrategyContract = (strategyAddress) => {
-  return useContract('AaveStrategy', strategyAddress);
 };
 
 /**
@@ -137,13 +132,9 @@ export const useContractAddresses = () => {
 };
 
 /**
- * Specific hooks for each contract type
+ * Additional strategy contract hooks
  */
-// Core contracts
-export const useVaultContract = (address) => useContract('AbunfiVault', address);
 export const useStrategyManagerContract = (address) => useContract('StrategyManager', address);
-
-// Strategy contracts
 export const useAaveStrategyContract = (address) => useContract('AaveStrategy', address);
 export const useCompoundStrategyContract = (address) => useContract('CompoundStrategy', address);
 export const useLiquidStakingStrategyContract = (address) => useContract('LiquidStakingStrategy', address);
@@ -154,9 +145,6 @@ export const useUniswapV4FairFlowStrategyContract = (address) => useContract('Un
 export const useSmartAccountContract = (address) => useContract('AbunfiSmartAccount', address);
 export const useBundlerContract = (address) => useContract('EIP7702Bundler', address);
 export const usePaymasterContract = (address) => useContract('EIP7702Paymaster', address);
-
-// Token contracts
-export const useERC20Contract = (address) => useContract('MockERC20', address);
 
 /**
  * Hook to get all strategy contracts with their addresses
