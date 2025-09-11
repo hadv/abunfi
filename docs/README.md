@@ -221,9 +221,9 @@ npm run build:frontend
 
 ## 📄 License
 
-MIT License - xem file [LICENSE](../LICENSE) để biết thêm chi tiết.
+MIT License - see [LICENSE](../LICENSE) file for more details.
 
-## 📞 Liên hệ
+## 📞 Contact
 
 - **Website**: https://abunfi.com
 - **Email**: support@abunfi.com
@@ -232,7 +232,7 @@ MIT License - xem file [LICENSE](../LICENSE) để biết thêm chi tiết.
 ## 🗺️ Roadmap
 
 ### Phase 1 (MVP) ✅
-- [x] Smart contracts cơ bản
+- [x] Basic smart contracts
 - [x] Frontend React app
 - [x] Backend API
 - [x] Social login integration

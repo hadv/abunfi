@@ -1,33 +1,33 @@
-# Chiến lược đầu tư Abunfi
+# Abunfi Investment Strategies
 
-Abunfi sử dụng một hệ thống quản lý chiến lược đa dạng để tối ưu hóa lợi nhuận và giảm thiểu rủi ro cho người dùng. Tất cả các chiến lược được quản lý tự động bởi `StrategyManager` với khả năng đánh giá rủi ro và phân bổ động.
+Abunfi uses a diverse strategy management system to optimize profits and minimize risks for users. All strategies are automatically managed by `StrategyManager` with risk assessment and dynamic allocation capabilities.
 
-## 🏗️ Kiến trúc Strategy Manager
+## 🏗️ Strategy Manager Architecture
 
 ### StrategyManager.sol
-- **Quản lý rủi ro**: Đánh giá và phân loại rủi ro cho từng chiến lược (0-100)
-- **Phân bổ động**: Tự động điều chỉnh allocation dựa trên performance và điều kiện thị trường
-- **Theo dõi APY**: Lưu trữ lịch sử APY và tính toán moving average
-- **Rebalancing**: Tự động rebalance khi deviation vượt ngưỡng cho phép
+- **Risk Management**: Assess and classify risk for each strategy (0-100)
+- **Dynamic Allocation**: Automatically adjust allocation based on performance and market conditions
+- **APY Tracking**: Store APY history and calculate moving averages
+- **Rebalancing**: Automatically rebalance when deviation exceeds allowed threshold
 
-## 💼 Các chiến lược đầu tư
+## 💼 Investment Strategies
 
-### 🏦 1. Lending Strategy (Bảo thủ)
+### 🏦 1. Lending Strategy (Conservative)
 **File**: `LendingStrategy.sol`
-**Mức rủi ro**: Thấp (10-20)
-**APY dự kiến**: 4-6%
+**Risk Level**: Low (10-20)
+**Expected APY**: 4-6%
 
-#### Mô tả
-Cho vay tài sản vào các giao thức lending uy tín để nhận lãi suất ổn định.
+#### Description
+Lend assets to reputable lending protocols to receive stable interest rates.
 
-#### Protocols được hỗ trợ
-- **Aave**: Giao thức lending lớn nhất với TVL $12B+
-- **Compound**: Giao thức lending tiên phong với cơ chế lãi suất tự động
+#### Supported Protocols
+- **Aave**: Largest lending protocol with TVL $12B+
+- **Compound**: Pioneer lending protocol with automatic interest mechanism
 
-#### Tính năng
-- Tự động compound lãi suất
-- Theo dõi health factor
-- Đa dạng hóa giữa các protocols
+#### Features
+- Automatic compound interest
+- Health factor monitoring
+- Diversification across protocols
 - Quản lý collateral ratio
 
 ---
