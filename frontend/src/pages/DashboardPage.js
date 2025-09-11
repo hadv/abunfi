@@ -154,23 +154,23 @@ const DashboardPage = () => {
                 <Box sx={{ display: 'flex', gap: 4, mb: 3 }}>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Tiền gửi
+                      Deposits
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      {formatVND(displayPortfolio.totalDeposits)}
+                      {formatUSD(displayPortfolio.totalDeposits)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Lợi nhuận
+                      Profit
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.main' }}>
-                      +{formatVND(displayPortfolio.earnedYield)}
+                      +{formatUSD(displayPortfolio.earnedYield)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Tăng trưởng
+                      Growth
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.main' }}>
                       +{yieldPercentage.toFixed(2)}%
@@ -213,8 +213,8 @@ const DashboardPage = () => {
                       <XAxis dataKey="date" />
                       <YAxis />
                       <Tooltip 
-                        formatter={(value) => [formatVND(value), 'Lợi nhuận']}
-                        labelFormatter={(label) => `Tháng ${label}`}
+                        formatter={(value) => [formatUSD(value), 'Profit']}
+                        labelFormatter={(label) => `Month ${label}`}
                       />
                       <Line 
                         type="monotone" 
