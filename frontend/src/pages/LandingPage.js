@@ -54,31 +54,31 @@ const LandingPage = () => {
       {/* Header */}
       <AppBar position="static" sx={{ bgcolor: 'background.paper', boxShadow: 1 }}>
         <Toolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0 }}>
             <Box
               sx={{
-                width: 42,
-                height: 42,
+                width: 32,
+                height: 32,
                 borderRadius: '50%',
                 bgcolor: 'primary.main',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                mr: 0.3,
-                boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)'
+                mr: 0.1,
+                position: 'relative',
+                top: '2px'
               }}
             >
-              <Typography variant="h5" sx={{ color: 'white', fontWeight: 700, fontSize: '1.4rem' }}>
+              <Typography sx={{ color: 'white', fontWeight: 'bold', fontSize: '1.1rem', lineHeight: 1 }}>
                 A
               </Typography>
             </Box>
             <Typography
-              variant="h4"
               sx={{
                 color: 'text.primary',
-                fontWeight: 600,
-                fontSize: '1.8rem',
-                letterSpacing: '-0.02em',
+                fontWeight: 'bold',
+                fontSize: '1.5rem',
+                lineHeight: 1,
                 fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
               }}
             >
