@@ -396,4 +396,13 @@ class SecurityController {
   }
 }
 
-module.exports = new SecurityController();
+const securityController = new SecurityController();
+
+// Export bound methods to preserve 'this' context
+module.exports = {
+  getSecurityStatus: securityController.getSecurityStatus.bind(securityController),
+  checkTransactionEligibility: securityController.checkTransactionEligibility.bind(securityController),
+  getSecurityRecommendations: securityController.getSecurityRecommendations.bind(securityController),
+  recordSecurityEvent: securityController.recordSecurityEvent.bind(securityController),
+  getSecurityEvents: securityController.getSecurityEvents.bind(securityController)
+};
