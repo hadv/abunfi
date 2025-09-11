@@ -121,8 +121,8 @@ const LandingPage = () => {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: 700, mx: 'auto' }}
             >
-              Start saving from $10 and earn 6-15% APY from 5+ advanced DeFi strategies.
-              Gas-free transactions with EIP-7702 technology. Simple, safe, transparent.
+              Turn your spare $10 into growing wealth! 🚀 Earn up to 15% returns with our smart DeFi strategies.
+              Zero fees, zero hassle - just watch your money grow while you sleep. ✨
             </Typography>
             
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
