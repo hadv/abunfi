@@ -57,21 +57,31 @@ const LandingPage = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
             <Box
               sx={{
-                width: 40,
-                height: 40,
+                width: 42,
+                height: 42,
                 borderRadius: '50%',
                 bgcolor: 'primary.main',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                mr: 0.5
+                mr: 0.3,
+                boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)'
               }}
             >
-              <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+              <Typography variant="h5" sx={{ color: 'white', fontWeight: 700, fontSize: '1.4rem' }}>
                 A
               </Typography>
             </Box>
-            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+            <Typography
+              variant="h4"
+              sx={{
+                color: 'text.primary',
+                fontWeight: 600,
+                fontSize: '1.8rem',
+                letterSpacing: '-0.02em',
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
+              }}
+            >
               bunfi
             </Typography>
           </Box>

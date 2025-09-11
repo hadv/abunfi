@@ -95,21 +95,32 @@ const Layout = ({ children }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               borderRadius: '50%',
               bgcolor: 'primary.main',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mr: 0.5
+              mr: 0.3,
+              boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)'
             }}
           >
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, fontSize: '1.2rem' }}>
               A
             </Typography>
           </Box>
-          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
+          <Typography
+            variant="h5"
+            noWrap
+            component="div"
+            sx={{
+              fontWeight: 600,
+              fontSize: '1.5rem',
+              letterSpacing: '-0.01em',
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
+            }}
+          >
             bunfi
           </Typography>
         </Box>
