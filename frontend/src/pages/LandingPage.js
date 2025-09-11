@@ -178,7 +178,7 @@ const LandingPage = () => {
                   $0
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Phí giao dịch
+                  Transaction Fees
                 </Typography>
               </Box>
             </Grid>
@@ -188,7 +188,7 @@ const LandingPage = () => {
                   24/7
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Rút tiền linh hoạt
+                  Flexible Withdrawals
                 </Typography>
               </Box>
             </Grid>
@@ -291,7 +291,7 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        Rủi ro thấp
+                        Low Risk
                       </Typography>
                     </Box>
                   </CardContent>
@@ -342,7 +342,7 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        Rủi ro TB
+                        Medium Risk
                       </Typography>
                     </Box>
                   </CardContent>
@@ -379,7 +379,7 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        Rủi ro TB
+                        Medium Risk
                       </Typography>
                     </Box>
                   </CardContent>
@@ -416,7 +416,7 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        Rủi ro TB
+                        Medium Risk
                       </Typography>
                     </Box>
                   </CardContent>
@@ -457,7 +457,7 @@ const LandingPage = () => {
                         borderRadius: 1,
                         fontSize: '0.7rem'
                       }}>
-                        Phí: $0
+                        Fee: $0
                       </Typography>
                       <Typography variant="caption" sx={{
                         bgcolor: 'success.light',

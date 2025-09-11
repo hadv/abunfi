@@ -204,7 +204,7 @@ const DashboardPage = () => {
             <Card>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-                  Lịch sử lợi nhuận
+                  Profit History
                 </Typography>
                 <Box sx={{ height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -252,7 +252,7 @@ const DashboardPage = () => {
                   onClick={() => navigate('/savings')}
                   sx={{ mb: 2, py: 1.5 }}
                 >
-                  Gửi tiết kiệm
+                  Deposit Savings
                 </Button>
                 
                 <Button
@@ -263,7 +263,7 @@ const DashboardPage = () => {
                   onClick={() => navigate('/savings')}
                   sx={{ mb: 2, py: 1.5 }}
                 >
-                  Rút tiền
+                  Withdraw
                 </Button>
                 
                 <Button

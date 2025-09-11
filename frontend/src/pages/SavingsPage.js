@@ -288,7 +288,7 @@ const SavingsPage = () => {
                       {isLoading ? (
                         <CircularProgress size={24} color="inherit" />
                       ) : (
-                        'Rút tiền'
+                        'Withdraw'
                       )}
                     </Button>
                   </Box>

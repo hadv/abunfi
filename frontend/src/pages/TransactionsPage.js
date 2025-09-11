@@ -174,7 +174,7 @@ const TransactionsPage = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Lịch sử giao dịch
+          Transaction History
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Track all your transactions and activities
@@ -220,11 +220,11 @@ const TransactionsPage = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Loại</TableCell>
-                    <TableCell>Số tiền</TableCell>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Amount</TableCell>
                     <TableCell>Shares</TableCell>
-                    <TableCell>Trạng thái</TableCell>
-                    <TableCell>Thời gian</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Time</TableCell>
                     <TableCell>Hash</TableCell>
                   </TableRow>
                 </TableHead>

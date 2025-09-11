@@ -1,17 +1,17 @@
 # Abunfi - Micro-Saving DeFi Platform
 
-## 📖 Tổng quan
+## 📖 Overview
 
-Abunfi là một nền tảng DeFi tiết kiệm dễ dàng được thiết kế đặc biệt cho người Việt Nam. Ứng dụng cho phép người dùng gửi tiết kiệm những khoản tiền nhỏ (từ 10,000 VNĐ) và nhận lãi suất hấp dẫn từ các giao thức DeFi uy tín.
+Abunfi is an easy DeFi savings platform designed for global users. The application allows users to deposit small amounts (from $10) and earn attractive interest rates from reputable DeFi protocols.
 
-## 🎯 Mục tiêu
+## 🎯 Goals
 
-- **Phá vỡ rào cản tài chính**: Cho phép mọi người tiếp cận DeFi với số tiền nhỏ
-- **Đơn giản hóa trải nghiệm**: Ẩn đi sự phức tạp của blockchain
-- **An toàn và minh bạch**: Sử dụng smart contracts được kiểm toán
-- **Tối ưu cho người Việt**: Giao diện tiếng Việt, hỗ trợ VNĐ
+- **Break financial barriers**: Allow everyone to access DeFi with small amounts
+- **Simplify experience**: Hide blockchain complexity
+- **Safe and transparent**: Use audited smart contracts
+- **Optimized for global users**: English interface, USD support
 
-## 🏗️ Kiến trúc hệ thống
+## 🏗️ System Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -27,27 +27,27 @@ Abunfi là một nền tảng DeFi tiết kiệm dễ dàng được thiết k�
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🚀 Tính năng chính
+## 🚀 Key Features
 
-### 1. Đăng ký siêu tốc
-- Đăng nhập bằng Google/Apple/Facebook qua Web3Auth
-- Tự động tạo ví blockchain an toàn
-- Không cần nhớ private key
+### 1. Super Fast Registration
+- Login with Google/Apple/Facebook via Web3Auth
+- Automatically create secure blockchain wallet
+- No need to remember private key
 
-### 2. Tiết kiệm dễ dàng
-- Số tiền tối thiểu: 10,000 VNĐ (~$4)
-- Lãi suất hấp dẫn: ~8%/năm
-- Rút tiền linh hoạt 24/7
+### 2. Easy Savings
+- Minimum amount: $10
+- Attractive interest rates: ~8%/year
+- Flexible withdrawals 24/7
 
-### 3. Giao diện thân thiện
-- Thiết kế đơn giản, dễ sử dụng
-- Hiển thị số liệu bằng VNĐ
-- Dashboard trực quan
+### 3. User-Friendly Interface
+- Simple, easy-to-use design
+- Display figures in USD
+- Intuitive dashboard
 
-### 4. An toàn & minh bạch
-- Smart contracts được kiểm toán
-- Tích hợp với Aave Protocol
-- Mọi giao dịch đều minh bạch
+### 4. Safe & Transparent
+- Audited smart contracts
+- Integration with Aave Protocol
+- All transactions are transparent
 
 ## 🛠️ Tech Stack
 
@@ -77,11 +77,11 @@ Abunfi là một nền tảng DeFi tiết kiệm dễ dàng được thiết k�
 - **Base**: Alternative L2
 - **Account Abstraction**: ERC-4337
 
-## 📋 Cài đặt và chạy
+## 📋 Installation and Setup
 
-### Yêu cầu hệ thống
+### System Requirements
 - Node.js >= 18
-- npm hoặc yarn
+- npm or yarn
 - MongoDB
 - Git
 
@@ -91,7 +91,7 @@ git clone <repository-url>
 cd abunfi
 ```
 
-### 2. Cài đặt dependencies
+### 2. Install Dependencies
 ```bash
 npm run install:all
 ```
@@ -109,7 +109,7 @@ cp frontend/.env.example frontend/.env
 # Chạy tất cả services
 npm run dev
 
-# Hoặc chạy từng service riêng
+# Or run each service separately
 npm run dev:contracts  # Hardhat node
 npm run dev:backend    # API server
 npm run dev:frontend   # React app
@@ -140,20 +140,20 @@ npm test
 ## 📚 API Documentation
 
 ### Authentication
-- `POST /api/auth/social-login` - Đăng nhập social
-- `POST /api/auth/phone-login` - Đăng nhập số điện thoại
-- `POST /api/auth/logout` - Đăng xuất
+- `POST /api/auth/social-login` - Social login
+- `POST /api/auth/phone-login` - Phone number login
+- `POST /api/auth/logout` - Logout
 
 ### User
-- `GET /api/user/profile` - Lấy thông tin user
-- `PUT /api/user/profile` - Cập nhật thông tin
+- `GET /api/user/profile` - Get user information
+- `PUT /api/user/profile` - Update information
 - `GET /api/user/dashboard` - Dashboard data
 
 ### Vault
-- `GET /api/vault/stats` - Thống kê vault
+- `GET /api/vault/stats` - Vault statistics
 - `GET /api/vault/portfolio` - Portfolio user
-- `POST /api/vault/estimate-deposit` - Ước tính gửi tiền
-- `POST /api/vault/estimate-withdraw` - Ước tính rút tiền
+- `POST /api/vault/estimate-deposit` - Estimate deposit
+- `POST /api/vault/estimate-withdraw` - Estimate withdrawal
 
 ### Transactions
 - `GET /api/transactions` - Lịch sử giao dịch
@@ -163,8 +163,8 @@ npm test
 
 ### Smart Contracts
 - Sử dụng OpenZeppelin libraries
-- Kiểm toán bởi các công ty uy tín
-- Timelock cho các thay đổi quan trọng
+- Audited by reputable companies
+- Timelock for important changes
 
 ### Backend
 - JWT authentication
@@ -211,7 +211,7 @@ npm run build:frontend
 - **Backend**: Winston logs, PM2 monitoring
 - **Frontend**: Error tracking, Analytics
 
-## 🤝 Đóng góp
+## 🤝 Contributing
 
 1. Fork repository
 2. Tạo feature branch
