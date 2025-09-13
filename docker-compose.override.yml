@@ -1,0 +1,48 @@
+# Development override for docker-compose.yml
+# This file is automatically loaded by docker-compose for development
+
+version: '3.8'
+
+services:
+  # Development-specific overrides for backend
+  backend:
+    environment:
+      NODE_ENV: development
+      CORS_ORIGIN: http://localhost:3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Development-specific overrides for frontend
+  frontend:
+    environment:
+      REACT_APP_API_URL: http://localhost:3001/api
+      REACT_APP_WEB3AUTH_CLIENT_ID: demo-client-id
+      REACT_APP_CHAIN_ID: 11155111
+      REACT_APP_RPC_URL: https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm start
+
+  # Expose database ports for development
+  postgres:
+    ports:
+      - "5432:5432"
+
+  # Add hardhat node for development
+  hardhat:
+    build:
+      context: ./contracts-submodule
+      dockerfile: Dockerfile
+    container_name: abunfi-hardhat
+    restart: unless-stopped
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./contracts-submodule:/app
+      - /app/node_modules
+    networks:
+      - abunfi-network
+    command: npx hardhat node --hostname 0.0.0.0
