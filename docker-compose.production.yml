@@ -1,5 +1,7 @@
-# Production-only Docker Compose for Abunfi
+# Production Environment Docker Compose for Abunfi
 # Optimized for production deployment with SSL, security, and performance
+# Use: DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
+# Development uses: docker-compose.yml
 version: '3.8'
 
 services:

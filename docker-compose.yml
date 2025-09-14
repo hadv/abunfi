@@ -1,3 +1,7 @@
+# Development Environment Docker Compose
+# For local development with hot reload, exposed ports, and dev settings
+# Use: docker-compose up -d --build
+# Production deployment uses: docker-compose.production.yml
 version: '3.8'
 
 services:
