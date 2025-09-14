@@ -195,6 +195,7 @@ See [DOCKER_SETUP.md](DOCKER_SETUP.md), [PRODUCTION_ONLY_DEPLOYMENT.md](PRODUCTI
 ## 🔒 Security
 
 - Smart contracts audited by reputable security firms
+- zkVM (RISC Zero) for enhanced privacy and social verification
 - Automatic risk management with dynamic allocation
 - Diversification across protocols to minimize concentration risk
 - Emergency withdrawal mechanisms

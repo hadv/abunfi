@@ -150,6 +150,7 @@ docker-compose up -d
 ### 🔒 Security First
 - Smart contracts using OpenZeppelin
 - Account Abstraction for best UX
+- zkVM for enhanced security and privacy
 - JWT authentication with refresh tokens
 - Rate limiting and input validation
 
@@ -167,13 +168,13 @@ docker-compose up -d
 
 ## 🎯 Next Roadmap
 
-### Phase 2 (Q2 2024)
+### Phase 2 (Q3/Q4 2025)
 - [ ] Mobile app (React Native)
 - [ ] Advanced yield strategies
 - [ ] Referral system with rewards
 - [ ] KYC integration
 
-### Phase 3 (Q3 2024)
+### Phase 3 (Q1 2026)
 - [ ] Multi-chain support (Polygon, BSC)
 - [ ] Governance token ($ABUN)
 - [ ] Advanced analytics dashboard

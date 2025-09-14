@@ -237,13 +237,13 @@ MIT License - see [LICENSE](../LICENSE) file for more details.
 - [x] Backend API
 - [x] Social login integration
 
-### Phase 2 (Q2 2024)
+### Phase 2 (Q3/Q4 2025)
 - [ ] Mobile app (React Native)
 - [ ] Advanced strategies
 - [ ] Referral system
 - [ ] KYC integration
 
-### Phase 3 (Q3 2024)
+### Phase 3 (Q1 2026)
 - [ ] Multi-chain support
 - [ ] Governance token
 - [ ] Advanced analytics
