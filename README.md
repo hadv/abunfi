@@ -162,7 +162,7 @@ cp .env.production.example .env.prod
 # Edit .env.prod with your domain and secrets
 
 # 2. Deploy to production
-DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 
 # 3. Monitor deployment
 ./scripts/monitor-production.sh

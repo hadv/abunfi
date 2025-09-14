@@ -40,7 +40,7 @@ chmod 600 .env.prod
 ### 2. **Deploy to Production**
 ```bash
 # Deploy with your domain
-DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 
 # Monitor deployment
 ./scripts/monitor-production.sh
@@ -122,10 +122,10 @@ Internet → Nginx (SSL) → Frontend (React)
 ### **Deployment Commands**
 ```bash
 # Initial deployment
-DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 
 # Update deployment
-DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 
 # Monitor services
 ./scripts/monitor-production.sh
@@ -265,7 +265,7 @@ du -sh /var/log/abunfi/*
 git pull origin main
 
 # Rebuild and deploy
-DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 ```
 
 ### **System Maintenance**

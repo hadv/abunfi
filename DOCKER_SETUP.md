@@ -23,7 +23,7 @@ abunfi/
 │       └── abunfi.conf           # Site-specific configuration
 └── scripts/
     ├── quick-start.sh            # Development setup
-    ├── deploy-production-only.sh # Production deployment
+    ├── deploy-production.sh      # Production deployment
     ├── monitor-production.sh     # Production monitoring
     ├── ssl-setup.sh             # SSL certificate setup
     └── backup.sh                # Database backup
@@ -57,7 +57,7 @@ cp .env.production.example .env.prod
 # Edit .env.prod with your values
 
 # 2. Deploy to production
-DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 
 # 3. Monitor deployment
 ./scripts/monitor-production.sh

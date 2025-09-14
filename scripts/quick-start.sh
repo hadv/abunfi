@@ -96,7 +96,7 @@ EOF
         # Export variables and run production deployment
         export DOMAIN_NAME=$domain
         export EMAIL=$email
-        ./scripts/deploy-production-only.sh
+        ./scripts/deploy-production.sh
         ;;
         
     3)

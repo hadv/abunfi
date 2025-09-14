@@ -24,7 +24,7 @@ fi
 # Check required environment variables
 if [[ -z "$DOMAIN_NAME" ]]; then
     echo -e "${RED}❌ DOMAIN_NAME environment variable is required${NC}"
-    echo -e "${YELLOW}Usage: DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh${NC}"
+    echo -e "${YELLOW}Usage: DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh${NC}"
     exit 1
 fi
 
@@ -199,7 +199,7 @@ echo -e "   🔗 API: https://${DOMAIN_NAME}/api/health"
 echo -e "\n${YELLOW}📋 Management Commands:${NC}"
 echo -e "   📊 Monitor: ./scripts/monitor-production.sh"
 echo -e "   💾 Backup: ./scripts/backup.sh"
-echo -e "   🔄 Update: DOMAIN_NAME=${DOMAIN_NAME} ./scripts/deploy-production-only.sh"
+echo -e "   🔄 Update: DOMAIN_NAME=${DOMAIN_NAME} ./scripts/deploy-production.sh"
 echo -e "   🛑 Stop: docker-compose -f docker-compose.production.yml down"
 
 echo -e "\n${BLUE}🚀 Abunfi is now running in production mode!${NC}"

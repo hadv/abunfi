@@ -126,7 +126,7 @@ echo -e "\n${YELLOW}🛠️  Quick Actions:${NC}"
 echo -e "   View logs: docker-compose -f $COMPOSE_FILE logs -f [service]"
 echo -e "   Restart service: docker-compose -f $COMPOSE_FILE restart [service]"
 echo -e "   Scale service: docker-compose -f $COMPOSE_FILE up -d --scale [service]=N"
-echo -e "   Update deployment: DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh"
+echo -e "   Update deployment: DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh"
 echo -e "   Backup database: ./scripts/backup.sh"
 
 # System health summary

@@ -16,7 +16,7 @@ Create a clean, production-focused Docker Compose setup by removing redundant fi
 - ❌ `.env.prod.example` - Replaced by `.env.production.example`
 
 ### **Scripts**
-- ❌ `scripts/deploy-production.sh` - Replaced by `scripts/deploy-production-only.sh`
+- ❌ `scripts/deploy-production.sh` (old version) - Replaced by new `scripts/deploy-production.sh`
 - ❌ `scripts/monitor.sh` - Replaced by `scripts/monitor-production.sh`
 
 ### **Documentation**
@@ -51,7 +51,7 @@ Create a clean, production-focused Docker Compose setup by removing redundant fi
 ### **Scripts**
 ```
 scripts/
-├── deploy-production-only.sh      # Production deployment
+├── deploy-production.sh           # Production deployment
 ├── monitor-production.sh          # Production monitoring
 ├── quick-start.sh                 # Development setup
 ├── backup.sh                      # Database backup
@@ -101,7 +101,7 @@ Docker Compose Files: 4 files
 
 Scripts: 6 files
 - deploy-production.sh (old)
-- deploy-production-only.sh (new)
+- deploy-production.sh (new)
 - monitor.sh (old)
 - monitor-production.sh (new)
 - quick-start.sh
@@ -122,7 +122,7 @@ Docker Compose Files: 2 files
 - docker-compose.production.yml (prod)
 
 Scripts: 4 files
-- deploy-production-only.sh
+- deploy-production.sh
 - monitor-production.sh
 - quick-start.sh
 - backup.sh
@@ -152,7 +152,7 @@ docker-compose up -d --build
 
 # New way:
 cp .env.production.example .env.prod
-DOMAIN_NAME=domain.com ./scripts/deploy-production-only.sh
+DOMAIN_NAME=domain.com ./scripts/deploy-production.sh
 ./scripts/monitor-production.sh
 ```
 
