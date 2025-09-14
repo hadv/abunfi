@@ -14,7 +14,6 @@ abunfi/
 ├── .env.production.example         # Production environment template
 ├── frontend/
 │   ├── Dockerfile                 # Frontend container (multi-stage)
-│   ├── nginx.conf                 # Frontend Nginx config
 │   └── .env.production            # Frontend production env
 ├── backend/
 │   └── Dockerfile                 # Backend container (optimized)

@@ -27,6 +27,11 @@ Create a clean, production-focused Docker Compose setup by removing redundant fi
 - ❌ `scripts/docker-build-test.sh` - No longer needed after simplification
 - ❌ `DOCKERFILE_OPTIMIZATIONS.md` - Consolidated into `WHY_SIMPLE_DOCKERFILE.md`
 
+### **Nginx Architecture Cleanup**
+- ❌ `frontend/nginx.conf` - Redundant with main nginx config
+- ✅ Simplified frontend Dockerfile with inline nginx config
+- ✅ Use only `nginx/nginx.conf` and `nginx/conf.d/abunfi.conf` for production
+
 ## ✅ Current Clean Structure
 
 ### **Docker Compose Files**

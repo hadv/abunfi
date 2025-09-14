@@ -47,7 +47,7 @@ RUN npm run build
 # Production stage - only Nginx + built files
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Simple nginx config generated inline (no external config file needed)
 ```
 </augment_code_snippet>
 
