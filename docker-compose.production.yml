@@ -1,0 +1,189 @@
+# Production Environment Docker Compose for Abunfi
+# Optimized for production deployment with SSL, security, and performance
+# Use: DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
+# Development uses: docker-compose.yml
+version: '3.8'
+
+services:
+  # Nginx Reverse Proxy with SSL/TLS
+  nginx:
+    image: nginx:alpine
+    container_name: abunfi-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_healthy
+    networks:
+      - abunfi-prod-network
+    # Auto-reload nginx for certificate renewal
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Let's Encrypt SSL Certificate Management
+  certbot:
+    image: certbot/certbot:latest
+    container_name: abunfi-certbot-prod
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Auto-renew certificates every 12 hours
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done;'"
+
+  # Frontend - React Production Build
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    image: abunfi-frontend:production
+    container_name: abunfi-frontend-prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - abunfi-prod-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Backend - Node.js API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: abunfi-backend:production
+    container_name: abunfi-backend-prod
+    restart: unless-stopped
+    environment:
+      # Core settings
+      NODE_ENV: production
+      PORT: 3001
+      
+      # Database
+      DATABASE_URL: postgresql://abunfi_user:${POSTGRES_PASSWORD}@postgres:5432/abunfi
+      
+      # Cache (Memory cache for demo)
+      USE_MEMORY_CACHE: "true"
+      
+      # Security
+      JWT_SECRET: ${JWT_SECRET}
+      
+      # Blockchain
+      RPC_URL: ${RPC_URL}
+      CHAIN_ID: ${CHAIN_ID:-11155111}
+      VAULT_CONTRACT_ADDRESS: ${VAULT_CONTRACT_ADDRESS}
+      
+      # CORS
+      CORS_ORIGIN: https://${DOMAIN_NAME}
+      
+      # Web3Auth
+      WEB3AUTH_CLIENT_ID: ${WEB3AUTH_CLIENT_ID}
+      
+      # Performance
+      NODE_OPTIONS: "--max-old-space-size=512"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backend_logs:/app/logs
+    networks:
+      - abunfi-prod-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: abunfi-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: abunfi
+      POSTGRES_USER: abunfi_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
+      - postgres_backups:/backups
+    networks:
+      - abunfi-prod-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U abunfi_user -d abunfi"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    # Production-optimized PostgreSQL configuration
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+
+# Production volumes with backup strategy
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/abunfi/postgres
+  backend_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/log/abunfi/backend
+  nginx_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/log/abunfi/nginx
+  postgres_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/backups/abunfi/postgres
+
+# Production network with custom configuration
+networks:
+  abunfi-prod-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: abunfi-prod
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

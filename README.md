@@ -66,7 +66,7 @@ abunfi-contracts/       # Smart contracts repository (separate)
 ### Backend
 - **Node.js** with Express.js
 - **PostgreSQL** for financial data
-- **In-memory Cache** for caching and sessions (Redis replacement)
+- **Memory Cache** for sessions and caching (demo mode)
 - **JWT** for API authentication
 - **WebSocket** for real-time updates
 - **Role-based Access Control** for Strategy Manager
@@ -90,11 +90,21 @@ abunfi-contracts/       # Smart contracts repository (separate)
 
 ### ⚡ Quick Start (5 minutes)
 
+#### Option 1: Docker Compose (Recommended)
 ```bash
 # Clone repository
 git clone https://github.com/hadv/abunfi.git
 cd abunfi
 
+# Quick start with Docker
+./scripts/quick-start.sh
+
+# Or manually start development environment
+docker-compose up -d --build
+```
+
+#### Option 2: Manual Setup
+```bash
 # Automated database setup
 chmod +x scripts/setup-local-db.sh
 ./scripts/setup-local-db.sh
@@ -129,6 +139,47 @@ New real-time dashboard for strategy managers:
 3. Select a test account or enter email manually
 4. Automatically redirected to appropriate dashboard
 
+## 🐳 Docker Deployment
+
+### Development with Docker
+```bash
+# Start all services with hot reload
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Access services:
+# Frontend: http://localhost:3000
+# Backend: http://localhost:3001
+# Database: localhost:5432
+```
+
+### Production Deployment
+```bash
+# 1. Configure environment
+cp .env.production.example .env.prod
+# Edit .env.prod with your domain and secrets
+
+# 2. Deploy to production
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
+
+# 3. Monitor deployment
+./scripts/monitor-production.sh
+```
+
+
+
+**Production Features:**
+- 🔒 **SSL/TLS** with Let's Encrypt auto-renewal
+- 🌐 **Nginx reverse proxy** with security headers
+- 📊 **Health monitoring** and logging
+- 🔄 **Automatic backups** and recovery
+- 🚀 **Performance optimization** with caching
+- 💾 **Memory cache** for demo (easily upgradeable to Redis)
+
+See [DOCKER_SETUP.md](DOCKER_SETUP.md), [PRODUCTION_ONLY_DEPLOYMENT.md](PRODUCTION_ONLY_DEPLOYMENT.md), and [MEMORY_CACHE_DEMO.md](MEMORY_CACHE_DEMO.md) for detailed guides.
+
 ## 📚 Documentation
 
 ### Development Guides
@@ -144,6 +195,7 @@ New real-time dashboard for strategy managers:
 ## 🔒 Security
 
 - Smart contracts audited by reputable security firms
+- zkVM (RISC Zero) for enhanced privacy and social verification
 - Automatic risk management with dynamic allocation
 - Diversification across protocols to minimize concentration risk
 - Emergency withdrawal mechanisms

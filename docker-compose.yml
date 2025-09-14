@@ -1,3 +1,7 @@
+# Development Environment Docker Compose
+# For local development with hot reload, exposed ports, and dev settings
+# Use: docker-compose up -d --build
+# Production deployment uses: docker-compose.production.yml
 version: '3.8'
 
 services:
@@ -13,8 +17,8 @@ services:
       PORT: 3001
       # PostgreSQL (primary database)
       DATABASE_URL: postgresql://abunfi_user:abunfi_password@postgres:5432/abunfi
-      # Redis (for caching and sessions)
-      REDIS_URL: redis://redis:6379
+      # Use memory cache instead of Redis for demo
+      USE_MEMORY_CACHE: "true"
       # Application config
       JWT_SECRET: your-super-secret-jwt-key
       RPC_URL: https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
@@ -23,7 +27,6 @@ services:
       - "3001:3001"
     depends_on:
       - postgres
-      - redis
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -93,28 +96,10 @@ services:
       timeout: 10s
       retries: 3
 
-  # Redis (for caching and sessions)
-  redis:
-    image: redis:7.2-alpine
-    container_name: abunfi-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - abunfi-network
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # Redis removed for demo - using memory cache instead
 
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
     driver: local
 
 networks:
