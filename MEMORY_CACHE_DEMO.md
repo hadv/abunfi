@@ -56,7 +56,7 @@ When ready for production, easily switch to Redis:
 USE_MEMORY_CACHE=false
 REDIS_URL=redis://redis:6379
 
-# 2. Add Redis service back to docker-compose.prod.yml
+# 2. Add Redis service back to docker-compose.production.yml
 # 3. Uncomment Redis configuration
 
 # No code changes needed - automatic detection!

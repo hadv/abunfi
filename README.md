@@ -158,15 +158,17 @@ docker-compose logs -f
 ### Production Deployment
 ```bash
 # 1. Configure environment
-cp .env.prod.example .env.prod
+cp .env.production.example .env.prod
 # Edit .env.prod with your domain and secrets
 
-# 2. Deploy with SSL
-DOMAIN_NAME=your-domain.com EMAIL=admin@your-domain.com ./scripts/deploy-production.sh
+# 2. Deploy to production
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
 
 # 3. Monitor deployment
-./scripts/monitor.sh
+./scripts/monitor-production.sh
 ```
+
+
 
 **Production Features:**
 - 🔒 **SSL/TLS** with Let's Encrypt auto-renewal
@@ -176,7 +178,7 @@ DOMAIN_NAME=your-domain.com EMAIL=admin@your-domain.com ./scripts/deploy-product
 - 🚀 **Performance optimization** with caching
 - 💾 **Memory cache** for demo (easily upgradeable to Redis)
 
-See [DOCKER_SETUP.md](DOCKER_SETUP.md), [PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md), and [MEMORY_CACHE_DEMO.md](MEMORY_CACHE_DEMO.md) for detailed guides.
+See [DOCKER_SETUP.md](DOCKER_SETUP.md), [PRODUCTION_ONLY_DEPLOYMENT.md](PRODUCTION_ONLY_DEPLOYMENT.md), and [MEMORY_CACHE_DEMO.md](MEMORY_CACHE_DEMO.md) for detailed guides.
 
 ## 📚 Documentation
 

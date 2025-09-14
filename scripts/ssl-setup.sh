@@ -29,7 +29,7 @@ mkdir -p certbot/conf certbot/www
 
 # Create initial certificate (staging first)
 echo -e "${YELLOW}📝 Creating staging certificate first...${NC}"
-docker-compose -f docker-compose.prod.yml run --rm certbot \
+docker-compose -f docker-compose.production.yml run --rm certbot \
     certonly --webroot --webroot-path /var/www/certbot \
     --email $EMAIL --agree-tos --no-eff-email \
     --staging \
@@ -37,7 +37,7 @@ docker-compose -f docker-compose.prod.yml run --rm certbot \
 
 # If staging works, get real certificate
 echo -e "${YELLOW}🔒 Creating production certificate...${NC}"
-docker-compose -f docker-compose.prod.yml run --rm certbot \
+docker-compose -f docker-compose.production.yml run --rm certbot \
     certonly --webroot --webroot-path /var/www/certbot \
     --email $EMAIL --agree-tos --no-eff-email \
     --force-renewal \
@@ -47,7 +47,7 @@ echo -e "${GREEN}✅ SSL certificates created successfully${NC}"
 
 # Test certificate renewal
 echo -e "${YELLOW}🔄 Testing certificate renewal...${NC}"
-docker-compose -f docker-compose.prod.yml run --rm certbot renew --dry-run
+docker-compose -f docker-compose.production.yml run --rm certbot renew --dry-run
 
 echo -e "${GREEN}✅ Certificate renewal test passed${NC}"
 echo -e "${YELLOW}📝 Certificates are stored in ./certbot/conf/live/$DOMAIN_NAME/${NC}"

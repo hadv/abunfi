@@ -1,33 +1,33 @@
 # Docker Compose Setup for Abunfi
 
-This document provides a comprehensive guide for deploying Abunfi using Docker Compose with public domain access.
+This document provides a comprehensive guide for deploying Abunfi using Docker Compose. We now have two distinct setups:
+
+- **Development**: `docker-compose.yml` - For local development with hot reload
+- **Production**: `docker-compose.production.yml` - Clean production-only deployment
 
 ## 📁 File Structure
 
 ```
 abunfi/
 ├── docker-compose.yml              # Development configuration
-├── docker-compose.prod.yml         # Production configuration
-├── docker-compose.override.yml     # Development overrides
-├── .env.prod.example              # Production environment template
+├── docker-compose.production.yml   # Production-only configuration
+├── .env.production.example         # Production environment template
 ├── frontend/
-│   ├── Dockerfile                 # Frontend container
+│   ├── Dockerfile                 # Frontend container (multi-stage)
 │   ├── nginx.conf                 # Frontend Nginx config
 │   └── .env.production            # Frontend production env
 ├── backend/
-│   └── Dockerfile                 # Backend container
+│   └── Dockerfile                 # Backend container (optimized)
 ├── nginx/
 │   ├── nginx.conf                 # Main Nginx configuration
 │   └── conf.d/
 │       └── abunfi.conf           # Site-specific configuration
-├── redis/
-│   └── redis.conf                # Redis configuration
 └── scripts/
-    ├── quick-start.sh            # Quick deployment script
-    ├── deploy-production.sh      # Production deployment
+    ├── quick-start.sh            # Development setup
+    ├── deploy-production-only.sh # Production deployment
+    ├── monitor-production.sh     # Production monitoring
     ├── ssl-setup.sh             # SSL certificate setup
-    ├── backup.sh                # Backup script
-    └── monitor.sh               # Monitoring script
+    └── backup.sh                # Database backup
 ```
 
 ## 🚀 Quick Start
@@ -54,14 +54,14 @@ docker-compose logs -f
 ### Option 3: Manual Production Setup
 ```bash
 # 1. Configure environment
-cp .env.prod.example .env.prod
+cp .env.production.example .env.prod
 # Edit .env.prod with your values
 
 # 2. Deploy to production
-DOMAIN_NAME=your-domain.com EMAIL=admin@your-domain.com ./scripts/deploy-production.sh
+DOMAIN_NAME=your-domain.com ./scripts/deploy-production-only.sh
 
 # 3. Monitor deployment
-./scripts/monitor.sh
+./scripts/monitor-production.sh
 ```
 
 ## 🏗️ Architecture Components
@@ -80,6 +80,8 @@ DOMAIN_NAME=your-domain.com EMAIL=admin@your-domain.com ./scripts/deploy-product
 - **Health checks** for container monitoring
 
 ### 3. Backend (Node.js)
+- **Multi-stage optimized** Docker build for production
+- **Security hardened** with non-root user and signal handling
 - **Express.js API** with comprehensive health checks
 - **WebSocket support** for real-time updates
 - **Database connections** to PostgreSQL and memory cache
@@ -158,13 +160,13 @@ REACT_APP_VAULT_CONTRACT_ADDRESS=0x...
 curl https://your-domain.com/health
 
 # Service status
-docker-compose -f docker-compose.prod.yml ps
+docker-compose -f docker-compose.production.yml ps
 
 # Resource usage
 docker stats
 
 # Comprehensive monitoring
-./scripts/monitor.sh
+./scripts/monitor-production.sh
 ```
 
 ### Backup and Recovery
@@ -182,11 +184,11 @@ docker stats
 ### Log Management
 ```bash
 # View all logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker-compose -f docker-compose.production.yml logs -f
 
 # Service-specific logs
-docker-compose -f docker-compose.prod.yml logs backend
-docker-compose -f docker-compose.prod.yml logs nginx
+docker-compose -f docker-compose.production.yml logs backend
+docker-compose -f docker-compose.production.yml logs nginx
 
 # Nginx access logs
 tail -f nginx_logs/access.log
@@ -218,8 +220,8 @@ tail -f nginx_logs/access.log
 1. **SSL Certificate Failures**
    ```bash
    # Check certificate status
-   docker-compose -f docker-compose.prod.yml logs certbot
-   
+   docker-compose -f docker-compose.production.yml logs certbot
+
    # Manual certificate renewal
    ./scripts/ssl-setup.sh
    ```
@@ -227,19 +229,19 @@ tail -f nginx_logs/access.log
 2. **Database Connection Issues**
    ```bash
    # Check PostgreSQL health
-   docker-compose -f docker-compose.prod.yml exec postgres pg_isready
-   
+   docker-compose -f docker-compose.production.yml exec postgres pg_isready
+
    # View database logs
-   docker-compose -f docker-compose.prod.yml logs postgres
+   docker-compose -f docker-compose.production.yml logs postgres
    ```
 
 3. **Application Startup Issues**
    ```bash
    # Check backend health
-   docker-compose -f docker-compose.prod.yml logs backend
-   
+   docker-compose -f docker-compose.production.yml logs backend
+
    # Verify environment variables
-   docker-compose -f docker-compose.prod.yml exec backend env | grep -E "(DATABASE_URL|JWT_SECRET)"
+   docker-compose -f docker-compose.production.yml exec backend env | grep -E "(DATABASE_URL|JWT_SECRET)"
    ```
 
 ### Performance Issues
@@ -281,10 +283,10 @@ For high-traffic deployments:
 git pull origin main
 
 # Rebuild and restart services
-docker-compose -f docker-compose.prod.yml up -d --build
+docker-compose -f docker-compose.production.yml up -d --build
 
 # Verify health
-./scripts/monitor.sh
+./scripts/monitor-production.sh
 ```
 
 ### Zero-Downtime Deployment

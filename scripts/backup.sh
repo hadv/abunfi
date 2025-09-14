@@ -45,7 +45,7 @@ fi
 echo -e "${YELLOW}⚙️ Backing up configuration files...${NC}"
 cp -r nginx "$BACKUP_DIR/"
 cp .env.prod "$BACKUP_DIR/"
-cp docker-compose.prod.yml "$BACKUP_DIR/"
+cp docker-compose.production.yml "$BACKUP_DIR/"
 
 # Create backup info file
 echo -e "${YELLOW}📝 Creating backup info...${NC}"

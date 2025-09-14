@@ -80,7 +80,7 @@ EOF
         # Check if .env.prod exists
         if [ ! -f ".env.prod" ]; then
             echo -e "${RED}❌ .env.prod file not found${NC}"
-            echo -e "${YELLOW}Please copy .env.prod.example to .env.prod and configure it${NC}"
+            echo -e "${YELLOW}Please copy .env.production.example to .env.prod and configure it${NC}"
             exit 1
         fi
         
@@ -96,7 +96,7 @@ EOF
         # Export variables and run production deployment
         export DOMAIN_NAME=$domain
         export EMAIL=$email
-        ./scripts/deploy-production.sh
+        ./scripts/deploy-production-only.sh
         ;;
         
     3)
@@ -119,7 +119,7 @@ EOF
         
         # Start with production compose but local settings
         cp .env.local .env.prod
-        docker-compose -f docker-compose.prod.yml up -d --build
+        docker-compose -f docker-compose.production.yml up -d --build
         
         echo -e "\n${GREEN}✅ Local testing environment started!${NC}"
         echo -e "${YELLOW}📱 Application: http://localhost${NC}"
@@ -138,11 +138,11 @@ sleep 15
 
 # Run health check
 echo -e "\n${YELLOW}🏥 Running health check...${NC}"
-./scripts/monitor.sh
+./scripts/monitor-production.sh
 
 echo -e "\n${GREEN}🎉 Abunfi is ready!${NC}"
 echo -e "\n${YELLOW}📚 Useful commands:${NC}"
 echo -e "  ${BLUE}View logs:${NC} docker-compose logs -f"
 echo -e "  ${BLUE}Stop services:${NC} docker-compose down"
-echo -e "  ${BLUE}Monitor:${NC} ./scripts/monitor.sh"
+echo -e "  ${BLUE}Monitor:${NC} ./scripts/monitor-production.sh"
 echo -e "  ${BLUE}Backup:${NC} ./scripts/backup.sh"
