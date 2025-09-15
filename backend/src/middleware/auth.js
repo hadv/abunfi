@@ -17,7 +17,31 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid token or user not found' });
     }
 
+    // Check if this is a temporary token that requires 2FA completion
+    if (decoded.temporary && decoded.requires2FA) {
+      // Only allow access to 2FA completion and passkey endpoints
+      const allowedPaths = [
+        '/api/auth/complete-2fa',
+        '/api/passkey/authenticate/begin',
+        '/api/passkey/authenticate/complete'
+      ];
+
+      if (!allowedPaths.some(path => req.path.startsWith(path))) {
+        return res.status(403).json({
+          error: 'Two-factor authentication required',
+          requires2FA: true,
+          message: 'Please complete passkey authentication to access this resource'
+        });
+      }
+    }
+
     req.user = user;
+    req.tokenInfo = {
+      isTemporary: decoded.temporary || false,
+      requires2FA: decoded.requires2FA || false,
+      verified2FA: decoded.verified2FA || false
+    };
+
     next();
   } catch (error) {
     logger.error('Authentication error:', error);

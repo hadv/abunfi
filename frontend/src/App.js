@@ -17,6 +17,7 @@ import DashboardPage from './pages/DashboardPage';
 import SavingsPage from './pages/SavingsPage';
 import TransactionsPage from './pages/TransactionsPage';
 import ProfilePage from './pages/ProfilePage';
+import SecurityPage from './pages/SecurityPage';
 import StrategyManagerDashboard from './pages/StrategyManagerDashboard';
 
 // Protected Route Component
@@ -166,6 +167,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ProfilePage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/security"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SecurityPage />
               </Layout>
             </ProtectedRoute>
           }

@@ -38,6 +38,15 @@ router.post('/send-phone-verification',
   authController.sendPhoneVerification
 );
 
+// Complete 2FA authentication
+router.post('/complete-2fa',
+  [
+    body('temporaryToken').notEmpty().withMessage('Temporary token is required')
+  ],
+  validateRequest,
+  authController.complete2FA
+);
+
 // Refresh token
 router.post('/refresh-token',
   [

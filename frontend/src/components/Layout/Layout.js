@@ -24,7 +24,8 @@ import {
   Person,
   Logout,
   AccountBalanceWallet,
-  Analytics
+  Analytics,
+  Security
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
@@ -48,6 +49,7 @@ const Layout = ({ children }) => {
       { text: 'Overview', icon: <Dashboard />, path: '/dashboard' },
       { text: 'Savings', icon: <Savings />, path: '/savings' },
       { text: 'History', icon: <History />, path: '/transactions' },
+      { text: 'Security', icon: <Security />, path: '/security' },
       { text: 'Profile', icon: <Person />, path: '/profile' },
     ];
 
@@ -209,6 +211,12 @@ const Layout = ({ children }) => {
             <Person fontSize="small" />
           </ListItemIcon>
           Profile
+        </MenuItem>
+        <MenuItem onClick={() => navigate('/security')}>
+          <ListItemIcon>
+            <Security fontSize="small" />
+          </ListItemIcon>
+          Security
         </MenuItem>
         <MenuItem onClick={() => navigate('/profile')}>
           <ListItemIcon>

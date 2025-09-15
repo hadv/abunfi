@@ -1,19 +1,33 @@
 const jwt = require('jsonwebtoken');
 const UserRepository = require('../models/postgres/UserRepository');
+const databaseService = require('../services/DatabaseService');
 const logger = require('../utils/logger');
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
+const generateToken = (userId, isTemporary = false) => {
+  const expiresIn = isTemporary ? '10m' : (process.env.JWT_EXPIRE || '7d');
+  const payload = { userId };
+  if (isTemporary) {
+    payload.temporary = true;
+    payload.requires2FA = true;
+  }
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+};
+
+const generateFullToken = (userId) => {
+  return jwt.sign({ userId, verified2FA: true }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '7d'
+  });
 };
 
 const authController = {
-  // Social login (Google, Apple, Facebook)
+  // Social login (Google, Apple, Facebook) with 2FA support
   socialLogin: async (req, res) => {
     try {
       const { socialId, socialProvider, email, name, walletAddress, avatar } = req.body;
 
       // Check if user exists
       let user = await UserRepository.findBySocial(socialId, socialProvider);
+      let isNewUser = false;
 
       if (!user) {
         // Check if user exists with same email
@@ -38,6 +52,15 @@ const authController = {
             metadata: { avatar },
             is_email_verified: true // Social login emails are pre-verified
           });
+          isNewUser = true;
+
+          // Create security preferences for new user
+          await databaseService.executeQuery(
+            `INSERT INTO user_security_preferences (user_id, security_level, trust_score)
+             VALUES ($1, 'basic', 50)
+             ON CONFLICT (user_id) DO NOTHING`,
+            [user.id]
+          );
         }
       } else {
         // Update login info
@@ -45,16 +68,136 @@ const authController = {
         user = await UserRepository.findById(user.id);
       }
 
-      const token = generateToken(user.id);
+      // Check if 2FA is enabled for this user
+      const requires2FA = user.two_factor_enabled && user.two_factor_method === 'passkey';
 
-      res.json({
+      if (requires2FA) {
+        // Check if user has active passkeys
+        const passkeyQuery = `
+          SELECT COUNT(*) as count FROM user_passkeys
+          WHERE user_id = $1 AND is_active = true
+        `;
+        const passkeyResult = await databaseService.executeQuery(passkeyQuery, [user.id]);
+        const hasPasskeys = parseInt(passkeyResult.rows[0].count) > 0;
+
+        if (hasPasskeys) {
+          // Issue temporary token that requires 2FA completion
+          const temporaryToken = generateToken(user.id, true);
+
+          // Log 2FA required event
+          await this.logSecurityEvent(user.id, 'login_2fa_required', 'attempt', req);
+
+          return res.json({
+            success: true,
+            requires2FA: true,
+            temporaryToken,
+            message: 'Please complete passkey authentication',
+            user: UserRepository.toPublicJSON(user)
+          });
+        }
+      }
+
+      // Generate full access token (no 2FA required or new user)
+      const token = generateFullToken(user.id);
+
+      // Log successful login
+      await this.logSecurityEvent(user.id, 'social_login_success', 'success', req, {
+        socialProvider,
+        isNewUser,
+        requires2FA: false
+      });
+
+      // For new users, suggest 2FA setup
+      const response = {
         success: true,
         token,
         user: UserRepository.toPublicJSON(user)
-      });
+      };
+
+      if (isNewUser) {
+        response.suggestions = {
+          setup2FA: {
+            title: 'Secure Your Account',
+            description: 'Set up passkey authentication for enhanced security and earn rewards!',
+            rewards: ['0.005 USDC bonus', '30-day yield boost', 'Enhanced transaction limits'],
+            action: 'setup_passkey'
+          }
+        };
+      }
+
+      res.json(response);
+
     } catch (error) {
       logger.error('Social login error:', error);
       res.status(500).json({ error: 'Login failed' });
+    }
+  },
+
+  // Complete 2FA authentication after social login
+  complete2FA: async (req, res) => {
+    try {
+      const { temporaryToken } = req.body;
+
+      if (!temporaryToken) {
+        return res.status(400).json({ error: 'Temporary token is required' });
+      }
+
+      // Verify temporary token
+      let decoded;
+      try {
+        decoded = jwt.verify(temporaryToken, process.env.JWT_SECRET);
+      } catch (error) {
+        return res.status(401).json({ error: 'Invalid or expired temporary token' });
+      }
+
+      if (!decoded.temporary || !decoded.requires2FA) {
+        return res.status(400).json({ error: 'Invalid token type' });
+      }
+
+      const userId = decoded.userId;
+
+      // Get user information
+      const user = await UserRepository.findById(userId);
+      if (!user || !user.is_active) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Verify that 2FA was actually completed (this would be set by the passkey verification)
+      // For now, we'll check if there's a recent successful passkey authentication
+      const recentAuthQuery = `
+        SELECT id FROM security_events
+        WHERE user_id = $1
+        AND event_type = 'passkey_authentication_success'
+        AND event_status = 'success'
+        AND created_at > NOW() - INTERVAL '5 minutes'
+        ORDER BY created_at DESC LIMIT 1
+      `;
+
+      const recentAuth = await databaseService.executeQuery(recentAuthQuery, [userId]);
+
+      if (recentAuth.rows.length === 0) {
+        return res.status(400).json({
+          error: 'Passkey authentication required',
+          message: 'Please complete passkey authentication first'
+        });
+      }
+
+      // Generate full access token
+      const fullToken = generateFullToken(userId);
+
+      // Log successful 2FA completion
+      await this.logSecurityEvent(userId, 'login_2fa_completed', 'success', req);
+
+      res.json({
+        success: true,
+        token: fullToken,
+        user: UserRepository.toPublicJSON(user),
+        message: '2FA authentication completed successfully'
+      });
+
+    } catch (error) {
+      logger.error('Complete 2FA error:', error);
+      res.status(500).json({ error: 'Failed to complete 2FA authentication' });
     }
   },
 
@@ -276,6 +419,28 @@ const authController = {
     } catch (error) {
       logger.error('Development login error:', error);
       res.status(500).json({ error: 'Development login failed' });
+    }
+  },
+
+  // Security event logging helper
+  logSecurityEvent: async (userId, eventType, eventStatus, req, metadata = {}) => {
+    try {
+      const eventQuery = `
+        INSERT INTO security_events (
+          user_id, event_type, event_status, ip_address, user_agent, metadata
+        ) VALUES ($1, $2, $3, $4, $5, $6)
+      `;
+
+      await databaseService.executeQuery(eventQuery, [
+        userId,
+        eventType,
+        eventStatus,
+        req.ip || req.connection?.remoteAddress,
+        req.get('User-Agent'),
+        JSON.stringify(metadata)
+      ]);
+    } catch (error) {
+      logger.error('Log security event error:', error);
     }
   }
 };
