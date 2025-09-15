@@ -18,6 +18,7 @@ const vaultRoutes = require('./routes/vault');
 const transactionRoutes = require('./routes/transaction');
 const strategyManagerRoutes = require('./routes/strategyManager');
 const securityRoutes = require('./routes/security');
+const passkeyRoutes = require('./routes/passkey');
 
 const app = express();
 
@@ -114,6 +115,7 @@ app.use('/api/vault', vaultRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/admin/strategies', strategyManagerRoutes);
 app.use('/api/security', securityRoutes);
+app.use('/api/passkey', passkeyRoutes);
 
 // Welcome endpoint
 app.get('/', (req, res) => {

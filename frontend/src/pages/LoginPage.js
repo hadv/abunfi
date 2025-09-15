@@ -8,15 +8,19 @@ import {
   Divider,
   CircularProgress,
   Alert,
-  Dialog
+  Dialog,
+  Chip
 } from '@mui/material';
-import { Google, Apple, Phone, Code, Security } from '@mui/icons-material';
+import { Google, Apple, Phone, Code, Security, Star } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
 import DevLogin from '../components/DevLogin';
 import AntiAbuseEducation from '../components/security/AntiAbuseEducation';
+import PasskeyAuthentication from '../components/PasskeyAuthentication';
+import PasskeyRegistration from '../components/PasskeyRegistration';
 import { useSecurityAuth } from '../services/securityAuthService';
+import { authService } from '../services/authService';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
@@ -27,18 +31,50 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [showDevLogin, setShowDevLogin] = useState(false);
   const [showSecurityInfo, setShowSecurityInfo] = useState(false);
+  const [show2FA, setShow2FA] = useState(false);
+  const [showPasskeySetup, setShowPasskeySetup] = useState(false);
+  const [temporaryToken, setTemporaryToken] = useState('');
+  const [loginSuggestions, setLoginSuggestions] = useState(null);
 
   const handleSocialLogin = async (provider) => {
     try {
       setIsLoading(true);
       setError('');
-      // Use enhanced login with security checks
-      const result = await login(provider);
 
-      // The security checks will be performed automatically in the UserContext
-      // when Web3Auth authentication is detected
+      // Step 1: Get Web3Auth user info
+      const web3AuthResult = await login(provider);
+
+      // Step 2: Perform social login with backend
+      const loginData = {
+        socialId: web3AuthResult.userInfo.verifierId,
+        socialProvider: provider,
+        email: web3AuthResult.userInfo.email,
+        name: web3AuthResult.userInfo.name,
+        walletAddress: web3AuthResult.walletAddress,
+        avatar: web3AuthResult.userInfo.profileImage
+      };
+
+      const result = await authService.socialLogin(loginData);
+
+      if (result.requires2FA) {
+        // User needs to complete 2FA
+        setTemporaryToken(result.temporaryToken);
+        setShow2FA(true);
+        toast.info('Please complete passkey authentication');
+        return;
+      }
+
+      // Login successful - store token and redirect
+      localStorage.setItem('authToken', result.token);
+
+      // Check for setup suggestions
+      if (result.suggestions) {
+        setLoginSuggestions(result.suggestions);
+      }
+
       toast.success('Login successful! Welcome to Abunfi.');
       navigate('/dashboard');
+
     } catch (error) {
       console.error('Login error:', error);
       setError('Login failed. Please try again.');
@@ -46,6 +82,34 @@ const LoginPage = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handle2FAComplete = async () => {
+    try {
+      setShow2FA(false);
+      toast.success('Authentication successful! Welcome to Abunfi.');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('2FA completion error:', error);
+      toast.error('Failed to complete authentication');
+    }
+  };
+
+  const handlePasskeySetupComplete = (result) => {
+    setShowPasskeySetup(false);
+    setLoginSuggestions(null);
+
+    if (result.isFirstPasskey) {
+      toast.success('🎉 Passkey setup complete! You earned security bonuses!');
+    } else {
+      toast.success('Passkey added successfully!');
+    }
+  };
+
+  const handleSkipPasskeySetup = () => {
+    setShowPasskeySetup(false);
+    setLoginSuggestions(null);
+    toast.info('You can set up passkeys later in your security settings');
   };
 
   return (
@@ -271,6 +335,69 @@ const LoginPage = () => {
       <AntiAbuseEducation
         showDialog={showSecurityInfo}
         onClose={() => setShowSecurityInfo(false)}
+      />
+
+      {/* 2FA Authentication Dialog */}
+      <PasskeyAuthentication
+        open={show2FA}
+        onClose={() => setShow2FA(false)}
+        onSuccess={handle2FAComplete}
+        temporaryToken={temporaryToken}
+        title="Complete Login"
+        subtitle="Use your passkey to complete the login process"
+      />
+
+      {/* Passkey Setup Suggestion Dialog */}
+      {loginSuggestions?.setup2FA && (
+        <Dialog
+          open={!!loginSuggestions}
+          onClose={handleSkipPasskeySetup}
+          maxWidth="sm"
+          fullWidth
+        >
+          <Box p={3} textAlign="center">
+            <Security color="primary" sx={{ fontSize: 48, mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              {loginSuggestions.setup2FA.title}
+            </Typography>
+            <Typography variant="body1" color="text.secondary" gutterBottom>
+              {loginSuggestions.setup2FA.description}
+            </Typography>
+
+            <Box sx={{ mt: 2, mb: 3 }}>
+              {loginSuggestions.setup2FA.rewards.map((reward, index) => (
+                <Chip
+                  key={index}
+                  icon={<Star />}
+                  label={reward}
+                  color="primary"
+                  variant="outlined"
+                  sx={{ m: 0.5 }}
+                />
+              ))}
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button onClick={handleSkipPasskeySetup}>
+                Maybe Later
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setShowPasskeySetup(true)}
+                startIcon={<Security />}
+              >
+                Set Up Now
+              </Button>
+            </Box>
+          </Box>
+        </Dialog>
+      )}
+
+      {/* Passkey Registration Dialog */}
+      <PasskeyRegistration
+        open={showPasskeySetup}
+        onClose={() => setShowPasskeySetup(false)}
+        onSuccess={handlePasskeySetupComplete}
       />
     </Box>
   );
