@@ -18,6 +18,7 @@ import SavingsPage from './pages/SavingsPage';
 import TransactionsPage from './pages/TransactionsPage';
 import ProfilePage from './pages/ProfilePage';
 import SecurityPage from './pages/SecurityPage';
+import SocialVerificationPage from './pages/SocialVerificationPage';
 import StrategyManagerDashboard from './pages/StrategyManagerDashboard';
 
 // Protected Route Component
@@ -177,6 +178,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <SecurityPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/social-verification"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SocialVerificationPage />
               </Layout>
             </ProtectedRoute>
           }

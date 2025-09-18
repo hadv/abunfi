@@ -36,6 +36,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWeb3Auth } from '../../contexts/Web3AuthContext';
 import { useRateLimitingService } from '../../services/rateLimitingService';
+import { SocialVerificationStatus } from '../zkvm';
 import toast from 'react-hot-toast';
 
 const GaslessTransactionSecurity = ({ 
@@ -298,6 +299,14 @@ const GaslessTransactionSecurity = ({
                         color={securityStatus.isWhitelisted ? 'primary' : 'default'}
                         size="small"
                       />
+                    </Box>
+
+                    {/* Social Verification Status */}
+                    <Box mb={2}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Social Verification
+                      </Typography>
+                      <SocialVerificationStatus compact={true} showRefresh={false} />
                     </Box>
 
                     {/* Estimated Cost */}
