@@ -25,7 +25,8 @@ import {
   Logout,
   AccountBalanceWallet,
   Analytics,
-  Security
+  Security,
+  Shield
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
@@ -50,6 +51,7 @@ const Layout = ({ children }) => {
       { text: 'Savings', icon: <Savings />, path: '/savings' },
       { text: 'History', icon: <History />, path: '/transactions' },
       { text: 'Security', icon: <Security />, path: '/security' },
+      { text: 'Social Verification', icon: <Shield />, path: '/social-verification' },
       { text: 'Profile', icon: <Person />, path: '/profile' },
     ];
 

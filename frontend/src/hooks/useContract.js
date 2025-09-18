@@ -5,6 +5,8 @@ import { useWeb3Auth } from '../contexts/Web3AuthContext';
 import AbunfiVaultABI from '../contracts/AbunfiVault.json';
 import AaveStrategyABI from '../contracts/AaveStrategy.json';
 import MockERC20ABI from '../contracts/MockERC20.json';
+import SocialAccountRegistryABI from '../contracts/SocialAccountRegistry.json';
+import RiscZeroSocialVerifierABI from '../contracts/RiscZeroSocialVerifier.json';
 
 // Mock ABIs for contracts that don't exist yet
 const StrategyManagerABI = { abi: [] };
@@ -27,6 +29,8 @@ const ABIS = {
   AbunfiSmartAccount: AbunfiSmartAccountABI,
   EIP7702Bundler: EIP7702BundlerABI,
   EIP7702Paymaster: EIP7702PaymasterABI,
+  SocialAccountRegistry: SocialAccountRegistryABI,
+  RiscZeroSocialVerifier: RiscZeroSocialVerifierABI,
   MockERC20: MockERC20ABI
 };
 
@@ -126,6 +130,10 @@ export const useContractAddresses = () => {
     bundler: process.env.REACT_APP_EIP7702_BUNDLER_ADDRESS,
     paymaster: process.env.REACT_APP_EIP7702_PAYMASTER_ADDRESS,
 
+    // zkVM Social Verification contracts
+    socialAccountRegistry: process.env.REACT_APP_SOCIAL_ACCOUNT_REGISTRY_ADDRESS,
+    riscZeroSocialVerifier: process.env.REACT_APP_RISC_ZERO_SOCIAL_VERIFIER_ADDRESS,
+
     // Token contracts
     usdc: process.env.REACT_APP_USDC_CONTRACT_ADDRESS,
   }), []);
@@ -145,6 +153,12 @@ export const useUniswapV4FairFlowStrategyContract = (address) => useContract('Un
 export const useSmartAccountContract = (address) => useContract('AbunfiSmartAccount', address);
 export const useBundlerContract = (address) => useContract('EIP7702Bundler', address);
 export const usePaymasterContract = (address) => useContract('EIP7702Paymaster', address);
+
+/**
+ * zkVM Social Verification contract hooks
+ */
+export const useSocialAccountRegistryContract = (address) => useContract('SocialAccountRegistry', address);
+export const useRiscZeroSocialVerifierContract = (address) => useContract('RiscZeroSocialVerifier', address);
 
 /**
  * Hook to get all strategy contracts with their addresses
