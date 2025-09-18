@@ -65,4 +65,36 @@ router.get('/yield-history',
   vaultController.getYieldHistory
 );
 
+// ============ BATCHING SYSTEM ROUTES ============
+
+// Get batching configuration
+router.get('/batching/config', vaultController.getBatchingConfig);
+
+// Get pending allocations by risk level
+router.get('/batching/pending', vaultController.getPendingAllocations);
+
+// Check if batch allocation should be triggered
+router.get('/batching/check', vaultController.checkBatchAllocation);
+
+// Trigger batch allocation manually
+router.post('/batching/trigger', authenticate, vaultController.triggerBatchAllocation);
+
+// Get batch allocation history
+router.get('/batching/history',
+  [
+    query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50')
+  ],
+  validateRequest,
+  vaultController.getBatchHistory
+);
+
+// Get estimated gas savings from batching
+router.post('/batching/gas-estimate',
+  [
+    body('amount').isFloat({ min: 0 }).withMessage('Amount must be positive')
+  ],
+  validateRequest,
+  vaultController.getGasSavingsEstimate
+);
+
 module.exports = router;

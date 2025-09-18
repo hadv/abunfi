@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import { NumericFormat } from 'react-number-format';
 import toast from 'react-hot-toast';
 import GaslessTransactionSecurity from '../components/security/GaslessTransactionSecurity';
+import BatchingSystemInfo from '../components/BatchingSystemInfo';
 import { useSecurityAuth } from '../services/securityAuthService';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
 
@@ -31,6 +32,7 @@ const SavingsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [canProceedWithTransaction, setCanProceedWithTransaction] = useState(false);
   const [estimatedGasCost, setEstimatedGasCost] = useState('0.005'); // Mock estimated gas cost
+  const [gasSavings, setGasSavings] = useState(null);
 
   // Mock data
   const currentAPY = 8.2;
@@ -46,6 +48,14 @@ const SavingsPage = () => {
     setCanProceedWithTransaction(canProceed);
     if (!canProceed && securityStatus) {
       console.log('Transaction blocked by security policy:', securityStatus);
+    }
+  };
+
+  const handleGasSavingsUpdate = (savings) => {
+    setGasSavings(savings);
+    // Update estimated gas cost with savings
+    if (savings && savings.originalGasCost) {
+      setEstimatedGasCost(savings.finalGasCost);
     }
   };
 
@@ -154,6 +164,12 @@ const SavingsPage = () => {
                       estimatedGasCost={estimatedGasCost}
                       transactionType="deposit"
                       showDetails={true}
+                    />
+
+                    {/* Batching System Information */}
+                    <BatchingSystemInfo
+                      depositAmount={depositAmount}
+                      onGasSavingsUpdate={handleGasSavingsUpdate}
                     />
 
                     <Alert severity="info" sx={{ mb: 3 }}>
