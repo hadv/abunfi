@@ -89,5 +89,43 @@ export const vaultService = {
   getStrategiesAPYHistory: async (period = '30d') => {
     const response = await api.get(`/vault/strategies/apy-history?period=${period}`);
     return response.data;
+  },
+
+  // ============ NEW BATCHING SYSTEM FUNCTIONS ============
+
+  // Get batching configuration
+  getBatchingConfig: async () => {
+    const response = await api.get('/vault/batching/config');
+    return response.data;
+  },
+
+  // Get pending allocations by risk level
+  getPendingAllocations: async () => {
+    const response = await api.get('/vault/batching/pending');
+    return response.data;
+  },
+
+  // Check if batch allocation should be triggered
+  checkBatchAllocation: async () => {
+    const response = await api.get('/vault/batching/check');
+    return response.data;
+  },
+
+  // Trigger batch allocation manually
+  triggerBatchAllocation: async () => {
+    const response = await api.post('/vault/batching/trigger');
+    return response.data;
+  },
+
+  // Get batch allocation history
+  getBatchHistory: async (limit = 10) => {
+    const response = await api.get(`/vault/batching/history?limit=${limit}`);
+    return response.data;
+  },
+
+  // Get estimated gas savings from batching
+  getGasSavingsEstimate: async (amount) => {
+    const response = await api.post('/vault/batching/gas-estimate', { amount });
+    return response.data;
   }
 };
