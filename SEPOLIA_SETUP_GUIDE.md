@@ -19,6 +19,8 @@ Set up the Abunfi project running on Sepolia testnet. This guide covers everythi
 ### Required Software:
 - **Node.js** >= 18.0.0 ([Download](https://nodejs.org/))
 - **Git** ([Download](https://git-scm.com/))
+- **PostgreSQL** >= 13.0 ([Download](https://postgresql.org/download/))
+- **Redis** >= 6.0 ([Download](https://redis.io/download))
 - **Foundry** (will be installed automatically)
 
 ### Required Accounts & Resources:
@@ -89,9 +91,56 @@ cd frontend && npm install && cd ..
 cd contracts-submodule && npm install && cd ..
 ```
 
-### Step 3: Environment Configuration
+### Step 3: Database Setup
 
-#### 3.1 Contracts Environment (`contracts-submodule/.env`)
+#### 3.1 PostgreSQL Setup
+```bash
+# Install PostgreSQL (if not already installed)
+# macOS with Homebrew:
+brew install postgresql
+brew services start postgresql
+
+# Ubuntu/Debian:
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Create database and user
+sudo -u postgres psql << 'EOF'
+CREATE USER abunfi_user WITH PASSWORD 'abunfi_password';
+CREATE DATABASE abunfi OWNER abunfi_user;
+CREATE DATABASE abunfi_test OWNER abunfi_user;
+GRANT ALL PRIVILEGES ON DATABASE abunfi TO abunfi_user;
+GRANT ALL PRIVILEGES ON DATABASE abunfi_test TO abunfi_user;
+\q
+EOF
+
+# Test connection
+psql -h localhost -U abunfi_user -d abunfi -c "SELECT version();"
+```
+
+#### 3.2 Redis Setup
+```bash
+# Install Redis (if not already installed)
+# macOS with Homebrew:
+brew install redis
+brew services start redis
+
+# Ubuntu/Debian:
+sudo apt update
+sudo apt install redis-server
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+
+# Test connection
+redis-cli ping
+# Should return: PONG
+```
+
+### Step 4: Environment Configuration
+
+#### 4.1 Contracts Environment (`contracts-submodule/.env`)
 ```bash
 # Copy template
 cp contracts-submodule/.env.example contracts-submodule/.env
@@ -120,7 +169,7 @@ MAX_GAS_PRICE=50000000000
 MAX_PRIORITY_FEE=2000000000
 ```
 
-#### 3.2 Backend Environment (`backend/.env`)
+#### 4.2 Backend Environment (`backend/.env`)
 ```bash
 # Copy template
 cp backend/.env.example backend/.env
@@ -134,6 +183,15 @@ Required configuration:
 # Server Configuration
 PORT=3001
 NODE_ENV=development
+
+# Database Configuration
+# PostgreSQL (primary database)
+DATABASE_URL=postgresql://abunfi_user:abunfi_password@localhost:5432/abunfi
+DATABASE_TEST_URL=postgresql://abunfi_user:abunfi_password@localhost:5432/abunfi_test
+
+# Redis (for caching and sessions)
+REDIS_URL=redis://localhost:6379
+REDIS_PASSWORD=
 
 # Blockchain Configuration
 RPC_URL=https://sepolia.infura.io/v3/[YOUR_PROJECT_ID]
@@ -160,7 +218,7 @@ RISC_ZERO_SOCIAL_VERIFIER_ADDRESS=0x...
 EIP7702_PAYMASTER_ADDRESS=0x...
 ```
 
-#### 3.3 Frontend Environment (`frontend/.env.local`)
+#### 4.3 Frontend Environment (`frontend/.env.local`)
 ```bash
 # Copy template
 cp frontend/.env.sepolia frontend/.env.local
@@ -210,9 +268,9 @@ REACT_APP_RISC_ZERO_SOCIAL_VERIFIER_ADDRESS=0x...
 REACT_APP_EIP7702_PAYMASTER_ADDRESS=0x...
 ```
 
-### Step 4: Smart Contract Deployment
+### Step 5: Smart Contract Deployment
 
-#### 4.1 Build Contracts
+#### 5.1 Build Contracts
 ```bash
 cd contracts-submodule
 
@@ -226,7 +284,7 @@ forge test
 cast balance [YOUR_ADDRESS] --rpc-url $SEPOLIA_RPC_URL
 ```
 
-#### 4.2 Deploy Core Contracts
+#### 5.2 Deploy Core Contracts
 ```bash
 # Load environment
 source .env
@@ -244,7 +302,7 @@ forge script script/DeploySepolia.s.sol \
   --broadcast > ../deployment-core.log 2>&1
 ```
 
-#### 4.3 Deploy zkVM Contracts
+#### 5.3 Deploy zkVM Contracts
 ```bash
 # Deploy social verification and rate limiting contracts
 forge script script/DeploySocialVerification.s.sol \
@@ -264,11 +322,11 @@ npm run export-abis
 cd ..
 ```
 
-### Step 5: Update Contract Addresses
+### Step 6: Update Contract Addresses
 
 After deployment, extract contract addresses from deployment logs and update environment files:
 
-#### 5.1 Extract Addresses from Deployment Logs
+#### 6.1 Extract Addresses from Deployment Logs
 ```bash
 # Check deployment logs for contract addresses
 grep -E "0x[a-fA-F0-9]{40}" deployment-core.log
@@ -278,7 +336,7 @@ grep -E "0x[a-fA-F0-9]{40}" deployment-zkvm.log
 ls contracts-submodule/deployments/
 ```
 
-#### 5.2 Update Backend Environment
+#### 6.2 Update Backend Environment
 Edit `backend/.env` with deployed addresses:
 ```bash
 # Example addresses (replace with your actual deployed addresses)
@@ -290,7 +348,7 @@ RISC_ZERO_SOCIAL_VERIFIER_ADDRESS=0x5678901234567890123456789012345678901234
 EIP7702_PAYMASTER_ADDRESS=0x6789012345678901234567890123456789012345
 ```
 
-#### 5.3 Update Frontend Environment
+#### 6.3 Update Frontend Environment
 Edit `frontend/.env.local` with the same deployed addresses:
 ```bash
 # Use the same addresses as backend
@@ -302,14 +360,14 @@ REACT_APP_RISC_ZERO_SOCIAL_VERIFIER_ADDRESS=0x5678901234567890123456789012345678
 REACT_APP_EIP7702_PAYMASTER_ADDRESS=0x6789012345678901234567890123456789012345
 ```
 
-### Step 6: Create Demo Data
+### Step 7: Create Demo Data
 
-#### 6.1 Create Demo Data Directory
+#### 7.1 Create Demo Data Directory
 ```bash
 mkdir -p demo-data
 ```
 
-#### 6.2 Create Demo Users
+#### 7.2 Create Demo Users
 ```bash
 cat > demo-data/demo-users.json << 'EOF'
 {
@@ -346,7 +404,7 @@ cat > demo-data/demo-users.json << 'EOF'
 EOF
 ```
 
-#### 6.3 Create Rate Limiting Demo Data
+#### 7.3 Create Rate Limiting Demo Data
 ```bash
 cat > demo-data/rate-limiting-demo.json << 'EOF'
 {
@@ -380,9 +438,9 @@ cat > demo-data/rate-limiting-demo.json << 'EOF'
 EOF
 ```
 
-### Step 7: Start the Demo
+### Step 8: Start the Demo
 
-#### 7.1 Create Startup Script
+#### 8.1 Create Startup Script
 ```bash
 cat > start-demo.sh << 'EOF'
 #!/bin/bash
@@ -472,15 +530,15 @@ EOF
 chmod +x start-demo.sh
 ```
 
-#### 7.2 Start the Demo
+#### 8.2 Start the Demo
 ```bash
 # Start all services
 ./start-demo.sh
 ```
 
-### Step 8: Verify Demo is Working
+### Step 9: Verify Demo is Working
 
-#### 8.1 Check All Services
+#### 9.1 Check All Services
 ```bash
 # Check backend health
 curl http://localhost:3001/api/health
@@ -492,7 +550,7 @@ curl http://localhost:3000
 curl http://localhost:3001/api/blockchain/status
 ```
 
-#### 8.2 Test Core Functionality
+#### 9.2 Test Core Functionality
 1. **Landing Page**: Visit http://localhost:3000
 2. **Login Flow**: Test social login or dev login
 3. **Dashboard**: Verify portfolio data displays
@@ -500,9 +558,9 @@ curl http://localhost:3001/api/blockchain/status
 5. **zkVM Features**: Navigate to social verification
 6. **Rate Limits**: Check rate limiting dashboard
 
-### Step 9: Demo Preparation
+### Step 10: Demo Preparation
 
-#### 9.1 Create Browser Bookmarks
+#### 10.1 Create Browser Bookmarks
 - **Landing**: http://localhost:3000
 - **Login**: http://localhost:3000/login
 - **Dashboard**: http://localhost:3000/dashboard
@@ -511,7 +569,7 @@ curl http://localhost:3001/api/blockchain/status
 - **Rate Limits**: http://localhost:3000/rate-limits
 - **Strategy Manager**: http://localhost:3000/strategy-manager
 
-#### 9.2 Practice Demo Script (8 minutes)
+#### 10.2 Practice Demo Script (8 minutes)
 1. **Minutes 1-2**: Problem statement and solution overview
 2. **Minutes 3-4**: Core features (login, deposit, dashboard)
 3. **Minutes 5-6**: zkVM social verification and rate limiting
@@ -521,7 +579,35 @@ curl http://localhost:3001/api/blockchain/status
 
 ### Common Issues and Solutions
 
-#### Issue 1: Contract Deployment Fails
+#### Issue 1: Database Connection Fails
+```bash
+# Check PostgreSQL status
+brew services list | grep postgresql
+# or
+sudo systemctl status postgresql
+
+# Check if database exists
+psql -h localhost -U abunfi_user -d abunfi -c "\l"
+
+# Recreate database if needed
+sudo -u postgres psql << 'EOF'
+DROP DATABASE IF EXISTS abunfi;
+DROP DATABASE IF EXISTS abunfi_test;
+CREATE DATABASE abunfi OWNER abunfi_user;
+CREATE DATABASE abunfi_test OWNER abunfi_user;
+\q
+EOF
+
+# Check Redis status
+brew services list | grep redis
+# or
+sudo systemctl status redis-server
+
+# Test Redis connection
+redis-cli ping
+```
+
+#### Issue 2: Contract Deployment Fails
 ```bash
 # Check Sepolia ETH balance
 cast balance [YOUR_ADDRESS] --rpc-url $SEPOLIA_RPC_URL
@@ -538,7 +624,7 @@ forge script script/DeploySepolia.s.sol \
   --gas-limit 8000000
 ```
 
-#### Issue 2: Frontend Won't Connect
+#### Issue 3: Frontend Won't Connect
 ```bash
 # Check contract addresses in environment
 grep "REACT_APP_.*_ADDRESS" frontend/.env.local
@@ -552,7 +638,7 @@ rm -rf node_modules/.cache
 npm start
 ```
 
-#### Issue 3: Backend API Errors
+#### Issue 4: Backend API Errors
 ```bash
 # Check backend logs
 cd backend
@@ -566,7 +652,7 @@ provider.getNetwork().then(console.log);
 "
 ```
 
-#### Issue 4: Services Won't Start
+#### Issue 5: Services Won't Start
 ```bash
 # Kill existing processes
 pkill -f "npm run dev"
@@ -596,6 +682,8 @@ cd frontend && npm start
 
 ### Technical Verification:
 - [ ] All dependencies installed correctly
+- [ ] PostgreSQL database running and accessible
+- [ ] Redis server running and accessible
 - [ ] Environment files configured
 - [ ] Smart contracts deployed to Sepolia
 - [ ] Contract addresses updated in all configs
