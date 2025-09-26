@@ -300,6 +300,13 @@ forge script script/DeploySepolia.s.sol \
 forge script script/DeploySepolia.s.sol \
   --rpc-url $SEPOLIA_RPC_URL \
   --broadcast > ../deployment-core.log 2>&1
+
+# Verify and save output in one run
+forge script script/DeploySepolia.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --broadcast \
+  --verify \
+  --etherscan-api-key $ETHERSCAN_API_KEY | tee ../deployment-core.log
 ```
 
 #### 5.3 Deploy zkVM Contracts
@@ -315,6 +322,13 @@ forge script script/DeploySocialVerification.s.sol \
 forge script script/DeploySocialVerification.s.sol \
   --rpc-url $SEPOLIA_RPC_URL \
   --broadcast > ../deployment-zkvm.log 2>&1
+
+# Verify and save output in one run
+forge script script/DeploySocialVerification.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --broadcast \
+  --verify \
+  --etherscan-api-key $ETHERSCAN_API_KEY | tee ../deployment-zkvm.log
 
 # Export ABIs for frontend/backend
 npm run export-abis
