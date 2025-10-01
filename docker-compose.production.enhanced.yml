@@ -1,7 +1,6 @@
-# Production Environment Docker Compose for Abunfi
-# Optimized for production deployment with SSL, security, and performance
+# Enhanced Production Environment Docker Compose for Abunfi
+# Includes resource limits, logging configuration, and additional optimizations
 # Use: DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
-# Development uses: docker-compose.yml
 version: '3.8'
 
 services:
@@ -26,24 +25,51 @@ services:
         condition: service_healthy
     networks:
       - abunfi-prod-network
-    # Auto-reload nginx for certificate renewal
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
       timeout: 10s
       retries: 3
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
 
   # Let's Encrypt SSL Certificate Management
   certbot:
-    image: certbot/certbot:latest
+    image: certbot/certbot:v2.7.4  # Pinned version for stability
     container_name: abunfi-certbot-prod
     restart: unless-stopped
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    # Auto-renew certificates every 12 hours
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done;'"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
 
   # Frontend - React Production Build
   frontend:
@@ -64,6 +90,22 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
 
   # Backend - Node.js API Server
   backend:
@@ -108,7 +150,7 @@ services:
       WEB3AUTH_CLIENT_ID: ${WEB3AUTH_CLIENT_ID}
       
       # Performance
-      NODE_OPTIONS: "--max-old-space-size=512"
+      NODE_OPTIONS: "--max-old-space-size=768"
     depends_on:
       postgres:
         condition: service_healthy
@@ -122,6 +164,22 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+        compress: "true"
 
   # PostgreSQL Database
   postgres:
@@ -159,6 +217,25 @@ services:
       -c default_statistics_target=100
       -c random_page_cost=1.1
       -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+        compress: "true"
 
 # Production volumes with backup strategy
 volumes:
@@ -196,3 +273,4 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+
