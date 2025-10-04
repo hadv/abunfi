@@ -110,8 +110,8 @@ services:
   # Backend - Node.js API Server
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile.with-zkvm
     image: abunfi-backend:production
     container_name: abunfi-backend-prod
     restart: unless-stopped
@@ -119,16 +119,16 @@ services:
       # Core settings
       NODE_ENV: production
       PORT: 3001
-      
+
       # Database
       DATABASE_URL: postgresql://abunfi_user:${POSTGRES_PASSWORD}@postgres:5432/abunfi
-      
+
       # Cache (Memory cache for demo)
       USE_MEMORY_CACHE: "true"
-      
+
       # Security
       JWT_SECRET: ${JWT_SECRET}
-      
+
       # Blockchain
       RPC_URL: ${RPC_URL}
       CHAIN_ID: ${CHAIN_ID:-11155111}
@@ -145,10 +145,14 @@ services:
 
       # CORS
       CORS_ORIGIN: https://${DOMAIN_NAME}
-      
+
       # Web3Auth
       WEB3AUTH_CLIENT_ID: ${WEB3AUTH_CLIENT_ID}
-      
+
+      # zkVM Configuration
+      ZKVM_PROVER_PATH: /app/bin/zkvm-prover
+      ZKVM_TIMEOUT: 300000
+
       # Performance
       NODE_OPTIONS: "--max-old-space-size=768"
     depends_on:

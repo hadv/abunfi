@@ -1,0 +1,87 @@
+# Multi-stage Dockerfile for Abunfi Backend with zkVM Support
+# Stage 1: Build zkVM prover binary
+FROM rust:1.75-alpine AS zkvm-builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    musl-dev \
+    openssl-dev \
+    pkgconfig \
+    git
+
+WORKDIR /zkvm
+
+# Copy zkVM source code (from root context)
+COPY contracts-submodule/risc0-social-verifier ./risc0-social-verifier
+
+# Build the zkVM prover binary
+WORKDIR /zkvm/risc0-social-verifier
+RUN cargo build --release --bin host
+
+# Stage 2: Build Node.js backend
+FROM node:18-alpine
+
+# Install runtime dependencies and security updates
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+    dumb-init \
+    curl \
+    libgcc \
+    libstdc++ && \
+    rm -rf /var/cache/apk/*
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first for better Docker layer caching
+COPY backend/package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && \
+    npm cache clean --force && \
+    rm -rf ~/.npm
+
+# Copy source code
+COPY backend/src/ ./src/
+
+# Create bin directory for zkVM binary
+RUN mkdir -p bin
+
+# Copy zkVM prover binary from builder stage
+COPY --from=zkvm-builder /zkvm/risc0-social-verifier/target/release/host ./bin/zkvm-prover
+
+# Make the binary executable
+RUN chmod +x ./bin/zkvm-prover
+
+# Create logs directory with proper permissions
+RUN mkdir -p logs && \
+    chown -R nodejs:nodejs /app && \
+    chmod 755 /app && \
+    chmod 755 /app/logs && \
+    chmod 755 /app/bin
+
+# Switch to non-root user for security
+USER nodejs
+
+# Expose port
+EXPOSE 3001
+
+# Enhanced health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Set environment variables for production
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV ZKVM_PROVER_PATH=/app/bin/zkvm-prover
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application directly
+CMD ["node", "src/index.js"]
+

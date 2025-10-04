@@ -189,6 +189,15 @@ WEB3AUTH_CLIENT_ID=$WEB3AUTH_CLIENT_ID
 WEB3AUTH_NETWORK=sapphire_devnet
 
 # =============================================================================
+# ZKVM CONFIGURATION
+# =============================================================================
+# Path to zkVM prover binary
+ZKVM_PROVER_PATH=./bin/zkvm-prover
+
+# Verification timeout in milliseconds (5 minutes)
+ZKVM_TIMEOUT=300000
+
+# =============================================================================
 # SERVER CONFIGURATION
 # =============================================================================
 # Backend API
@@ -229,32 +238,43 @@ REACT_APP_ENABLE_NOTIFICATIONS=true
 # ✅ Secrets auto-generated for local development
 # ✅ Using in-memory cache (no Redis required)
 # ✅ CORS enabled for localhost:3000
+# ✅ zkVM prover configured for local development
 # ⚠️  This configuration is for DEVELOPMENT ONLY
 # ⚠️  Never use these settings in production
 
 # =============================================================================
 # QUICK START COMMANDS
 # =============================================================================
-# 1. Start PostgreSQL:
+# 1. Initialize submodules (for zkVM):
+#    git submodule update --init --recursive
+#
+# 2. Build zkVM prover (required for local dev):
+#    cd contracts-submodule/risc0-social-verifier
+#    cargo build --release --bin host
+#    mkdir -p ../../backend/bin
+#    cp target/release/host ../../backend/bin/zkvm-prover
+#    cd ../..
+#
+# 3. Start PostgreSQL:
 #    docker run -d --name abunfi-postgres \\
 #      -e POSTGRES_DB=abunfi \\
 #      -e POSTGRES_USER=abunfi_user \\
 #      -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \\
 #      -p 5432:5432 postgres:16-alpine
 #
-# 2. Start Hardhat node (if using local network):
+# 4. Start Hardhat node (if using local network):
 #    cd contracts-submodule && npx hardhat node
 #
-# 3. Deploy contracts (if using local network):
+# 5. Deploy contracts (if using local network):
 #    cd contracts-submodule && npx hardhat run scripts/deploy.js --network localhost
 #
-# 4. Start backend:
+# 6. Start backend:
 #    cd backend && npm run dev
 #
-# 5. Start frontend:
+# 7. Start frontend:
 #    cd frontend && npm start
 #
-# Or use Docker Compose:
+# Or use Docker Compose (automatically builds zkVM):
 #    docker-compose up -d --build
 
 EOF

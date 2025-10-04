@@ -19,6 +19,7 @@ const transactionRoutes = require('./routes/transaction');
 const strategyManagerRoutes = require('./routes/strategyManager');
 const securityRoutes = require('./routes/security');
 const passkeyRoutes = require('./routes/passkey');
+const zkVMRoutes = require('./routes/zkvm');
 
 const app = express();
 
@@ -116,6 +117,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/admin/strategies', strategyManagerRoutes);
 app.use('/api/security', securityRoutes);
 app.use('/api/passkey', passkeyRoutes);
+app.use('/api/zkvm', zkVMRoutes);
 
 // Welcome endpoint
 app.get('/', (req, res) => {
@@ -130,7 +132,8 @@ app.get('/', (req, res) => {
       vault: '/api/vault',
       transactions: '/api/transactions',
       strategyManager: '/api/admin/strategies',
-      security: '/api/security'
+      security: '/api/security',
+      zkvm: '/api/zkvm'
     }
   });
 });
