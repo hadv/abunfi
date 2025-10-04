@@ -8,8 +8,8 @@ services:
   # Backend API
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile.with-zkvm
     container_name: abunfi-backend
     restart: unless-stopped
     environment:
@@ -23,6 +23,9 @@ services:
       JWT_SECRET: your-super-secret-jwt-key
       RPC_URL: https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
       CORS_ORIGIN: http://localhost:3000
+      # zkVM configuration
+      ZKVM_PROVER_PATH: /app/bin/zkvm-prover
+      ZKVM_TIMEOUT: 300000
     ports:
       - "3001:3001"
     depends_on:
@@ -30,6 +33,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - /app/bin
     networks:
       - abunfi-network
     command: npm run dev

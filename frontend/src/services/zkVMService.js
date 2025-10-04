@@ -7,7 +7,8 @@ import toast from 'react-hot-toast';
  */
 class ZkVMService {
   constructor() {
-    this.verificationServiceUrl = process.env.REACT_APP_RISC_ZERO_VERIFICATION_SERVICE_URL || 'http://localhost:3000';
+    // Use backend API for zkVM verification
+    this.verificationServiceUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
     this.supportedPlatforms = {
       TWITTER: { id: 0, name: 'Twitter', icon: '🐦', minAge: 30, minFollowers: 10 },
       DISCORD: { id: 1, name: 'Discord', icon: '💬', minAge: 14, minFollowers: 0 },
@@ -93,8 +94,8 @@ class ZkVMService {
    */
   async startZkVerification(platform, oauthToken, walletAddress, requestId) {
     try {
-      // Call the RISC Zero verification service
-      const response = await fetch(`${this.verificationServiceUrl}/verify`, {
+      // Call the backend zkVM API
+      const response = await fetch(`${this.verificationServiceUrl}/zkvm/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,6 +135,33 @@ class ZkVMService {
    */
   async checkVerificationStatus(requestId, contracts) {
     try {
+      // First check backend zkVM service for proof generation status
+      const backendResponse = await fetch(`${this.verificationServiceUrl}/zkvm/status/${requestId}`);
+
+      if (backendResponse.ok) {
+        const backendStatus = await backendResponse.json();
+
+        // If backend verification is still pending, return pending status
+        if (backendStatus.status === 'pending') {
+          return {
+            isVerified: false,
+            isCompleted: false,
+            data: null
+          };
+        }
+
+        // If backend verification failed, return failed status
+        if (backendStatus.status === 'failed') {
+          return {
+            isVerified: false,
+            isCompleted: true,
+            error: backendStatus.error,
+            data: null
+          };
+        }
+      }
+
+      // Check on-chain verification status
       if (!contracts.riscZeroSocialVerifier) {
         throw new Error('RISC Zero Social Verifier contract not available');
       }

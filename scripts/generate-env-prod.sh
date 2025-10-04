@@ -154,6 +154,15 @@ LIQUID_STAKING_STRATEGY_ADDRESS=0x31B602db32404AB15a41075774ccAF66918edA8c
 WEB3AUTH_CLIENT_ID=$WEB3AUTH_CLIENT_ID
 
 # =============================================================================
+# ZKVM CONFIGURATION
+# =============================================================================
+# Path to zkVM prover binary (built into Docker container)
+ZKVM_PROVER_PATH=/app/bin/zkvm-prover
+
+# Verification timeout in milliseconds (5 minutes)
+ZKVM_TIMEOUT=300000
+
+# =============================================================================
 # OPTIONAL CONFIGURATION
 # =============================================================================
 # Backup configuration
@@ -170,6 +179,7 @@ BACKUP_S3_BUCKET=abunfi-backups
 # ✅ Secrets auto-generated with cryptographically secure random values
 # ✅ Contract addresses loaded from deployment files
 # ✅ Configured for Sepolia testnet
+# ✅ zkVM prover automatically built in Docker container
 # ⚠️  Remember to configure Web3Auth for your domain
 # ⚠️  Set up monitoring and backup services
 # ⚠️  Keep this file secure (chmod 600)
@@ -180,6 +190,7 @@ BACKUP_S3_BUCKET=abunfi-backups
 # ✅ Strong, unique passwords generated
 # ✅ JWT secret is cryptographically secure
 # ✅ RPC URL configured
+# ✅ zkVM prover path configured for Docker
 # ⚠️  Domain SSL certificate will be auto-generated on deployment
 # ⚠️  Setup backup strategy (run: ./scripts/setup-automated-backups.sh)
 # ⚠️  Configure monitoring (run: ./scripts/monitor-production.sh)

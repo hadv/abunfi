@@ -20,8 +20,12 @@ Set up the Abunfi project running on Sepolia testnet. This guide covers everythi
 - **Node.js** >= 18.0.0 ([Download](https://nodejs.org/))
 - **Git** ([Download](https://git-scm.com/))
 - **PostgreSQL** >= 13.0 ([Download](https://postgresql.org/download/))
-- **Redis** >= 6.0 ([Download](https://redis.io/download))
+- **Rust** >= 1.75.0 ([Download](https://rustup.rs/)) - Required for zkVM prover
 - **Foundry** (will be installed automatically)
+
+### Optional Software (for Docker deployment):
+- **Docker** >= 20.10 ([Download](https://docs.docker.com/get-docker/))
+- **Docker Compose** >= 2.0 ([Download](https://docs.docker.com/compose/install/))
 
 ### Required Accounts & Resources:
 - **Sepolia ETH**: ~0.5 ETH for contract deployment
@@ -71,12 +75,24 @@ curl -L https://foundry.paradigm.xyz | bash
 source ~/.bashrc
 foundryup
 
+# Install Rust (if not installed) - Required for zkVM
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+
 # Verify installations
 node --version    # Should be >= 18
 forge --version   # Should show Foundry version
+rustc --version   # Should be >= 1.75
+cargo --version   # Should show Cargo version
 ```
 
-### Step 2: Install Dependencies
+### Step 2: Initialize Submodules
+```bash
+# Initialize git submodules (includes contracts and zkVM code)
+git submodule update --init --recursive
+```
+
+### Step 3: Install Dependencies
 ```bash
 # Install root dependencies
 npm install
@@ -91,7 +107,30 @@ cd frontend && npm install && cd ..
 cd contracts-submodule && npm install && cd ..
 ```
 
-### Step 3: Database Setup
+### Step 4: Build zkVM Prover
+
+The zkVM prover must be built before running the backend:
+
+```bash
+# Navigate to zkVM directory
+cd contracts-submodule/risc0-social-verifier
+
+# Build the zkVM prover binary
+cargo build --release --bin host
+
+# Copy binary to backend bin directory
+mkdir -p ../../backend/bin
+cp target/release/host ../../backend/bin/zkvm-prover
+
+# Verify binary exists
+ls -la ../../backend/bin/zkvm-prover
+
+cd ../..
+```
+
+**Note**: This step is only needed for local development. Docker builds handle this automatically.
+
+### Step 5: Database Setup
 
 #### 3.1 PostgreSQL Setup
 ```bash
@@ -204,6 +243,10 @@ JWT_EXPIRE=7d
 
 # CORS
 CORS_ORIGIN=http://localhost:3000
+
+# zkVM Configuration
+ZKVM_PROVER_PATH=./bin/zkvm-prover
+ZKVM_TIMEOUT=300000
 
 # External APIs
 COINGECKO_API_URL=https://api.coingecko.com/api/v3
@@ -545,9 +588,37 @@ chmod +x start-demo.sh
 ```
 
 #### 8.2 Start the Demo
+
+**Option A: Local Development (without Docker)**
 ```bash
 # Start all services
 ./start-demo.sh
+```
+
+**Option B: Docker Development (with zkVM)**
+```bash
+# Build and start all services with Docker
+docker-compose up -d --build
+
+# Check logs
+docker logs -f abunfi-backend
+
+# Verify zkVM binary is available
+docker exec abunfi-backend ls -la /app/bin/zkvm-prover
+
+# Test zkVM endpoint
+curl http://localhost:3001/api/zkvm/health
+```
+
+**Docker Services Include:**
+- ✅ Backend API with zkVM prover
+- ✅ Frontend React app
+- ✅ PostgreSQL database
+- ✅ Hardhat local node (for testing)
+
+**To stop Docker services:**
+```bash
+docker-compose down
 ```
 
 ### Step 9: Verify Demo is Working
@@ -638,7 +709,55 @@ forge script script/DeploySepolia.s.sol \
   --gas-limit 8000000
 ```
 
-#### Issue 3: Frontend Won't Connect
+#### Issue 3: zkVM Prover Binary Not Found
+```bash
+# Check if Rust is installed
+rustc --version
+cargo --version
+
+# Rebuild zkVM prover
+cd contracts-submodule/risc0-social-verifier
+cargo clean
+cargo build --release --bin host
+
+# Copy to backend bin directory
+mkdir -p ../../backend/bin
+cp target/release/host ../../backend/bin/zkvm-prover
+chmod +x ../../backend/bin/zkvm-prover
+
+# Verify binary exists
+ls -la ../../backend/bin/zkvm-prover
+
+cd ../..
+```
+
+**For Docker:**
+```bash
+# Rebuild backend with zkVM
+docker-compose build --no-cache backend
+
+# Verify binary in container
+docker exec abunfi-backend ls -la /app/bin/zkvm-prover
+
+# Test zkVM endpoint
+curl http://localhost:3001/api/zkvm/health
+```
+
+#### Issue 4: zkVM Verification Timeout
+```bash
+# Increase timeout in backend/.env
+ZKVM_TIMEOUT=600000  # 10 minutes
+
+# Restart backend
+# For local:
+pkill -f "node.*backend"
+cd backend && npm run dev
+
+# For Docker:
+docker-compose restart backend
+```
+
+#### Issue 5: Frontend Won't Connect
 ```bash
 # Check contract addresses in environment
 grep "REACT_APP_.*_ADDRESS" frontend/.env.local
@@ -695,13 +814,15 @@ cd frontend && npm start
 ## ✅ Success Checklist
 
 ### Technical Verification:
-- [ ] All dependencies installed correctly
+- [ ] All dependencies installed correctly (Node.js, Rust, Foundry)
+- [ ] Git submodules initialized
 - [ ] PostgreSQL database running and accessible
-- [ ] Redis server running and accessible
-- [ ] Environment files configured
+- [ ] zkVM prover binary built and available
+- [ ] Environment files configured (backend/.env, frontend/.env.local)
 - [ ] Smart contracts deployed to Sepolia
 - [ ] Contract addresses updated in all configs
 - [ ] Backend API responding (http://localhost:3001/api/health)
+- [ ] zkVM endpoint responding (http://localhost:3001/api/zkvm/health)
 - [ ] Frontend loading (http://localhost:3000)
 - [ ] Demo data created
 - [ ] All demo pages accessible
