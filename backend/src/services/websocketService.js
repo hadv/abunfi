@@ -20,33 +20,24 @@ class WebSocketService {
           const url = new URL(info.req.url, `http://${info.req.headers.host}`);
           const token = url.searchParams.get('token');
 
-          console.log('🔌 WebSocket verification: Token received:', !!token);
-
           if (!token) {
-            console.log('❌ WebSocket verification: No token provided');
             logger.warn('WebSocket connection rejected: No token provided');
             return false;
           }
 
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
-          console.log('🔌 WebSocket verification: Token decoded:', { userId: decoded.userId });
-
           const user = await UserRepository.findById(decoded.userId);
-          console.log('🔌 WebSocket verification: User found:', !!user, user ? { id: user.id, role: user.role, is_active: user.is_active } : null);
 
           if (!user || !user.is_active) {
-            console.log('❌ WebSocket verification: Invalid user or inactive');
             logger.warn('WebSocket connection rejected: Invalid user');
             return false;
           }
 
-          // Store user info for later use - try multiple approaches
+          // Store user info for later use
           info.req.user = user;
-          info.req.userData = user; // Alternative storage
-          console.log('✅ WebSocket verification: Success');
+          info.req.userData = user;
           return true;
         } catch (error) {
-          console.log('❌ WebSocket verification failed:', error.message);
           logger.warn('WebSocket connection rejected:', error.message);
           return false;
         }
@@ -64,10 +55,6 @@ class WebSocketService {
   }
 
   async handleConnection(ws, req) {
-    console.log('🔌 WebSocket handleConnection: req.user exists:', !!req.user);
-    console.log('🔌 WebSocket handleConnection: req.userData exists:', !!req.userData);
-    console.log('🔌 WebSocket handleConnection: req keys:', Object.keys(req));
-
     let user = req.user || req.userData;
 
     // If user is not found in req, try to extract from URL and verify again
@@ -77,18 +64,15 @@ class WebSocketService {
         const token = url.searchParams.get('token');
 
         if (token) {
-          console.log('🔌 WebSocket handleConnection: Attempting to verify token directly');
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
           user = await UserRepository.findById(decoded.userId);
-          console.log('🔌 WebSocket handleConnection: User found via token:', !!user);
         }
       } catch (error) {
-        console.log('❌ WebSocket handleConnection: Token verification failed:', error.message);
+        logger.error('WebSocket token verification failed:', error.message);
       }
     }
 
     if (!user) {
-      console.log('❌ WebSocket handleConnection: No user found in request');
       logger.error('WebSocket connection failed: No user found in request');
       ws.close(1008, 'Authentication failed');
       return;
@@ -120,7 +104,7 @@ class WebSocketService {
 
     // Handle disconnection
     ws.on('close', (code, reason) => {
-      console.log('🔌 WebSocket close event:', { userId, code, reason: reason?.toString(), userRole });
+      logger.info(`WebSocket disconnected: userId=${userId}, code=${code}`);
       this.handleDisconnection(ws, userId);
     });
 

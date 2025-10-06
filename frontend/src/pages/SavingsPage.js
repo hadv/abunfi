@@ -82,8 +82,7 @@ const SavingsPage = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // TODO: Implement actual deposit transaction via blockchain
       toast.success('Deposit successful!');
       setDepositAmount('');
     } catch (error) {
@@ -106,8 +105,7 @@ const SavingsPage = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // TODO: Implement actual withdrawal transaction via blockchain
       toast.success('Withdrawal successful!');
       setWithdrawShares('');
     } catch (error) {

@@ -38,15 +38,8 @@ api.interceptors.response.use(
       switch (status) {
         case 401:
           // Unauthorized - clear token and redirect to login
-          // TEMPORARILY DISABLED FOR DEBUGGING
-          console.error('🚨 API 401 Error - NOT redirecting for debugging:', {
-            url: error.config?.url,
-            pathname: window.location.pathname,
-            error: error.response?.data
-          });
-
           localStorage.removeItem('abunfi_token');
-          toast.error('Authentication failed - check console for details');
+          toast.error('Authentication failed. Please login again.');
 
           // Temporarily comment out redirect to see what's happening
           // window.location.href = '/login';

@@ -37,7 +37,7 @@ class SecurityController {
         });
       }
 
-      // Mock security status (in real implementation, this would query the blockchain)
+      // TODO: Replace with real blockchain queries to EIP7702Paymaster contract
       const securityStatus = await this.generateMockSecurityStatus(walletAddress);
       
       // Cache the result
@@ -224,16 +224,18 @@ class SecurityController {
   }
 
   /**
-   * Generate mock security status (replace with real blockchain queries)
+   * Get security status from blockchain
+   * TODO: Replace with real blockchain queries to EIP7702Paymaster contract
+   * Currently using deterministic mock data based on wallet address
    */
   async generateMockSecurityStatus(walletAddress) {
-    // Simulate different security states based on wallet address
+    // Generate deterministic security states based on wallet address
     const addressHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(walletAddress));
     const hashInt = parseInt(addressHash.slice(2, 10), 16);
-    
-    const isWhitelisted = hashInt % 10 < 3; // 30% chance of being whitelisted
-    const gasUsedPercentage = (hashInt % 100) * 0.8; // 0-80% usage
-    const txUsedPercentage = (hashInt % 100) * 0.6; // 0-60% usage
+
+    const isWhitelisted = hashInt % 10 < 3;
+    const gasUsedPercentage = (hashInt % 100) * 0.8;
+    const txUsedPercentage = (hashInt % 100) * 0.6;
     
     const dailyGasLimit = isWhitelisted ? '0.2' : '0.1'; // ETH
     const dailyTxLimit = isWhitelisted ? 100 : 50;

@@ -4,6 +4,7 @@ const passkeyController = require('../controllers/passkeyController');
 const { authenticate } = require('../middleware/auth');
 const { validateRequest } = require('../middleware/validation');
 const rateLimit = require('express-rate-limit');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
@@ -207,7 +208,7 @@ router.get('/security/status',
       });
 
     } catch (error) {
-      console.error('Get security status error:', error);
+      logger.error('Get security status error:', error);
       res.status(500).json({ error: 'Failed to retrieve security status' });
     }
   }
@@ -284,7 +285,7 @@ router.post('/security/claim-achievement',
       });
 
     } catch (error) {
-      console.error('Claim achievement error:', error);
+      logger.error('Claim achievement error:', error);
       res.status(500).json({ error: 'Failed to claim achievement' });
     }
   }
@@ -392,7 +393,7 @@ router.get('/security/recommendations',
       });
 
     } catch (error) {
-      console.error('Get security recommendations error:', error);
+      logger.error('Get security recommendations error:', error);
       res.status(500).json({ error: 'Failed to retrieve security recommendations' });
     }
   }

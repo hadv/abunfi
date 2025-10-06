@@ -72,14 +72,14 @@ const ProtocolComparison = ({ showDetailed = false }) => {
   useEffect(() => {
     if (autoRefresh) {
       const interval = setInterval(() => {
-        // Simulate real-time data updates
+        // TODO: Fetch real-time APY data from blockchain/APIs
         setProtocolData(prev => prev.map(protocol => ({
           ...protocol,
           apy: protocol.apy + (Math.random() - 0.5) * 0.2,
           lastDayChange: (Math.random() - 0.5) * 0.5
         })));
         setLastUpdated(new Date());
-      }, 30000); // Update every 30 seconds
+      }, 30000);
 
       return () => clearInterval(interval);
     }
@@ -87,7 +87,7 @@ const ProtocolComparison = ({ showDetailed = false }) => {
 
   const handleRefresh = () => {
     setLastUpdated(new Date());
-    // Simulate data refresh
+    // TODO: Fetch updated APY data from blockchain/APIs
     setProtocolData(prev => prev.map(protocol => ({
       ...protocol,
       apy: protocol.apy + (Math.random() - 0.5) * 0.1

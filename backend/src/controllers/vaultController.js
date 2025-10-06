@@ -358,13 +358,9 @@ const vaultController = {
           shouldTrigger = await blockchainService.shouldTriggerAllocation();
         }
       } catch (blockchainError) {
-        logger.warn('Blockchain service unavailable, using mock data');
-      }
-
-      // Mock logic if blockchain is not available
-      if (!blockchainService.initialized) {
-        // Mock: trigger if pending > threshold or time elapsed
-        shouldTrigger = Math.random() > 0.7; // 30% chance for demo
+        logger.warn('Blockchain service unavailable');
+        // Return false if blockchain is not available
+        shouldTrigger = false;
       }
 
       res.json({

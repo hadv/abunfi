@@ -58,7 +58,7 @@ abunfi-contracts/       # Smart contracts repository (separate)
 ### Frontend
 - **React 18** with TypeScript
 - **Material-UI** for user interface
-- **Web3Auth** for multi-platform authentication
+- **Web3Auth** for social login (Google, Apple, Facebook) - ✅ **Fully Implemented**
 - **Ethers.js** for blockchain interaction
 - **Recharts** for data visualization
 - **WebSocket** for real-time updates
@@ -66,16 +66,18 @@ abunfi-contracts/       # Smart contracts repository (separate)
 ### Backend
 - **Node.js** with Express.js
 - **PostgreSQL** for financial data
-- **Memory Cache** for sessions and caching (demo mode)
+- **Memory Cache** for sessions and caching (upgradeable to Redis)
 - **JWT** for API authentication
 - **WebSocket** for real-time updates
 - **Role-based Access Control** for Strategy Manager
+- **zkVM Integration** for privacy-preserving verification
 
 ### Blockchain
-- **Arbitrum One** (Ethereum Layer 2)
+- **Sepolia Testnet** (Ethereum testnet for pre-production)
 - **Solidity** for smart contracts
 - **Foundry** for testing and deployment
-- **Account Abstraction** for better UX
+- **Account Abstraction (EIP-7702)** for gasless transactions
+- **zkVM (RISC Zero)** for privacy-preserving social verification
 
 ### DeFi Integration
 - **Aave, Curve, Lido, Rocket Pool, Uniswap V3**
@@ -120,24 +122,13 @@ cd frontend && npm start     # Terminal 2
 
 ### 🎯 Strategy Manager Dashboard
 
-New real-time dashboard for strategy managers:
+Real-time dashboard for strategy managers:
 - **Real-time Data Visualization**: Funds distribution, APY comparison, compound interest
 - **Interactive Controls**: Allocation management with auto-rebalancing
 - **Role-based Access**: Strategy managers and admins only
 - **WebSocket Integration**: Live updates every 30 seconds
 
-**Access**: `http://localhost:3000` → Click "Development Login"
-
-**Test Accounts**:
-- `manager@abunfi.com` (Strategy Manager) - ✅ Full access
-- `admin@abunfi.com` (Admin) - ✅ Full access
-- `user@abunfi.com` (Regular User) - ❌ Access denied
-
-**How to Login**:
-1. Open `http://localhost:3000`
-2. Click "Development Login" button (development mode only)
-3. Select a test account or enter email manually
-4. Automatically redirected to appropriate dashboard
+**Access**: `http://localhost:3000/strategy-manager`
 
 ## 🐳 Docker Deployment
 
@@ -176,9 +167,9 @@ DOMAIN_NAME=your-domain.com ./scripts/deploy-production.sh
 - 📊 **Health monitoring** and logging
 - 🔄 **Automatic backups** and recovery
 - 🚀 **Performance optimization** with caching
-- 💾 **Memory cache** for demo (easily upgradeable to Redis)
+- 💾 **Memory cache** for sessions (upgradeable to Redis for production)
 
-See [DOCKER_SETUP.md](DOCKER_SETUP.md), [PRODUCTION_ONLY_DEPLOYMENT.md](PRODUCTION_ONLY_DEPLOYMENT.md), and [MEMORY_CACHE_DEMO.md](MEMORY_CACHE_DEMO.md) for detailed guides.
+See [DOCKER_SETUP.md](DOCKER_SETUP.md) and [PRODUCTION_ONLY_DEPLOYMENT.md](PRODUCTION_ONLY_DEPLOYMENT.md) for detailed guides.
 
 ## 📚 Documentation
 
