@@ -82,7 +82,10 @@ const SavingsPage = () => {
         return;
       }
 
-      // TODO: Implement actual deposit transaction via blockchain
+      // Execute deposit transaction via smart contract
+      // TODO: Implement when Vault contract is deployed
+      // const tx = await vaultContract.deposit(ethers.parseEther(depositAmount));
+      // await tx.wait();
       toast.success('Deposit successful!');
       setDepositAmount('');
     } catch (error) {
@@ -105,7 +108,10 @@ const SavingsPage = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Implement actual withdrawal transaction via blockchain
+      // Execute withdrawal transaction via smart contract
+      // TODO: Implement when Vault contract is deployed
+      // const tx = await vaultContract.withdraw(withdrawShares);
+      // await tx.wait();
       toast.success('Withdrawal successful!');
       setWithdrawShares('');
     } catch (error) {

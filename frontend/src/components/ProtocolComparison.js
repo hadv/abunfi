@@ -72,7 +72,10 @@ const ProtocolComparison = ({ showDetailed = false }) => {
   useEffect(() => {
     if (autoRefresh) {
       const interval = setInterval(() => {
-        // TODO: Fetch real-time APY data from blockchain/APIs
+        // Fetch real-time APY data from DeFi protocols
+        // TODO: Implement when backend API endpoints are ready
+        // Example: fetchProtocolAPYs().then(data => setProtocolData(data));
+        // For now, using placeholder data with small variations
         setProtocolData(prev => prev.map(protocol => ({
           ...protocol,
           apy: protocol.apy + (Math.random() - 0.5) * 0.2,
@@ -87,7 +90,9 @@ const ProtocolComparison = ({ showDetailed = false }) => {
 
   const handleRefresh = () => {
     setLastUpdated(new Date());
-    // TODO: Fetch updated APY data from blockchain/APIs
+    // Fetch updated APY data from DeFi protocols
+    // TODO: Implement when backend API endpoints are ready
+    // Example: fetchProtocolAPYs().then(data => setProtocolData(data));
     setProtocolData(prev => prev.map(protocol => ({
       ...protocol,
       apy: protocol.apy + (Math.random() - 0.5) * 0.1

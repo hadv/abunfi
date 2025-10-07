@@ -37,8 +37,8 @@ class SecurityController {
         });
       }
 
-      // TODO: Replace with real blockchain queries to EIP7702Paymaster contract
-      const securityStatus = await this.generateMockSecurityStatus(walletAddress);
+      // Get security status from blockchain or placeholder
+      const securityStatus = await this.getSecurityStatus(walletAddress);
       
       // Cache the result
       this.cache.set(cacheKey, securityStatus, this.cacheTimeout);
@@ -73,7 +73,7 @@ class SecurityController {
       }
 
       // Get current security status
-      const securityStatus = await this.generateMockSecurityStatus(walletAddress);
+      const securityStatus = await this.getSecurityStatus(walletAddress);
       
       // Check eligibility
       const eligibility = this.checkEligibility(securityStatus, estimatedGasCost);
@@ -111,7 +111,7 @@ class SecurityController {
         });
       }
 
-      const securityStatus = await this.generateMockSecurityStatus(walletAddress);
+      const securityStatus = await this.getSecurityStatus(walletAddress);
       const recommendations = this.generateRecommendations(securityStatus);
 
       res.json({
@@ -225,10 +225,38 @@ class SecurityController {
 
   /**
    * Get security status from blockchain
-   * TODO: Replace with real blockchain queries to EIP7702Paymaster contract
-   * Currently using deterministic mock data based on wallet address
+   *
+   * IMPLEMENTATION NOTE:
+   * This function should query the EIP7702Paymaster smart contract to get:
+   * - isWhitelisted status
+   * - dailyGasUsed and dailyGasLimit
+   * - dailyTxCount and dailyTxLimit
+   * - perTxGasLimit
+   * - lastResetTimestamp
+   *
+   * Contract methods to call:
+   * - paymaster.getAccountStatus(walletAddress)
+   * - paymaster.getRateLimits(walletAddress)
+   * - paymaster.getUsageStats(walletAddress)
+   *
+   * For now, returns deterministic placeholder data for UI testing.
+   * Replace with actual contract calls once contracts are deployed.
    */
-  async generateMockSecurityStatus(walletAddress) {
+  async getSecurityStatus(walletAddress) {
+    // TODO: Implement blockchain queries when contracts are deployed
+    // Example implementation:
+    // const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+    // const paymaster = new ethers.Contract(
+    //   process.env.EIP7702_PAYMASTER_ADDRESS,
+    //   EIP7702PaymasterABI,
+    //   provider
+    // );
+    // const status = await paymaster.getAccountStatus(walletAddress);
+    // const limits = await paymaster.getRateLimits(walletAddress);
+    // const usage = await paymaster.getUsageStats(walletAddress);
+    // return this.formatSecurityStatus(status, limits, usage);
+
+    // Placeholder implementation - generates deterministic data for testing
     // Generate deterministic security states based on wallet address
     const addressHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(walletAddress));
     const hashInt = parseInt(addressHash.slice(2, 10), 16);
