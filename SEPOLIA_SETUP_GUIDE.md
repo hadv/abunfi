@@ -1,8 +1,8 @@
-# 🚀 Abunfi Sepolia Setup Guide
+# 🚀 Abunfi Sepolia Testnet Deployment Guide
 
 ## 📋 Overview
 
-Set up the Abunfi project running on Sepolia testnet. This guide covers everything from prerequisites to a functional demo with zkVM rate limiting.
+Deploy the Abunfi project to Sepolia testnet as pre-production environment. This guide covers everything from prerequisites to a fully functional deployment with zkVM rate limiting.
 
 ## 🎯 What You'll Have After Setup
 
@@ -37,29 +37,18 @@ Set up the Abunfi project running on Sepolia testnet. This guide covers everythi
 - **Etherscan API Key**: For contract verification (optional)
   - Get from: [etherscan.io/apis](https://etherscan.io/apis)
 
-### Optional (for enhanced demo):
+### Optional:
 - **Web3Auth Client ID**: For social login
   - Get from: [web3auth.io](https://web3auth.io/)
 
-## ⚡ Quick Start (Automated Setup)
+## ⚡ Quick Start
 
-### Option 1: One-Command Setup (Recommended)
 ```bash
 # Clone repository
 git clone https://github.com/hadv/abunfi.git
 cd abunfi
 
-# Run automated setup
-./scripts/setup-sepolia-demo.sh
-
-# Follow prompts to enter:
-# - Private key (with Sepolia ETH)
-# - Sepolia RPC URL
-# - Etherscan API key (optional)
-# - Web3Auth Client ID (optional)
-
-# Start demo
-./start-demo.sh
+# Follow the manual setup steps below to configure and deploy
 ```
 
 ## 📝 Manual Setup (Step-by-Step)
@@ -238,7 +227,7 @@ CHAIN_ID=11155111
 PRIVATE_KEY=[YOUR_PRIVATE_KEY]
 
 # Security
-JWT_SECRET=abunfi_demo_jwt_secret_2024
+JWT_SECRET=your_secure_jwt_secret_here_change_in_production
 JWT_EXPIRE=7d
 
 # CORS
@@ -284,23 +273,18 @@ REACT_APP_WEB3AUTH_CLIENT_ID=[YOUR_WEB3AUTH_CLIENT_ID]
 REACT_APP_WEB3AUTH_NETWORK=sapphire_devnet
 
 # zkVM & Rate Limiting Features
-REACT_APP_ENABLE_ZKVM_DEMO=true
+REACT_APP_ENABLE_ZKVM=true
 REACT_APP_SOCIAL_VERIFICATION_ENABLED=true
-REACT_APP_ENABLE_RATE_LIMITING_DEMO=true
+REACT_APP_ENABLE_RATE_LIMITING=true
 REACT_APP_SHOW_RATE_LIMIT_DASHBOARD=true
 
-# Demo Rate Limits
+# Rate Limits (Testnet Configuration)
 REACT_APP_DEFAULT_DAILY_GAS_LIMIT=0.1
 REACT_APP_WHITELISTED_DAILY_GAS_LIMIT=0.2
 REACT_APP_DEFAULT_PER_TX_GAS_LIMIT=0.01
 REACT_APP_WHITELISTED_PER_TX_GAS_LIMIT=0.02
 REACT_APP_DEFAULT_DAILY_TX_LIMIT=50
 REACT_APP_WHITELISTED_DAILY_TX_LIMIT=100
-
-# Demo Features
-REACT_APP_ENABLE_SECURITY_TESTING=true
-REACT_APP_SECURITY_TEST_MODE=true
-REACT_APP_ENABLE_DEV_TOOLS=true
 
 # Contract addresses (updated after deployment)
 REACT_APP_VAULT_CONTRACT_ADDRESS=0x...
@@ -417,185 +401,9 @@ REACT_APP_RISC_ZERO_SOCIAL_VERIFIER_ADDRESS=0x5678901234567890123456789012345678
 REACT_APP_EIP7702_PAYMASTER_ADDRESS=0x6789012345678901234567890123456789012345
 ```
 
-### Step 7: Create Demo Data
+### Step 7: Start the Application
 
-#### 7.1 Create Demo Data Directory
-```bash
-mkdir -p demo-data
-```
-
-#### 7.2 Create Demo Users
-```bash
-cat > demo-data/demo-users.json << 'EOF'
-{
-  "demoUsers": [
-    {
-      "email": "investor@demo.com",
-      "name": "Demo Investor",
-      "role": "user",
-      "balance": 1000,
-      "apy": 12.5,
-      "socialVerificationLevel": 1,
-      "verifiedPlatforms": ["twitter"]
-    },
-    {
-      "email": "manager@demo.com",
-      "name": "Strategy Manager",
-      "role": "strategy_manager",
-      "balance": 50000,
-      "apy": 15.2,
-      "socialVerificationLevel": 3,
-      "verifiedPlatforms": ["twitter", "github", "linkedin"]
-    },
-    {
-      "email": "whale@demo.com",
-      "name": "Whale User",
-      "role": "user",
-      "balance": 100000,
-      "apy": 14.8,
-      "socialVerificationLevel": 2,
-      "verifiedPlatforms": ["twitter", "github"]
-    }
-  ]
-}
-EOF
-```
-
-#### 7.3 Create Rate Limiting Demo Data
-```bash
-cat > demo-data/rate-limiting-demo.json << 'EOF'
-{
-  "rateLimitingData": [
-    {
-      "address": "0x1234567890123456789012345678901234567890",
-      "socialVerificationLevel": 0,
-      "dailyGasUsed": "0.05",
-      "dailyTxCount": 25,
-      "isWhitelisted": false,
-      "limits": {
-        "dailyGasLimit": "0.1",
-        "perTxGasLimit": "0.01",
-        "dailyTxLimit": 50
-      }
-    },
-    {
-      "address": "0x5678901234567890123456789012345678901234",
-      "socialVerificationLevel": 2,
-      "dailyGasUsed": "0.08",
-      "dailyTxCount": 40,
-      "isWhitelisted": true,
-      "limits": {
-        "dailyGasLimit": "0.2",
-        "perTxGasLimit": "0.02",
-        "dailyTxLimit": 100
-      }
-    }
-  ]
-}
-EOF
-```
-
-### Step 8: Start the Demo
-
-#### 8.1 Create Startup Script
-```bash
-cat > start-demo.sh << 'EOF'
-#!/bin/bash
-
-echo "🚀 Starting Abunfi Demo..."
-
-# Function to check if port is in use
-check_port() {
-    if lsof -Pi :$1 -sTCP:LISTEN -t >/dev/null ; then
-        echo "Port $1 is already in use. Stopping existing process..."
-        kill $(lsof -t -i:$1) 2>/dev/null || true
-        sleep 2
-    fi
-}
-
-# Check and clear ports
-check_port 3000
-check_port 3001
-
-# Start backend
-echo "📡 Starting backend API server..."
-cd backend
-npm run dev &
-BACKEND_PID=$!
-cd ..
-
-# Wait for backend to start
-echo "⏳ Waiting for backend to initialize..."
-sleep 10
-
-# Check if backend is running
-if curl -s http://localhost:3001/api/health > /dev/null; then
-    echo "✅ Backend started successfully"
-else
-    echo "❌ Backend failed to start"
-    exit 1
-fi
-
-# Start frontend
-echo "🌐 Starting frontend application..."
-cd frontend
-npm start &
-FRONTEND_PID=$!
-cd ..
-
-# Wait for frontend to start
-echo "⏳ Waiting for frontend to initialize..."
-sleep 15
-
-echo ""
-echo "🎉 Abunfi Demo Started!"
-echo ""
-echo "📱 Frontend Application: http://localhost:3000"
-echo "🔧 Backend API: http://localhost:3001"
-echo "📊 API Health Check: http://localhost:3001/api/health"
-echo ""
-echo "🔐 zkVM Demo Pages:"
-echo "   • Social Verification: http://localhost:3000/social-verification"
-echo "   • Rate Limiting: http://localhost:3000/rate-limits"
-echo "   • Security Dashboard: http://localhost:3000/security"
-echo ""
-echo "💼 Demo Flow:"
-echo "   • Landing Page: http://localhost:3000"
-echo "   • Login: http://localhost:3000/login"
-echo "   • Dashboard: http://localhost:3000/dashboard"
-echo "   • Savings: http://localhost:3000/savings"
-echo "   • Strategy Manager: http://localhost:3000/strategy-manager"
-echo ""
-echo "Press Ctrl+C to stop the demo"
-
-# Function to cleanup on exit
-cleanup() {
-    echo ""
-    echo "🛑 Stopping demo..."
-    kill $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
-    echo "✅ Demo stopped"
-    exit 0
-}
-
-# Set trap for cleanup
-trap cleanup INT TERM
-
-# Wait for user interrupt
-wait
-EOF
-
-chmod +x start-demo.sh
-```
-
-#### 8.2 Start the Demo
-
-**Option A: Local Development (without Docker)**
-```bash
-# Start all services
-./start-demo.sh
-```
-
-**Option B: Docker Development (with zkVM)**
+**Option A: Docker Deployment (Recommended)**
 ```bash
 # Build and start all services with Docker
 docker-compose up -d --build
@@ -637,28 +445,12 @@ curl http://localhost:3001/api/blockchain/status
 
 #### 9.2 Test Core Functionality
 1. **Landing Page**: Visit http://localhost:3000
-2. **Login Flow**: Test social login or dev login
+2. **Login Flow**: Test social login
 3. **Dashboard**: Verify portfolio data displays
-4. **Deposit Flow**: Test small deposit transaction
+4. **Deposit Flow**: Test deposit transaction
 5. **zkVM Features**: Navigate to social verification
 6. **Rate Limits**: Check rate limiting dashboard
-
-### Step 10: Demo Preparation
-
-#### 10.1 Create Browser Bookmarks
-- **Landing**: http://localhost:3000
-- **Login**: http://localhost:3000/login
-- **Dashboard**: http://localhost:3000/dashboard
-- **Savings**: http://localhost:3000/savings
-- **Social Verification**: http://localhost:3000/social-verification
-- **Rate Limits**: http://localhost:3000/rate-limits
-- **Strategy Manager**: http://localhost:3000/strategy-manager
-
-#### 10.2 Practice Demo Script (8 minutes)
-1. **Minutes 1-2**: Problem statement and solution overview
-2. **Minutes 3-4**: Core features (login, deposit, dashboard)
-3. **Minutes 5-6**: zkVM social verification and rate limiting
-4. **Minutes 7-8**: Strategy management and competitive advantages
+7. **Strategy Manager**: Test strategy management interface
 
 ## 🔧 Troubleshooting
 

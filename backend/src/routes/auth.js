@@ -71,13 +71,4 @@ router.post('/forgot-password',
   authController.forgotPassword
 );
 
-// Development login (ONLY for development environment)
-router.post('/dev-login',
-  [
-    body('email').isEmail().withMessage('Valid email is required')
-  ],
-  validateRequest,
-  authController.devLogin
-);
-
 module.exports = router;

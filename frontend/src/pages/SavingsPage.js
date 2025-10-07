@@ -22,9 +22,10 @@ import GaslessTransactionSecurity from '../components/security/GaslessTransactio
 import BatchingSystemInfo from '../components/BatchingSystemInfo';
 import { useSecurityAuth } from '../services/securityAuthService';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
+import blockchainService from '../services/blockchainService';
 
 const SavingsPage = () => {
-  const { walletAddress } = useWeb3Auth();
+  const { walletAddress, provider } = useWeb3Auth();
   const { canPerformGaslessTransaction } = useSecurityAuth();
   const [tabValue, setTabValue] = useState(0);
   const [depositAmount, setDepositAmount] = useState('');
@@ -82,12 +83,25 @@ const SavingsPage = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Deposit successful!');
+      // Initialize blockchain service with Web3Auth provider
+      if (provider) {
+        await blockchainService.initialize(provider);
+      }
+
+      // Execute deposit transaction via smart contract
+      toast.loading('Submitting transaction...');
+      const receipt = await blockchainService.deposit(depositAmount);
+
+      toast.dismiss();
+      toast.success(`Deposit successful! Tx: ${receipt.transactionHash.slice(0, 10)}...`);
       setDepositAmount('');
+
+      // Refresh balance (you may want to add a callback here)
     } catch (error) {
-      toast.error('Có lỗi xảy ra, vui lòng thử lại');
+      toast.dismiss();
+      console.error('Deposit error:', error);
+      const errorMessage = blockchainService.formatError(error);
+      toast.error(`Deposit failed: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -106,12 +120,25 @@ const SavingsPage = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Withdrawal successful!');
+      // Initialize blockchain service with Web3Auth provider
+      if (provider) {
+        await blockchainService.initialize(provider);
+      }
+
+      // Execute withdrawal transaction via smart contract
+      toast.loading('Submitting transaction...');
+      const receipt = await blockchainService.withdraw(withdrawShares);
+
+      toast.dismiss();
+      toast.success(`Withdrawal successful! Tx: ${receipt.transactionHash.slice(0, 10)}...`);
       setWithdrawShares('');
+
+      // Refresh balance (you may want to add a callback here)
     } catch (error) {
-      toast.error('Có lỗi xảy ra, vui lòng thử lại');
+      toast.dismiss();
+      console.error('Withdrawal error:', error);
+      const errorMessage = blockchainService.formatError(error);
+      toast.error(`Withdrawal failed: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

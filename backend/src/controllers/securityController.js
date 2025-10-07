@@ -1,6 +1,7 @@
 const { ethers } = require('ethers');
 const logger = require('../utils/logger');
 const memoryCache = require('../utils/memoryCache');
+const blockchainService = require('../config/blockchain');
 
 /**
  * Security Controller
@@ -37,8 +38,8 @@ class SecurityController {
         });
       }
 
-      // Mock security status (in real implementation, this would query the blockchain)
-      const securityStatus = await this.generateMockSecurityStatus(walletAddress);
+      // Get security status from blockchain
+      const securityStatus = await blockchainService.getSecurityStatus(walletAddress);
       
       // Cache the result
       this.cache.set(cacheKey, securityStatus, this.cacheTimeout);
@@ -73,7 +74,7 @@ class SecurityController {
       }
 
       // Get current security status
-      const securityStatus = await this.generateMockSecurityStatus(walletAddress);
+      const securityStatus = await blockchainService.getSecurityStatus(walletAddress);
       
       // Check eligibility
       const eligibility = this.checkEligibility(securityStatus, estimatedGasCost);
@@ -111,7 +112,7 @@ class SecurityController {
         });
       }
 
-      const securityStatus = await this.generateMockSecurityStatus(walletAddress);
+      const securityStatus = await blockchainService.getSecurityStatus(walletAddress);
       const recommendations = this.generateRecommendations(securityStatus);
 
       res.json({
@@ -223,130 +224,62 @@ class SecurityController {
     }
   }
 
-  /**
-   * Generate mock security status (replace with real blockchain queries)
-   */
-  async generateMockSecurityStatus(walletAddress) {
-    // Simulate different security states based on wallet address
-    const addressHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(walletAddress));
-    const hashInt = parseInt(addressHash.slice(2, 10), 16);
-    
-    const isWhitelisted = hashInt % 10 < 3; // 30% chance of being whitelisted
-    const gasUsedPercentage = (hashInt % 100) * 0.8; // 0-80% usage
-    const txUsedPercentage = (hashInt % 100) * 0.6; // 0-60% usage
-    
-    const dailyGasLimit = isWhitelisted ? '0.2' : '0.1'; // ETH
-    const dailyTxLimit = isWhitelisted ? 100 : 50;
-    const perTxLimit = isWhitelisted ? '0.02' : '0.01'; // ETH
-    
-    const gasUsed = (parseFloat(dailyGasLimit) * gasUsedPercentage / 100).toFixed(6);
-    const txUsed = Math.floor(dailyTxLimit * txUsedPercentage / 100);
-    
-    const gasRemaining = (parseFloat(dailyGasLimit) - parseFloat(gasUsed)).toFixed(6);
-    const txRemaining = dailyTxLimit - txUsed;
-    
-    // Determine risk level
-    let riskLevel = 'low';
-    if (gasUsedPercentage > 80 || txUsedPercentage > 80) {
-      riskLevel = 'high';
-    } else if (gasUsedPercentage > 60 || txUsedPercentage > 60) {
-      riskLevel = 'medium';
-    }
-    
-    // Generate warnings
-    const warnings = [];
-    if (gasUsedPercentage > 80) {
-      warnings.push({
-        type: 'gas_limit',
-        severity: gasUsedPercentage > 95 ? 'critical' : 'warning',
-        message: `You've used ${gasUsedPercentage.toFixed(1)}% of your daily gas limit`,
-        remaining: gasRemaining
-      });
-    }
-    
-    if (txUsedPercentage > 80) {
-      warnings.push({
-        type: 'tx_limit',
-        severity: txUsedPercentage > 95 ? 'critical' : 'warning',
-        message: `You've used ${txUsedPercentage.toFixed(1)}% of your daily transaction limit`,
-        remaining: txRemaining
-      });
-    }
 
-    const now = new Date();
-    const lastReset = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const nextReset = new Date(lastReset.getTime() + 24 * 60 * 60 * 1000);
-    const hoursUntilReset = Math.ceil((nextReset - now) / (1000 * 60 * 60));
-
-    return {
-      isActive: true,
-      isWhitelisted,
-      requiresWhitelist: false,
-      dailyLimits: {
-        gas: {
-          used: gasUsed,
-          limit: dailyGasLimit,
-          remaining: gasRemaining,
-          percentage: gasUsedPercentage
-        },
-        transactions: {
-          used: txUsed,
-          limit: dailyTxLimit,
-          remaining: txRemaining,
-          percentage: txUsedPercentage
-        }
-      },
-      perTxLimit,
-      resetInfo: {
-        lastReset: lastReset.toISOString(),
-        nextReset: nextReset.toISOString(),
-        hoursUntilReset
-      },
-      warnings,
-      riskLevel
-    };
-  }
 
   /**
    * Check transaction eligibility based on security status
    */
   checkEligibility(securityStatus, estimatedGasCost) {
-    if (!securityStatus.isActive) {
-      return {
-        canProceed: false,
-        reason: 'Gasless transactions are disabled for your account'
-      };
-    }
-
-    if (securityStatus.requiresWhitelist && !securityStatus.isWhitelisted) {
-      return {
-        canProceed: false,
-        reason: 'Your account requires whitelisting for gasless transactions'
-      };
-    }
-
-    if (securityStatus.dailyLimits.transactions.remaining <= 0) {
+    // Check if transactions remaining
+    if (securityStatus.remaining && securityStatus.remaining.transactions <= 0) {
       return {
         canProceed: false,
         reason: 'Daily transaction limit exceeded'
       };
     }
 
-    if (estimatedGasCost) {
-      const estimatedCostFloat = parseFloat(estimatedGasCost);
-      
-      if (estimatedCostFloat > parseFloat(securityStatus.perTxLimit)) {
-        return {
-          canProceed: false,
-          reason: `Transaction gas cost exceeds per-transaction limit of ${securityStatus.perTxLimit} ETH`
-        };
-      }
+    // Check per-transaction gas limit
+    if (estimatedGasCost && securityStatus.limits) {
+      try {
+        // Convert all values to wei for precise BigNumber comparison
+        const estimatedCostWei = ethers.parseEther(estimatedGasCost.toString());
+        const perTxLimitWei = ethers.parseEther(securityStatus.limits.perTxGasLimit.toString());
+        const gasRemainingWei = ethers.parseEther(securityStatus.remaining.gas.toString());
 
-      if (estimatedCostFloat > parseFloat(securityStatus.dailyLimits.gas.remaining)) {
-        return {
-          canProceed: false,
-          reason: 'Insufficient daily gas allowance remaining'
-        };
+        if (estimatedCostWei > perTxLimitWei) {
+          return {
+            canProceed: false,
+            reason: `Transaction gas cost exceeds per-transaction limit of ${securityStatus.limits.perTxGasLimit} ETH`
+          };
+        }
+
+        // Check daily gas remaining
+        if (estimatedCostWei > gasRemainingWei) {
+          return {
+            canProceed: false,
+            reason: 'Insufficient daily gas allowance remaining'
+          };
+        }
+      } catch (error) {
+        logger.warn('Error parsing gas values for comparison, falling back to float comparison:', error);
+        // Fallback to original float comparison if BigNumber parsing fails
+        const estimatedCostFloat = parseFloat(estimatedGasCost);
+        const perTxLimit = parseFloat(securityStatus.limits.perTxGasLimit);
+        const gasRemaining = parseFloat(securityStatus.remaining.gas);
+
+        if (estimatedCostFloat > perTxLimit) {
+          return {
+            canProceed: false,
+            reason: `Transaction gas cost exceeds per-transaction limit of ${perTxLimit} ETH`
+          };
+        }
+
+        if (estimatedCostFloat > gasRemaining) {
+          return {
+            canProceed: false,
+            reason: 'Insufficient daily gas allowance remaining'
+          };
+        }
       }
     }
 

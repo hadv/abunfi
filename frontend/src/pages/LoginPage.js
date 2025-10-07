@@ -5,31 +5,26 @@ import {
   Paper,
   Typography,
   Button,
-  Divider,
   CircularProgress,
   Alert,
   Dialog,
   Chip
 } from '@mui/material';
-import { Google, Apple, Phone, Code, Security, Star } from '@mui/icons-material';
+import { Google, Apple, Phone, Security, Star } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWeb3Auth } from '../contexts/Web3AuthContext';
-import DevLogin from '../components/DevLogin';
 import AntiAbuseEducation from '../components/security/AntiAbuseEducation';
 import PasskeyAuthentication from '../components/PasskeyAuthentication';
 import PasskeyRegistration from '../components/PasskeyRegistration';
-import { useSecurityAuth } from '../services/securityAuthService';
 import { authService } from '../services/authService';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useWeb3Auth();
-  const { socialLoginWithSecurity } = useSecurityAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showDevLogin, setShowDevLogin] = useState(false);
   const [showSecurityInfo, setShowSecurityInfo] = useState(false);
   const [show2FA, setShow2FA] = useState(false);
   const [showPasskeySetup, setShowPasskeySetup] = useState(false);
@@ -224,7 +219,7 @@ const LoginPage = () => {
                 variant="outlined"
                 size="large"
                 startIcon={<Phone />}
-                onClick={() => handleSocialLogin('phone')}
+                onClick={() => toast.info('Phone login coming soon!')}
                 disabled={isLoading}
                 sx={{
                   py: 1.5,
@@ -235,48 +230,6 @@ const LoginPage = () => {
                 Login with Phone Number
               </Button>
             </Box>
-
-            <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" color="text.secondary">
-                Or
-              </Typography>
-            </Divider>
-
-            {/* Demo Login */}
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              onClick={() => handleSocialLogin('google')}
-              disabled={isLoading}
-              sx={{ py: 1.5, mb: 2 }}
-            >
-              Try Demo
-            </Button>
-
-            {/* Development Login */}
-            {process.env.NODE_ENV === 'development' && (
-              <Button
-                variant="outlined"
-                fullWidth
-                startIcon={<Code />}
-                onClick={() => setShowDevLogin(true)}
-                disabled={isLoading}
-                sx={{
-                  py: 1.5,
-                  mb: 3,
-                  borderColor: 'warning.main',
-                  color: 'warning.main',
-                  '&:hover': {
-                    borderColor: 'warning.dark',
-                    backgroundColor: 'warning.light',
-                    color: 'warning.dark'
-                  }
-                }}
-              >
-                Development Login
-              </Button>
-            )}
 
             {/* Security Information */}
             <Box sx={{ mt: 3, mb: 2 }}>
@@ -320,16 +273,6 @@ const LoginPage = () => {
           </Paper>
         </motion.div>
       </Container>
-
-      {/* Development Login Dialog */}
-      <Dialog
-        open={showDevLogin}
-        onClose={() => setShowDevLogin(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DevLogin onClose={() => setShowDevLogin(false)} />
-      </Dialog>
 
       {/* Security Information Dialog */}
       <AntiAbuseEducation
