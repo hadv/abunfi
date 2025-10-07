@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 import {
   Box,
   Card,
@@ -93,17 +94,36 @@ const GaslessTransactionSecurity = ({
     }
 
     // Check if estimated gas cost exceeds per-transaction limit
-    if (estimatedGasCost && parseFloat(estimatedGasCost) > parseFloat(status.perTxLimit)) {
-      return false;
+    if (estimatedGasCost) {
+      try {
+        // Use BigNumber comparison for precision
+        const estimatedCostWei = ethers.parseEther(estimatedGasCost.toString());
+        const perTxLimitWei = ethers.parseEther(status.perTxLimit.toString());
+        const gasRemainingWei = ethers.parseEther(status.dailyLimits.gas.remaining.toString());
+
+        if (estimatedCostWei > perTxLimitWei) {
+          return false;
+        }
+
+        if (estimatedCostWei > gasRemainingWei) {
+          return false;
+        }
+      } catch (error) {
+        console.warn('Error parsing gas values for comparison, falling back to float comparison:', error);
+        // Fallback to float comparison if BigNumber parsing fails
+        if (parseFloat(estimatedGasCost) > parseFloat(status.perTxLimit)) {
+          return false;
+        }
+
+        const remainingGas = parseFloat(status.dailyLimits.gas.remaining);
+        if (parseFloat(estimatedGasCost) > remainingGas) {
+          return false;
+        }
+      }
     }
 
-    // Check if daily limits would be exceeded
-    const remainingGas = parseFloat(status.dailyLimits.gas.remaining);
+    // Check if daily transaction limits would be exceeded
     const remainingTx = status.dailyLimits.transactions.remaining;
-
-    if (estimatedGasCost && parseFloat(estimatedGasCost) > remainingGas) {
-      return false;
-    }
 
     if (remainingTx <= 0) {
       return false;

@@ -508,8 +508,8 @@ class BlockchainService {
         ? ethers.parseEther('0.02')
         : ethers.parseEther('0.01');
 
-      // Calculate usage percentages
-      const gasUsedPercentage = (Number(dailyGasUsed) / Number(dailyGasLimit)) * 100;
+      // Calculate usage percentages using BigNumber arithmetic to avoid precision loss
+      const gasUsedPercentage = Number(dailyGasUsed * 10000n / dailyGasLimit) / 100; // Use basis points for precision
       const txUsedPercentage = (Number(dailyTxCount) / dailyTxLimit) * 100;
 
       // Calculate remaining
@@ -546,7 +546,7 @@ class BlockchainService {
 
       // Calculate next reset time
       const now = Math.floor(Date.now() / 1000);
-      const lastReset = Number(lastResetTimestamp);
+      const lastReset = lastResetTimestamp.toNumber(); // Safe conversion for timestamp
       const nextReset = lastReset + (24 * 60 * 60); // 24 hours
 
       return {
@@ -560,7 +560,7 @@ class BlockchainService {
         },
         usage: {
           dailyGasUsed: ethers.formatEther(dailyGasUsed),
-          dailyTxCount: Number(dailyTxCount),
+          dailyTxCount: dailyTxCount.toNumber(), // Safe conversion for transaction count
           gasUsedPercentage: gasUsedPercentage.toFixed(2),
           txUsedPercentage: txUsedPercentage.toFixed(2)
         },

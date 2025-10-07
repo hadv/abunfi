@@ -240,23 +240,46 @@ class SecurityController {
 
     // Check per-transaction gas limit
     if (estimatedGasCost && securityStatus.limits) {
-      const estimatedCostFloat = parseFloat(estimatedGasCost);
-      const perTxLimit = parseFloat(securityStatus.limits.perTxGasLimit);
+      try {
+        // Convert all values to wei for precise BigNumber comparison
+        const estimatedCostWei = ethers.parseEther(estimatedGasCost.toString());
+        const perTxLimitWei = ethers.parseEther(securityStatus.limits.perTxGasLimit.toString());
+        const gasRemainingWei = ethers.parseEther(securityStatus.remaining.gas.toString());
 
-      if (estimatedCostFloat > perTxLimit) {
-        return {
-          canProceed: false,
-          reason: `Transaction gas cost exceeds per-transaction limit of ${perTxLimit} ETH`
-        };
-      }
+        if (estimatedCostWei > perTxLimitWei) {
+          return {
+            canProceed: false,
+            reason: `Transaction gas cost exceeds per-transaction limit of ${securityStatus.limits.perTxGasLimit} ETH`
+          };
+        }
 
-      // Check daily gas remaining
-      const gasRemaining = parseFloat(securityStatus.remaining.gas);
-      if (estimatedCostFloat > gasRemaining) {
-        return {
-          canProceed: false,
-          reason: 'Insufficient daily gas allowance remaining'
-        };
+        // Check daily gas remaining
+        if (estimatedCostWei > gasRemainingWei) {
+          return {
+            canProceed: false,
+            reason: 'Insufficient daily gas allowance remaining'
+          };
+        }
+      } catch (error) {
+        logger.warn('Error parsing gas values for comparison, falling back to float comparison:', error);
+        // Fallback to original float comparison if BigNumber parsing fails
+        const estimatedCostFloat = parseFloat(estimatedGasCost);
+        const perTxLimit = parseFloat(securityStatus.limits.perTxGasLimit);
+        const gasRemaining = parseFloat(securityStatus.remaining.gas);
+
+        if (estimatedCostFloat > perTxLimit) {
+          return {
+            canProceed: false,
+            reason: `Transaction gas cost exceeds per-transaction limit of ${perTxLimit} ETH`
+          };
+        }
+
+        if (estimatedCostFloat > gasRemaining) {
+          return {
+            canProceed: false,
+            reason: 'Insufficient daily gas allowance remaining'
+          };
+        }
       }
     }
 
